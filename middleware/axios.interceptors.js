@@ -1,0 +1,101 @@
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
+
+// import  {useUserStore} from '@/store/auth/index';
+import axiosInstance from "@/services/axios.instance";
+import TokenService from "@/services/token.service";
+import AuthService from "~~/services/auth.service";
+
+import { checkStatus, ErrMessage } from "~/utils";
+import useToast from "~~/composables_/useToast";
+import { initLogout } from "~~/store/auth";
+
+const setupInterceptor = () => {
+  axiosInstance.interceptors.request.use(
+    (config) => {
+      const token = TokenService.getLocalAccessToken();
+      if (token) {
+        // @ts-ignore
+        config.headers["Authorization"] = `Bearer ${token} `;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  axiosInstance.interceptors.response.use(
+    (response) => {
+      console.log(response, "interception ");
+
+      const msg = response.data.message;
+
+      if (checkStatus(response.data.status)) {
+        return response;
+      } {
+        createToast(msg, {
+          showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          // position:'top-center'
+        });
+        // console.clear();
+        throw new ErrMessage(response.data);
+      }
+    },
+    async (err) => {
+      const status = err.response?.status;
+      const originalConfig = err.config;
+      console.log(err, "err");
+      // console.log(originalConfig, "cg");
+
+      if (originalConfig?.url !== "/login" && status === 401) {
+
+
+        return;
+      }
+
+      // if()
+      if (err.code === "ERR_NETWORK") {
+        // openNotification('Check Network Connection',TOAST_TYPES.error)
+        createToast("Check Your Network Connection And Try Again.", {
+          showIcon: true,
+          type: "warning",
+        });
+
+        return Promise.reject(err);
+        // console.log(err.message, "err");
+      }
+
+      if (status && status === 500 && process.env.NODE_ENV === "development") {
+        createToast("Backend Error 👀👀.", {
+          showIcon: true,
+          type: "info",
+        });
+      }
+      // if (originalConfig.url !== "/login" && err.response) {
+      //   // Access Token was expired
+      //   if (err.response.status === 401 && !originalConfig._retry) {
+      //     // EventBus.dispatch("logout");
+      //     // originalConfig._retry = true;
+      //     // try {
+      //     //   const rs = await axiosInstance.post("/refresh/token");
+      //     //   // console.log(rs, "rs");
+      //     //   const { access_token } = rs.data;
+      //     //   // .dispatch("auth/refreshToken", accessToken);
+      //     //   TokenService.updateLocalAccessToken(access_token);
+      //     //   return axiosInstance(originalConfig);
+      //     // } catch (_error) {
+      //     //   return Promise.reject(_error);
+      //     // }
+      //   }
+      // }
+
+      return Promise.reject(err);
+    }
+  );
+};
+
+export default setupInterceptor;

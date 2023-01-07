@@ -1,0 +1,114 @@
+import { defineStore } from "pinia";
+import TokenService from '@/services/token.service.js';
+import AuthService from "@/services/auth.service"
+
+export const useUserStore = defineStore("user", {
+  state: () => ({
+    user: null,
+    token: null,
+    tempUser:null,
+  }),
+  getters: {
+    // TODO: Plan to refactor
+    authenticated: (state) => {
+      return state.token !== null;
+    },
+    isUser: (state) => {
+      return state.user !== null;
+    } ,
+    getTempUser: (state) => {
+      return state.tempUser;
+    }
+  },
+  actions: {
+    // TODO: chang auth storage from localstorage to cookies
+    login: async (form) => {
+
+      // console.log(form ,'form in store');
+
+      return await AuthService.postLogin(form).then(
+        (response) => {
+          // console.log(response,'response')
+
+
+
+          useUserStore().setUserDetails(response);
+          return Promise.resolve(response.data);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    createAccount: (form) => {
+      return AuthService.signUp(form).then(
+        (response) => {
+          useUserStore().setUserDetails(response);
+          return Promise.resolve(response.data);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    verifyOtp: (form) => {
+      return AuthService.verifyOtp(form).then(
+        (response) => {
+          // useUserStore().setUserDetails(response.data.data)
+          return Promise.resolve(response.data);
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+    },
+    setUserDetails: (response) => {
+      const data = response.data;
+
+      const expired = data.expires_in;
+      
+      const expirationDate = new Date(new Date().getTime() + expired * 1000);
+
+
+      if (data.access_token) {
+        useUserStore().token = data.access_token;
+        useUserStore().user = data.user;
+        // TokenService
+        TokenService.setToken(data.access_token);
+      }
+
+      if(expired){
+        TokenService.setExpiration(expirationDate);
+      }
+    },
+    setTemp:(details) => {
+      const state = useUserStore();
+      state.tempUser = details;
+    },
+    clearUserDetails: () => {
+      const state = useUserStore();
+      state.user = null;
+      state.token = null;
+      TokenService.removeToken();
+    },
+    logout:() => {
+      TokenService.removeToken();
+      const state = useUserStore();
+      state.user = null;
+      state.token = null;
+      navigateTo('/sign-in');
+    },
+    clearTemp: () => {
+      const state = useUserStore();
+      state.tempUser = null;
+    }
+  },
+  persist: true,
+});
+
+
+
+export const initLogout = async () => {
+  const {logout} = useUserStore();
+  logout();
+}

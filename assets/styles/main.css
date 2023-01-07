@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* @apply font-primary; */
+}
+
+:root{
+  --color-gray-300: hsl(0, 4%, 75%);
+  --color-background: hsl(210deg,15%,6%);
+}
+
+
+
+html,
+body {
+  height: 100% !important;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  line-height: 1.45;
+}
+
+body {
+  @apply bg-[#FFF];
+}
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
