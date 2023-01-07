@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Public keys that are exposed to the client
     public: {
-      MONO_TEST_KEY : process.env.NUXT_MONO_TEST_KEY,
+      TUMA_CLIENT_ID : process.env.NUXT_TUMA_CLIENT_ID,
     },
   },
 });

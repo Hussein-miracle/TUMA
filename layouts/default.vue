@@ -1,16 +1,11 @@
 <template>
   <div class="layout-default">
+    <the-header />
+    <slot/>
   </div>
 </template>
 
 <script setup>
-// useHead({
-//   title:'Sign In'
-// })
-
-// definePageMeta({
-//   layout:false,
-// })
 </script>
 
 <style lang="scss" >

@@ -1,7 +1,4 @@
 import axios from "axios";
-// https://api.staging.useapace.com/v2
-
-
 
 
 const instance = axios.create({

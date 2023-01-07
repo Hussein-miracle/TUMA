@@ -40,10 +40,10 @@ const setIndexVal = (val) => {
 };
 
 const modifyIndex = () => {
-  if(index.value >= 0 && index.value < data.length ){
+  if(index.value > 0 && index.value < data.length){
     index.value++;
-  }else if(index.value === data.length){
-    index.value = 0;
+  }else if(index.value === data.length ){
+    index.value = 1;
   }
 }
 
@@ -60,7 +60,7 @@ let interval;
 onMounted(() => {
   interval = setInterval(() => {
     modifyIndex();
-  }, 1500);
+  }, 5500);
 });
 
 

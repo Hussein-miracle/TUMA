@@ -2,7 +2,7 @@ import axiosInstance from "./axios.instance";
 
 let instance = null;
 
-class SettingsService{
+class ProfileService{
   constructor(){
     if(instance !== null){
       return instance;
@@ -26,6 +26,6 @@ class SettingsService{
 
 
 
-const overService = new OverviewService();
+const profileService = new ProfileService();
 
-export default overService;
+export default profileService;

@@ -15,7 +15,7 @@ const props = defineProps(["text"]);
 }
 .btn {
   max-width: pxToRem(375);
-  
+    padding: 6px 10px;
   height: 3rem;
   text-transform: uppercase;
   // background-color: transparent;

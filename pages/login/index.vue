@@ -1,17 +1,17 @@
 <template>
   <div class="login pt-4 bg-white flex flex-col ">
     <div
-      class="logo bg-transparent max-w-md text-center relative left-[50%] -translate-x-[50%]"
+      class="logo bg-transparent max-w-md text-center relative sm:left-[50%] sm:-translate-x-[50%]"
     >
       <h1 class="logo-text text-secondary font-extrabold text-9xl">tuma</h1>
       <span
-        class="logo-trademark text-primary bg-secondary rounded-full px-2 py-1 relative left-[25%] -translate-x-[50%]"
+        class="logo-trademark text-primary bg-secondary rounded-full px-2 py-1 relative sm:left-[25%] sm:-translate-x-[50%]"
         >by Bisco Express</span
       >
     </div>
 
     <VeeForm
-      class="flex flex-col gap-y-3 items-center mt-6 login__form w-[40%] self-center"
+      class="flex flex-col gap-y-3 items-center mt-6 login__form  sm:w-[60%] md:w-[40%] self-center"
       :validation-schema="loginSchema"
       @submit="handleSubmit"
     >
@@ -28,7 +28,7 @@
         <label for="email" class="mb-2 text-ash-1">Email</label>
 
         <VeeErrorMsg
-          class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+          class="text-red-600 text-xs py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="email"
         />
       </div>
@@ -48,7 +48,7 @@
         </div>
 
         <VeeErrorMsg
-          class="text-red-600 py-1 px-1 my-1 max-w-md rounded-md bg-red-300 capitalize"
+          class="text-red-600 py-1 px-1 my-1  text-xs max-w-md rounded-md bg-red-300 capitalize"
           name="password"
         />
 
@@ -78,7 +78,7 @@
 
 
 
-    <p class="text-ash-1 text-center">Not a member ? <span class="text-primary cursor-pointer" @click="navigateTo('/signup')"> Join now</span></p>
+    <p class="text-ash-1 text-center">Not a member ? <span class="text-primary cursor-pointer" @click="navigateTo('/register')"> Join now</span></p>
   </div>
 </template>
 

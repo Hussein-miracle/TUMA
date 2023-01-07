@@ -48,7 +48,6 @@ module.exports = {
           2: "#4F4F4F",
           3: "#828282",
           4: "#BDBDBD",
-          'header': "#F9FAFC"
         }
       },
       fontFamily: {

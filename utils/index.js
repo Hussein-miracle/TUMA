@@ -49,3 +49,9 @@ export const assets = {
   tumayellow: "#fec02f",
   tumayellowdark: "#fec02f1a",
 };
+
+
+
+export const stringToHtmlEntity = (str) => {
+  return str.replace(/[^a-z0-9\s]/ugm, s => "&#" + s.codePointAt(0) + ";");
+};
