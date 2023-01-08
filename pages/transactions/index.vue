@@ -1,6 +1,10 @@
 <template>
   <div class="transaction-logs">
-
+    <transaction-log/>
+    <transaction-log/>
+    <transaction-log/>
+    <transaction-log/>
+    <transaction-log/>
   </div>
 </template>
 

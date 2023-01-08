@@ -1,6 +1,6 @@
 <template>
   <header
-    class="theheader flex justify-evenly items-center w-full py-1 bg-secondary"
+    class="theheader text-white flex justify-evenly items-center w-full py-1 bg-secondary"
   >
     <NuxtLink to="transactions" class="custom flex items-center">
       <!-- <icons-transactions :v2="currentRoute === 'transactions' " :v1="currentRoute !== 'transactions' "/> -->
