@@ -188,6 +188,8 @@ definePageMeta({
 </script>
 
 <style lang="scss" scoped>
+
+
 .signup {
   &__form {
     .item {
