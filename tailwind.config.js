@@ -34,6 +34,10 @@ module.exports = {
         secondary: "#212746",
         secondaryDark: "#fec02f1a",
         black: "#080A0D",
+        cancelled:'#ea0000',
+        greenlike:'#0ae2c7',
+        whitelike:'#F4F5F7',
+        tumablack:'#332B2B',
         ash: { 
           1 : "#c6cbd4" ,
           2 : "#707070" 
