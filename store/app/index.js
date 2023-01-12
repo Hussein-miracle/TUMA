@@ -7,6 +7,8 @@ export const useAppStore = defineStore("app", {
     showTodoList: false,
     // tabState:
     userImage:'',
+
+    remittanceMethod:'',
   }),
   getters: {
     showTodo: (state) => {
@@ -14,6 +16,9 @@ export const useAppStore = defineStore("app", {
     },
     getUserImage:(state)=>{
       return state.userImage;
+    },
+    getMethod:(state) => {
+      return state.remittanceMethod;
     }
   },
   actions: {
@@ -22,6 +27,10 @@ export const useAppStore = defineStore("app", {
     },
     setImage(value){
       useAppStore().userImage = value;
+    },
+    setRemittanceMethod(value){
+      console.log(value,'remittance methid in store');
+      useAppStore().remittanceMethod = value;
     }
   },
   persist: true,

@@ -1,7 +1,7 @@
 <template>
   <div class="change-password flex flex-col items-center">
     <h2
-      class="verification__main--title text-4xl font-bold text-secondary mb-4 mt-4"
+      class="verification__main--title text-3xl font-bold text-secondary mb-4 mt-4"
     >
       Change Password
     </h2>
@@ -13,7 +13,7 @@
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
           v-model.lazy="changePasswordForm.previous_password"
-          :type="show === true ? 'text' : 'password'"
+          :type="s === true ? 'text' : 'password'"
           placeholder="Previous Password"
           id="previous_password"
           name="previous_password"
@@ -22,10 +22,10 @@
         <label for="password" class="mb-2 text-ash-1">Previous Password</label>
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
-          @click="toggleShow"
+          @click="toggleS"
         >
-          <icons-view-password v-if="show === true" />
-          <icons-close-password v-if="show === false" />
+          <icons-view-password v-if="s === true" />
+          <icons-close-password v-if="s === false" />
         </div>
 
         <VeeErrorMsg
@@ -59,19 +59,19 @@
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
           v-model.lazy="changePasswordForm.confirm_password"
-          :type="show === true ? 'text' : 'password'"
+          :type="see === true ? 'text' : 'password'"
           placeholder="Confirm Password"
           id="confirm_password"
           name="confirm_password"
         />
 
-        <label for="confirm_password" class="mb-2 text-ash-1">New Password</label>
+        <label for="confirm_password" class="mb-2 text-ash-1">Confirm Password</label>
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
-          @click="toggleShow"
+          @click="toggleSee"
         >
-          <icons-view-password v-if="show === true" />
-          <icons-close-password v-if="show === false" />
+          <icons-view-password v-if="see === true" />
+          <icons-close-password v-if="see === false" />
         </div>
 
         <VeeErrorMsg
@@ -84,8 +84,11 @@
         type="submit"
         :text="'change password'"
         :disable="isLoading === true"
+        class="rounded-3xl py-1 px-2 text-white"
+        :class="{'opacity-70 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
+    
   </div>
 </template>
 
@@ -94,9 +97,19 @@ import * as yup from "yup";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 
+
+
+useHead({
+  title:'Change Password'
+})
+
 const { show, toggleShow } = useToggle();
+const { show:see, toggleShow:toggleSee } = useToggle();
+
+const { show:s, toggleShow:toggleS } = useToggle();
 
 const isLoading = ref(false);
+
 
 const changePasswordForm = reactive({
   previous_password: "",
@@ -141,6 +154,7 @@ const handleSubmit = async (values) => {
   isLoading.value = true;
   console.log(values);
 };
+
 </script>
 
 <style lang="scss" scoped>

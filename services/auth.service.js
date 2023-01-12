@@ -14,10 +14,10 @@ class AuthService {
   async postLogout() {
     return await axiosInstance.post("/logout");
   }
-  async createAccount(details) {
-    console.log(details,'details')
+  async register(details) {
+    // console.log(details,'details')
     // try {
-    const res = await axiosInstance.post("/signup", details);
+    const res = await axiosInstance.post("auth/register", details);
 
     console.log(res , 'res');
     // const response = await axiosInstance.post("/signup",details);

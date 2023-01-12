@@ -1,11 +1,11 @@
 <template>
-  <button class="btn bg-primary text-secondary rounded-md my-1 md:my-2 mx-auto  md:w-80">
+  <button  class="btn bg-primary text-secondary rounded-md my-1 md:my-2 mx-auto  md:w-80">
     {{ text }}
   </button>
 </template>
 
 <script setup>
-const props = defineProps(["text"]);
+const props = defineProps(["text",'type']);
 </script>
 
 <style lang="scss" scoped>

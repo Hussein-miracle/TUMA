@@ -1,6 +1,10 @@
 <template>
   <div class="forgot-password">
-    Forgot password
+    <h2 class="text-secondary text-2xl font-bold">Forgot password</h2>
+
+    <div class="">
+      
+    </div>
   </div>
 </template>
 

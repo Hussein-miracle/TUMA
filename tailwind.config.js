@@ -38,9 +38,11 @@ module.exports = {
         greenlike:'#0ae2c7',
         whitelike:'#F4F5F7',
         tumablack:'#332B2B',
+        tumablack:'#332B2B',
         ash: { 
           1 : "#c6cbd4" ,
-          2 : "#707070" 
+          2 : "#707070" ,
+          3 : "#9DA3B4" ,
         },
         green: {
           4: "#6FCF97"

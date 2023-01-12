@@ -55,6 +55,7 @@ export default defineNuxtConfig({
     // Public keys that are exposed to the client
     public: {
       TUMA_CLIENT_ID : process.env.NUXT_TUMA_CLIENT_ID,
+      API_BASE_URL:process.env.NUXT_API_BASE_URL,
     },
   },
 });
