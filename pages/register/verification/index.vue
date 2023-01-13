@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col items-center">
-    <h2 class="verification__main--title text-4xl font-bold text-secondary mb-4 mt-4">
+    <h2
+      class="verification__main--title text-4xl font-bold text-secondary mb-4 mt-4"
+    >
       OTP Verification
     </h2>
 
@@ -50,6 +52,26 @@
           minlength="1"
           required
         />
+        <input
+          type="text"
+          name=""
+          id="5"
+          v-model="otpInputs.digit5"
+          ref="fifthDigitRef"
+          maxlength="1"
+          minlength="1"
+          required
+        />
+        <input
+          type="text"
+          name=""
+          id="6"
+          v-model="otpInputs.digit6"
+          ref="sixthDigitRef"
+          maxlength="1"
+          minlength="1"
+          required
+        />
       </div>
 
       <div class="self-center mt-2 text-center">
@@ -64,7 +86,7 @@
           Didn't receive the OTP ?
         </p>
         <p
-          class=" mb-4 cursor-pointer text-primary text-center"
+          class="mb-4 cursor-pointer text-primary text-center"
           @click="clearInputs"
         >
           Resend it
@@ -81,15 +103,19 @@ import { createToast } from "mosha-vue-toastify";
 import "mosha-vue-toastify/dist/style.css";
 import AuthService from "~/services/auth.service";
 import { useUserStore } from "@/store/auth/index";
+import { useAppStore } from "@/store/app/index";
 
-const { tempUser } = useUserStore();
+// const { tempUser } = useUserStore();
 
 const verifying = ref(false);
+
 const code = ref("");
 const firstDigitRef = ref(null);
 const secondDigitRef = ref(null);
 const thirdDigitRef = ref(null);
 const fourthDigitRef = ref(null);
+const fifthDigitRef = ref(null);
+const sixthDigitRef = ref(null);
 
 const user = reactive({
   phone_number: "+234 816 0445 544",
@@ -100,13 +126,15 @@ const otpInputs = reactive({
   digit2: null,
   digit3: null,
   digit4: null,
+  digit5: null,
+  digit6: null,
 });
 
 const checkPasteData = (string) => {
   let count = 0;
   const otp = string.trim().toString().split("");
 
-  if (otp.length === 4) {
+  if (otp.length === 6) {
     // console.log(otp,'otp');
     for (const item in otpInputs) {
       otpInputs[item] = otp[count];
@@ -135,15 +163,11 @@ const handlePaste = async (e) => {
 const handleSubmit = async () => {
   const data = {
     code: code.value,
+    email: userEmail,
   };
   verifying.value = true;
   try {
-    if (code.value.length === 4) {
-      // verifyOtp(data).then((result) => {
-      //   console.log(result, "verifyResult");
-      //   verifying.value = !true;
-      //   navigateTo("/sign-in");
-      // });
+    if (code.value.length === 6) {
     }
   } catch (err) {
     verifying.value = !true;
@@ -191,24 +215,26 @@ watch(otpInputs, async (update, stale) => {
     fourthDigitRef.value.focus();
   }
   if (!!otpInputs.digit4) {
+    fifthDigitRef.value.focus();
+  }
+  if (!!otpInputs.digit5) {
+    sixthDigitRef.value.focus();
+  }
+  if (!!otpInputs.digit6) {
     initVerify();
   }
 });
 </script>
 
-<style lang='scss' scoped>
-.verification{
+<style lang="scss" scoped>
+.verification {
   // @apply text-center;
-  &__main--inputs{
-    input{
+  &__main--inputs {
+    input {
       @apply bg-primary w-16 h-16 flex items-center justify-center p-6;
 
       border-radius: 50%;
     }
   }
-
 }
-  
-
-
 </style>

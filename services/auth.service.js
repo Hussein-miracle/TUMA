@@ -9,7 +9,7 @@ class AuthService {
   }
   async postLogin(details) {
     // console.log(details , 'details')
-    return await axiosInstance.post("/login", details);
+    return await axiosInstance.post("auth/login", details);
   }
   async postLogout() {
     return await axiosInstance.post("/logout");
@@ -32,7 +32,7 @@ class AuthService {
   }
 
   async verifyOtp(details) {
-    const response = await axiosInstance.post("/verify/code", details);
+    const response = await axiosInstance.post("auth/register/verify", details);
 
 
     // console.log('Refresh?',response);

@@ -120,10 +120,8 @@
         >
           <option value="" disabled>Select Reason for Remittance</option>
 
-          <option class="option" value="family">Family</option>
+          <option class="option" :value="item.reason" v-for="item in reasons" :key="item.reason">{{item.reason}}</option>
 
-          <option class="option" value="friends">Friends</option>
-          <option class="option" value="parents">Parent</option>
         </select>
 
         <div class="deliver w-full flex flex-col items-center">
@@ -138,17 +136,17 @@
               <div class="icon"></div>
 
               <div class="details flex flex-col items-start">
-                <h3 class="text-secondary capitalize text-xl font-medium">
+                <h3 class="text-secondary capitalize text-xl font-medium mb-2">
                   {{ remittanceMethod }}
                 </h3>
 
-                <p class="text-secondary">
+                <p class="text-secondary my-2">
                   You selected this as a receive method
                 </p>
               </div>
             </div>
 
-            <div class="text-ash-3 cursor-pointer" @click="toggleModal">
+            <div class="text-ash-3 cursor-pointer hover:text-ash-2 transition-all duration-75" @click="toggleModal" >
               Change
             </div>
           </div>
@@ -184,9 +182,9 @@ const isLoadingCity = ref(false);
 const cityRef = ref(null);
 const isOpen = ref(false);
 const store = useAppStore();
-const reasonForRemittance = ref('')
+const reasonForRemittance = ref('');
 
-const { getMethod: remittanceMethod } = storeToRefs(store);
+const { getMethod: remittanceMethod  , reasons } = storeToRefs(store);
 
 // console.log(state , 'state');
 
@@ -253,11 +251,15 @@ function fillCityAndStateFields(localities) {
   recipientForm.city = `${locality.city} ${locality.state}`;
 }
 
-onMounted(() => {
+onMounted( () => {
   city = document.querySelector("#city");
   city.addEventListener("blur", onCityBlur);
 });
 
+onBeforeMount( async () => {
+  useAppStore().fetchReasons();
+
+})
 onUnmounted(() => {
   city.removeEventListener("blur", onCityBlur);
 });

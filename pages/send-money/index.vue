@@ -1,11 +1,11 @@
 <template>
-  <div class="send-money px-6 pt-4 relative flex flex-col items-center">
+  <div class="send-money px-6 py-3 relative flex flex-col items-center">
     <h3 class="text-white font-semibold text-2xl self-start text-left">
       Send Money
     </h3>
 
     <div
-      class="card bg-white sm:w-[28rem] sm:h-72 mx-auto mt-6 px-4 rounded-sm py-2"
+      class="card bg-white w-[80vw] sm:w-[28rem] sm:h-72 mx-auto mt-6 px-4 rounded-sm py-2"
     >
       <div class="top h-1/2 px-8">
         <h6 class="text-ash-1 font-semibold">Enter Amount</h6>
@@ -13,22 +13,16 @@
         <div
           class="top__content relative bg-blue flex justify-between items-center py-8"
         >
-          <div class="div font-bold flex">
-            <span class="unit self-end"> ₦ </span>
+          <div class="div font-bold flex items-center gap-x-1">
+            <span class="unit self-end"> {{conversionDetails.recipient_country_code}} </span>
 
-            <span class="amount text-xl"> 73,000 </span>
+            <input type="number" id="userInput" step="0.00" class="amount font-bold text-xl w-20 focus:outline-primary rounder-sm max-w-[6rem] sm:w-24 border-none outline-none px-0.5 py-0.5 " placeholder="0.00"  v-model="conversionDetails.amount"/> 
           </div>
 
           <div class="line bg-ash-1"></div>
           <!-- 
 <img src="../../assets/icons/nigerian-flag.svg" class="object-contain max-w-full"/> -->
-
-          <select class="">
-            <option class="">NGN</option>
-            <option>GBP</option>
-            <option>EUR</option>
-            <option>USD</option>
-          </select>
+          <sender-currency-select />
         </div>
       </div>
 
@@ -38,36 +32,23 @@
         <div
           class="bottom__content relative flex justify-between items-center py-8"
         >
-          <div class="div font-bold flex">
-            <span class="unit self-end">$</span>
-            <span class="amount text-xl">100</span>
+          <div class="div font-bold flex items-center gap-x-2">
+            <span class="unit self-end">{{conversionDetails.recipient_currency}}</span>
+            <span class="amount text-xl">0.00</span>
           </div>
 
           <div class="line bg-ash-1"></div>
-
-          <select>
-            <option>USD</option>
-            <option>GBP</option>
-            <option>NGN</option>
-            <option>EUR</option>
-          </select>
+          <RecipientCurrencySelect />
         </div>
       </div>
     </div>
-
-    <!-- <select class="mx-auto mt-8 rounded-md w-72 px-3 py-1 focus:outline-primary" v-model="remitanceForm.method">
-      <option disabled value="">Select Remitance method</option>
-      <option value="cash">Cash</option>
-      <option value="bank">Bank</option>
-      <option value="mobile-money">Mobile</option>
-    </select> -->
 
     <div
       class="fieldset mx-auto mt-8 rounded-md w-72 px-2 py-1 flex items-center justify-between flex-col bg-white"
     >
       <div
         class="legend flex items-center justify-between w-full"
-        @click="remittanceMethod = 'cash'"
+        @click="conversionDetails.sub_type = 'cash'"
       >
         <div
           class="option cursor-pointer flex gap-x-2 flex-row-reverse items-center justify-start text-left"
@@ -79,7 +60,7 @@
             type="radio"
             name="cash"
             id="cash"
-            v-model="remittanceMethod"
+            v-model="conversionDetails.sub_type"
             value="cash"
             hidden
           />
@@ -90,8 +71,8 @@
           >
             <span
               :class="{
-                '!block': remittanceMethod === 'cash',
-                hidden: remittanceMethod !== 'cash',
+                '!block': conversionDetails.sub_type === 'cash',
+                hidden: conversionDetails.sub_type !== 'cash',
               }"
             >
             </span>
@@ -100,19 +81,19 @@
 
         <div class="rate font-bold flex">
           <span class="unit self-end">$</span>
-          <span class="amount">130</span>
+          <span class="amount">0.00</span>
         </div>
       </div>
       <div
         class="legend flex items-center justify-between w-full cursor-pointer"
-        @click="remittanceMethod = 'bank'"
+        @click="conversionDetails.sub_type = 'bank'"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
         >
           <label>Bank</label>
           <input
-            v-model="remittanceMethod"
+            v-model="conversionDetails.sub_type"
             type="radio"
             name="bank"
             id="bank"
@@ -125,8 +106,8 @@
           >
             <span
               :class="{
-                '!block': remittanceMethod === 'bank',
-                hidden: remittanceMethod !== 'bank',
+                '!block': conversionDetails.sub_type === 'bank',
+                hidden: conversionDetails.sub_type !== 'bank',
               }"
             ></span>
           </label>
@@ -134,19 +115,20 @@
 
         <div class="rate font-bold flex">
           <span class="unit self-end">$</span>
-          <span class="amount">110</span>
+          <span class="amount">0.00</span>
         </div>
       </div>
+
       <div
         class="legend cursor-pointer flex items-center justify-between w-full"
-        @click="remitanceMethod = 'mobile'"
+        @click="conversionDetails.sub_type = 'mobile'"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
         >
-          <label>Mobile</label>
+          <label for="mobile">Mobile</label>
           <input
-            v-model="remittanceMethod"
+            v-model="conversionDetails.sub_type"
             type="radio"
             name="mobile"
             id="mobile"
@@ -160,8 +142,8 @@
           >
             <span
               :class="{
-                '!block': remittanceMethod === 'mobile',
-                hidden: remittanceMethod !== 'mobile',
+                '!block': conversionDetails.sub_type === 'mobile',
+                hidden: conversionDetails.sub_type !== 'mobile',
               }"
             ></span>
           </label>
@@ -169,7 +151,7 @@
 
         <div class="rate font-bold flex">
           <span class="unit self-end">$</span>
-          <span class="amount">100</span>
+          <span class="amount">0.00</span>
         </div>
       </div>
     </div>
@@ -187,30 +169,67 @@
 
 <script setup>
 import { useAppStore } from "@/store/app/index";
+import UtilsService from "@/services/utils.service";
 
 useHead({
   title: "Send Money",
 });
 
+const {
+  public: { TUMA_CLIENT_ID },
+} = useRuntimeConfig();
+
+const conversionDetails = reactive({
+  amount: "",
+  client_id: TUMA_CLIENT_ID,
+  recipient_country_code: "NG",
+  recipient_currency: "USD",
+  sub_type: "",
+});
+
 const remittanceMethod = ref("");
 
+const isLoadingCountries = ref(false);
+
 const handleContinue = () => {
-  if (remittanceMethod.value !== "") {
-    useAppStore().setRemittanceMethod(remittanceMethod.value);
-    // console.log(remittanceMethod.value, "method");
+  if (conversionDetails.sub_type !== "") {
+    useAppStore().setRemittanceMethod(conversionDetails.sub_type);
+    console.log(conversionDetails.sub_type, "method");
     navigateTo("/recipient");
   }
 };
 
+// const fetchCountries = async () => {
+//   const data = await UtilsService.getCountries();
+//   // console.log(data.data,'countries');
+//   setCountries(data.data);
+// };
+
+const handleTypeBlur = async () => {
+  if(!!conversionDetails.amount){
+    useAppStore().fetchConversion(conversionDetails);
+  }
+}
 onMounted(() => {
-    remittanceMethod.value = useAppStore().getMethod || '';
+  remittanceMethod.value = useAppStore().getMethod || "";
+  const amountInput  = document.querySelector('#userInput');
+
+  amountInput.addEventListener('blur',handleTypeBlur);
+});
+
+onBeforeMount(async () => {
+  useAppStore().fetchCountries();
+});
+
+onBeforeUnmount(() => {
+  amountInput.removeEventListener('blur',handleTypeBlur);
 })
 </script>
 
 <style lang="scss" scoped>
 $percent: 75%;
 .send-money {
-  height: calc(100vh - 3rem);
+  min-height: calc(100vh - 3rem);
   background-image: linear-gradient(
     180deg,
     #fec02f 1%,
@@ -302,6 +321,7 @@ label.btn {
 
     width: $percent;
     height: $percent;
+    z-index: 5;
   }
 }
 

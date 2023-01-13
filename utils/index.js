@@ -89,3 +89,11 @@ export const geocodeResponseToCityState = (geocodeJSON) => {
   }
   return parsedLocalities;
 }
+
+
+export const getRandomIndex = (max) => {
+  const index = Math.floor(Math.random() * (max));
+
+  return index;
+};
+

@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const url = 'https://vtsp35pseg.us-east-1.awsapprunner.com/api';
+const testUrl = 'https://dagdag.test/api';
 
 
 const instance = axios.create({
