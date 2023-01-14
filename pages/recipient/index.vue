@@ -52,7 +52,7 @@
               '!block absolute top-[50%] -translate-y-1/2 right-2':
                 isLoadingCity === true,
             }"
-            class="hidden loader h-[70%] w-[70%]"
+            class="hidden loader h-[50%] w-[50%]"
           ></span>
           <VeeField
             type="text"
@@ -215,7 +215,11 @@ const recipientSchema = yup.object().shape({
 });
 
 let city;
-const handleSubmit = async () => {};
+const handleSubmit = async (values) => {
+  console.log(values);
+
+  // navigateTo('/upload');
+};
 
 const onCityBlur = async () => {
   const api_key = "AIzaSyCiC_PwVKq0LjEIKD3blen35rwOEWe-U34";

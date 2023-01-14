@@ -75,11 +75,12 @@
       </div>
 
       <div class="self-center mt-2 text-center">
-        <Button
+        <button-primary
           :text="'Verify'"
           :showIcon="false"
           :type="'submit'"
-          :disable="verifying"
+          :disabled="verifying"
+          :class="{'opacity-80': verifying === true}"
         />
 
         <p class="font-bold mt-4 text-secondary cursor-pointer">
@@ -120,6 +121,10 @@ const sixthDigitRef = ref(null);
 const user = reactive({
   phone_number: "+234 816 0445 544",
 });
+
+useHead({
+  title:'Verification'
+})
 
 const otpInputs = reactive({
   digit1: null,
@@ -162,12 +167,15 @@ const handlePaste = async (e) => {
 
 const handleSubmit = async () => {
   const data = {
-    code: code.value,
-    email: userEmail,
+    verification_code: code.value,
+    email: 'wivoden772@themesw.com',
   };
   verifying.value = true;
   try {
     if (code.value.length === 6) {
+      const res = await useUserStore().verifyOtp(data);
+
+      console.log(res,'data after verfity')
     }
   } catch (err) {
     verifying.value = !true;
@@ -190,9 +198,7 @@ const clearInputs = () => {
 };
 
 onBeforeMount(() => {
-  if (tempUser && tempUser?.phone_number !== null) {
-    user.phone_number = tempUser?.phone_number;
-  }
+
 });
 
 onMounted(() => {

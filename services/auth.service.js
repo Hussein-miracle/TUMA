@@ -17,7 +17,7 @@ class AuthService {
   async register(details) {
     // console.log(details,'details')
     // try {
-    const res = await axiosInstance.post("auth/register", details);
+    const res = await axiosInstance.post("/auth/register", details);
 
     console.log(res , 'res');
     // const response = await axiosInstance.post("/signup",details);
@@ -35,7 +35,7 @@ class AuthService {
     const response = await axiosInstance.post("auth/register/verify", details);
 
 
-    // console.log('Refresh?',response);
+    console.log('verify res',response);
 
     if (response.data.access_token) {
       TokenService.setToken(response.data.access_token);

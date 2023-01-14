@@ -205,6 +205,7 @@ const handleContinue = () => {
 //   setCountries(data.data);
 // };
 
+let amountInput;
 const handleTypeBlur = async () => {
   if(!!conversionDetails.amount){
     useAppStore().fetchConversion(conversionDetails);
@@ -212,7 +213,7 @@ const handleTypeBlur = async () => {
 }
 onMounted(() => {
   remittanceMethod.value = useAppStore().getMethod || "";
-  const amountInput  = document.querySelector('#userInput');
+   amountInput  = document.querySelector('#userInput');
 
   amountInput.addEventListener('blur',handleTypeBlur);
 });
