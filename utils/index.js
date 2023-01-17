@@ -97,3 +97,5 @@ export const getRandomIndex = (max) => {
   return index;
 };
 
+
+

@@ -3,12 +3,16 @@
     <h2 class="text-secondary text-2xl font-bold">Card Details</h2>
 
     <div class="add-card__input flex flex-col items-center w-full">
-      <VeeForm
+      <!-- <VeeForm
         class="flex flex-col gap-y-3 items-center mt-6 w-[90%] add-card__form sm:w-[70%] md:w-[50%] self-center"
         @submit="handleSubmit"
+
+        
       >
         <div class="item flex flex-col-reverse my-2 w-full relative">
-          <div class="absolute card_logo top-3/4 right-1 -translate-y-1/2">🛡️🛡️🛡️</div>
+          <div class="absolute card_logo top-3/4 right-1 -translate-y-1/2">
+            🛡️🛡️🛡️
+          </div>
 
           <VeeField
             type="text"
@@ -66,8 +70,8 @@
               type="text"
               v-model="cardDetails.cvv"
               name="cvv"
-              min='3'
-              max='3'
+              min="3"
+              max="3"
               id="cvv"
               placeholder="CVV"
             />
@@ -82,10 +86,14 @@
         </div>
 
         <div class="flex gap-x-2 items-center justify-start mr-auto">
-          <icons-check-rounded class='cursor-pointer'  v-if='cardDetails.save_card === true'  @click="cardDetails.save_card = !cardDetails.save_card"/>
+          <icons-check-rounded
+            class="cursor-pointer"
+            v-if="cardDetails.save_card === true"
+            @click="cardDetails.save_card = !cardDetails.save_card"
+          />
           <span
             v-else
-            class="circle  w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
+            class="circle w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
             @click="cardDetails.save_card = !cardDetails.save_card"
           ></span>
           <p class="text-secondary font-light">
@@ -99,7 +107,18 @@
           class="text-secondary font-semibold"
           :disabled="isLoading === true"
         />
-      </VeeForm>
+      </VeeForm> -->
+
+      <div id="st-notification-frame"></div>
+
+      <form id="st-form">
+        <div id="st-card-number" class="st-card-number"></div>
+        <div id="st-expiration-date" class="st-expiration-date"></div>
+        <div id="st-security-code" class="st-security-code"></div>
+        <button type="submit" id="st-form__submit" class="st-form__submit">
+          Pay securely
+        </button>
+      </form>
     </div>
   </div>
 </template>
@@ -119,6 +138,14 @@ definePageMeta({
   layout: false,
 });
 
+const initTrustPayment = async () => {
+  const st = SecureTrading({
+    jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImFjY291bnR0eXBlZGVzY3JpcHRpb24iOiJFQ09NIiwiYmFzZWFtb3VudCI6IjEwNTAiLCJjdXJyZW5jeWlzbzNhIjoiR0JQIiwib3JkZXJyZWZlcmVuY2UiOiI0NjU1NzY4NjQ1NjRhYmNkZWgiLCJzaXRlcmVmZXJlbmNlIjoidGVzdF9kYWdkYWdsdGQxMTI1NjgiLCJyZXF1ZXN0dHlwZWRlc2NyaXB0aW9ucyI6WyJUSFJFRURRVUVSWSIsIkFVVEgiXX0sImlhdCI6MTY3MzkwODY1MiwiaXNzIjoiand0QGRhZ2RhZ2x0ZC5jb20ifQ.3Udtai0igiRg0RQFLwlKRtQv60f0_4nLBpX_iZ7cjnY",
+  });
+
+  st.Components();
+};
+
 const handleSubmit = async (values) => {
   isLoading.value = true;
   console.log(values, "card details val");
@@ -128,20 +155,36 @@ const handleSubmit = async (values) => {
   }, 500);
 };
 
+onMounted (async () => {
+  const trustSource = "https://cdn.eu.trustpayments.com/js/latest/st.js";
 
-watch(cardDetails,() => {
-  if(!!cardDetails.card_number){
+  const trustScript = document.createElement("script");
+
+  trustScript.src = trustSource;
+
+  if (!document.querySelector(`[src="${trustSource}"]`)) {
+    document.body.appendChild(trustScript);
+  }
+
+  await initTrustPayment();
+
+
+
+});
+
+watch(cardDetails, () => {
+  if (!!cardDetails.card_number) {
     const len = cardDetails.card_number.length;
 
-    if(len === 5){
+    if (len === 5) {
       cardDetails.card_number = `${cardDetails.card_number} `;
-      }
+    }
 
-    if(len === 10){
+    if (len === 10) {
       cardDetails.card_number = `${cardDetails.card_number} `;
     }
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>

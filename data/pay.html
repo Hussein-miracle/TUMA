@@ -1,0 +1,22 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div id="st-notification-frame"></div>
+    <form id="st-form" method="POST">
+      <div id="st-card-number"></div>
+      <div id="st-expiration-date"></div>
+      <div id="st-security-code"></div>
+      <button type="submit">Pay securely</button>
+    </form>
+    <script src="https://cdn.eu.trustpayments.com/js/latest/st.js"></script>
+    <script>
+      (function() {
+        var st = SecureTrading({
+          jwt : ''
+        });
+        st.Components();
+    })();
+    </script>
+  </body>
+</html>
