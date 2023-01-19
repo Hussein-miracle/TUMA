@@ -202,6 +202,7 @@ import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 import flags from "@/data/countries";
 import AuthService from '@/services/auth.service';
+import {useAppStore} from '@/store/app/index';
 
 const {
   public: { TUMA_CLIENT_ID },
@@ -269,13 +270,21 @@ const handleSubmit = async (values) => {
 
   try{
     AuthService.register(values).then((result) => {
-      console.log(result,'res reg');
+      // console.log(result,'res reg');
+      const data = result.data.data;
+      // console.log(data,'after reg');
+      const user = data.user;
+      console.log(user,'user after reg');
+      useAppStore().setAppUser(user);
       isLoading.value = false;
       navigateTo('register/verification');
+    }).catch((err) => {
+      isLoading.value = false;
+    console.log(err,'err');
+
     })
   }catch(err){
     isLoading.value = false;
-    console.log(err,'err');
 
   }
 
@@ -292,9 +301,9 @@ definePageMeta({
   layout: false,
 });
 
-watch(signupForm, () => {
-  console.log(signupForm,'sF');
-});
+// watch(signupForm, () => {
+//   console.log(signupForm,'sF');
+// });
 </script>
 
 <style lang="scss" scoped>

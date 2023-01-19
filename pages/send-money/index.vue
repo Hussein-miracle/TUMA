@@ -22,7 +22,7 @@
               type="number"
               id="userInput"
               step="0.00"
-              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24  px-1 py-1 border-secondary border-2"
+              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
               placeholder="0.00"
               v-model="conversionDetails.amount"
             />
@@ -181,7 +181,7 @@
 <script setup>
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
-// import { debounce } from "mosha-vue-toastify/dist/util";
+import { watchDebounced } from "@vueuse/core";
 
 useHead({
   title: "Send Money",
@@ -204,7 +204,7 @@ const remittanceMethod = ref("");
 const isLoadingCountries = ref(false);
 
 const handleContinue = () => {
-  if (conversionDetails.sub_type !== "") {
+  if (conversionDetails.sub_type !== ""  && conversionDetails.amount !== '') {
     useAppStore().setRemittanceMethod(conversionDetails.sub_type);
     console.log(conversionDetails.sub_type, "method");
     navigateTo("/recipient");
@@ -219,10 +219,9 @@ const handleContinue = () => {
 
 let amountInput;
 
-
 onMounted(() => {
   remittanceMethod.value = useAppStore().getMethod || "";
-  amountInput = document.querySelector("#userInput");
+  // amountInput = document.querySelector("#userInput");
 });
 
 onBeforeMount(async () => {
@@ -233,14 +232,15 @@ onBeforeMount(async () => {
 //   amountInput.removeEventListener("blur", handleTypeBlur);
 // });
 
-// watch(
-//   conversionDetails,
-//   debounce(() => {
-//     if (!!conversionDetails.amount) {
-//       useAppStore().fetchConversion(conversionDetails);
-//     }
-//   }, 500)
-// );
+watchDebounced(
+  conversionDetails,
+  () => {
+    if (!!conversionDetails.amount) {
+      useAppStore().fetchConversion(conversionDetails);
+    }
+  },
+  { debounce: 500, maxWait: 1000 }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -348,8 +348,8 @@ input[type="radio"]:focus label.btn {
   }
 }
 
-#userInput{
-  @apply border-secondary; 
+#userInput {
+  @apply border-secondary;
   border-style: solid !important;
   border-width: 1.45px !important;
 }

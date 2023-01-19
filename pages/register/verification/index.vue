@@ -7,7 +7,10 @@
     </h2>
 
     <p class="mx-6 sm:mx-auto text-ash-1">
-      Enter <span class="font-bold"> OTP </span> sent to {{ user.phone_number }}
+      Enter <span class="font-bold"> OTP </span> sent to
+
+      <span class="font-light text-secondary">+{{ user.phone }} </span
+      >
     </p>
 
     <VeeForm class="flex flex-col self-center my-4" @submit="handleSubmit">
@@ -80,7 +83,7 @@
           :showIcon="false"
           :type="'submit'"
           :disabled="verifying"
-          :class="{'opacity-80': verifying === true}"
+          :class="{ 'opacity-80': verifying === true }"
         />
 
         <p class="font-bold mt-4 text-secondary cursor-pointer">
@@ -105,8 +108,13 @@ import "mosha-vue-toastify/dist/style.css";
 import AuthService from "~/services/auth.service";
 import { useUserStore } from "@/store/auth/index";
 import { useAppStore } from "@/store/app/index";
+import { storeToRefs } from "pinia";
 
-// const { tempUser } = useUserStore();
+const appState = useAppStore();
+
+const { getUser: user } = storeToRefs(appState);
+
+console.log(user.value, "gU");
 
 const verifying = ref(false);
 
@@ -118,13 +126,11 @@ const fourthDigitRef = ref(null);
 const fifthDigitRef = ref(null);
 const sixthDigitRef = ref(null);
 
-const user = reactive({
-  phone_number: "+234 816 0445 544",
-});
+// const user = storeToRefs()
 
 useHead({
-  title:'Verification'
-})
+  title: "Verification",
+});
 
 const otpInputs = reactive({
   digit1: null,
@@ -168,14 +174,22 @@ const handlePaste = async (e) => {
 const handleSubmit = async () => {
   const data = {
     verification_code: code.value,
-    email: 'wivoden772@themesw.com',
+    email: user.value.email,
   };
+
+  console.log(data,'code data');
   verifying.value = true;
   try {
     if (code.value.length === 6) {
       const res = await useUserStore().verifyOtp(data);
 
-      console.log(res,'data after verfity')
+      console.log(res, "data after verfity");
+      createToast(`${msg}⚡⚡`,{
+        type:'success',
+        showIcon:true,
+        position:'top-center'
+      })
+      navigateTo('/login');
     }
   } catch (err) {
     verifying.value = !true;
@@ -197,9 +211,7 @@ const clearInputs = () => {
   verifying.value = false;
 };
 
-onBeforeMount(() => {
-
-});
+onBeforeMount(() => {});
 
 onMounted(() => {
   firstDigitRef.value.focus();

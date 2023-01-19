@@ -44,6 +44,9 @@ export const useAppStore = defineStore("app", {
 
     getReasons:(state)=>{
       return state.reasons;
+    },
+    getUser:(state) =>{
+      return state.user;
     }
 
   },
@@ -93,6 +96,12 @@ export const useAppStore = defineStore("app", {
       console.log(data , 'conversiondata');
 
       useAppStore().conversionDetails = data;
+    },
+    setAppUser:(values)=>{
+      const olduser = useAppStore().getUser;
+      const userUpdates = {...olduser,...values,verification_code:undefined};
+
+      useAppStore().user = userUpdates;
     }
   },
   persist: true,

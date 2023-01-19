@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     // '~/plugins/mono',
+    '@vueuse/nuxt',
     [
       "@pinia/nuxt",
       {
