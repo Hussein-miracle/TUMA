@@ -111,7 +111,7 @@
 
       <div id="st-notification-frame"></div>
 
-      <form id="st-form">
+      <form id="st-form" action="" >
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>

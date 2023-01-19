@@ -14,9 +14,18 @@
           class="top__content relative bg-blue flex justify-between items-center py-8"
         >
           <div class="div font-bold flex items-center gap-x-1">
-            <span class="unit self-end"> {{conversionDetails.recipient_country_code}} </span>
+            <span class="unit self-end">
+              {{ conversionDetails.recipient_country_code }}
+            </span>
 
-            <input type="number" id="userInput" step="0.00" class="amount font-bold text-xl w-20 focus:outline-primary rounder-sm max-w-[6rem] sm:w-24 border-none outline-none px-0.5 py-0.5 " placeholder="0.00"  v-model="conversionDetails.amount"/> 
+            <input
+              type="number"
+              id="userInput"
+              step="0.00"
+              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24  px-1 py-1 border-secondary border-2"
+              placeholder="0.00"
+              v-model="conversionDetails.amount"
+            />
           </div>
 
           <div class="line bg-ash-1"></div>
@@ -33,7 +42,9 @@
           class="bottom__content relative flex justify-between items-center py-8"
         >
           <div class="div font-bold flex items-center gap-x-2">
-            <span class="unit self-end">{{conversionDetails.recipient_currency}}</span>
+            <span class="unit self-end">{{
+              conversionDetails.recipient_currency
+            }}</span>
             <span class="amount text-xl">0.00</span>
           </div>
 
@@ -170,6 +181,7 @@
 <script setup>
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
+// import { debounce } from "mosha-vue-toastify/dist/util";
 
 useHead({
   title: "Send Money",
@@ -206,25 +218,29 @@ const handleContinue = () => {
 // };
 
 let amountInput;
-const handleTypeBlur = async () => {
-  if(!!conversionDetails.amount){
-    useAppStore().fetchConversion(conversionDetails);
-  }
-}
+
+
 onMounted(() => {
   remittanceMethod.value = useAppStore().getMethod || "";
-   amountInput  = document.querySelector('#userInput');
-
-  amountInput.addEventListener('blur',handleTypeBlur);
+  amountInput = document.querySelector("#userInput");
 });
 
 onBeforeMount(async () => {
   useAppStore().fetchCountries();
 });
 
-onBeforeUnmount(() => {
-  amountInput.removeEventListener('blur',handleTypeBlur);
-})
+// onBeforeUnmount(() => {
+//   amountInput.removeEventListener("blur", handleTypeBlur);
+// });
+
+// watch(
+//   conversionDetails,
+//   debounce(() => {
+//     if (!!conversionDetails.amount) {
+//       useAppStore().fetchConversion(conversionDetails);
+//     }
+//   }, 500)
+// );
 </script>
 
 <style lang="scss" scoped>
@@ -330,5 +346,11 @@ input[type="radio"]:focus label.btn {
   &::after {
     display: block;
   }
+}
+
+#userInput{
+  @apply border-secondary; 
+  border-style: solid !important;
+  border-width: 1.45px !important;
 }
 </style>

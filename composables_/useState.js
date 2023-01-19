@@ -1,4 +1,4 @@
-export function useState(initialState) {
+export const  useState = (initialState) => {
 
   const state = ref(initialState);
 
