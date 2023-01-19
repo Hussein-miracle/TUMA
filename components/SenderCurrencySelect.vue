@@ -6,7 +6,7 @@
       class="rounded-md bg-primary px-4 py-2 text-sm  max-w-[10rem] hover:bg-opacity-20 focus:outline-none flex justify-between truncate gap-x-2 items-center"
     >
       <span
-        class="text-whitelike truncate"
+        class="text-whitelike truncate "
         v-if="selectedCountry && selectedCountry?.name"
         >{{ selectedCountry?.name }}</span
       >
