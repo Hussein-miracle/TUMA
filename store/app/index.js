@@ -25,7 +25,9 @@ export const useAppStore = defineStore("app", {
     },
     user: null,
     countries: [],
-
+    transaction:{
+      applicantEmail:'',applicantPhone:''
+    },
     senderCurrencyDetails: {
       sender_currency: "",
       sender_country: "",
@@ -66,6 +68,10 @@ export const useAppStore = defineStore("app", {
     getSenderCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
       return state.senderCurrencyDetails;
+    },
+    
+    getTransaction:(state) => {
+      return state.transaction;
     },
     getRecipientCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
@@ -167,6 +173,9 @@ export const useAppStore = defineStore("app", {
     },
     setConversionData:(data) => {
       useAppStore().conversionData = {...data};
+    },
+    setTransactionData:(data) => {
+      useAppStore().transaction = {...data};
     }
   },
   persist: true,

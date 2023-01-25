@@ -305,6 +305,9 @@ const handleSubmit = async (values) => {
     .then((response) => {
       const result = response.data;
       console.log(result, "recipient Daata");
+      const data = {
+        
+      }
       return result;
     })
     .then((res) => {
@@ -327,7 +330,8 @@ const handleSubmit = async (values) => {
           console.log(result,'trans creation data');
           const data = result.data;
           isLoading.value = false;
-          // navigateTo("/upload");
+          navigateTo("/upload");
+          return data;
         })
         .catch((err) => {
           isLoading.value = false;

@@ -55,6 +55,14 @@ class UtilsService{
     return data;
   }
 
+  async getSumSubToken(){
+    const response =  await axiosInstance.get(`/sumsub`);
+  
+    const data = response.data.data;
+  
+    return data;
+  }
+
 }
 
 
