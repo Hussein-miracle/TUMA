@@ -62,6 +62,13 @@ class UtilsService{
   
     return data;
   }
+  async postToTrustPayment(details){
+    const response =  await axiosInstance.post(`/trustpayment`,details);
+    
+    const data = response.data;
+  
+    return data;
+  }
 
 }
 
