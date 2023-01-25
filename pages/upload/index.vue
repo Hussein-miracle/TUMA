@@ -1,5 +1,5 @@
 <template>
-  <div class="upload bg-blue-600">
+  <div class="upload">
     <div id="sumsub-websdk-container"></div>
   </div>
 </template>

@@ -61,10 +61,13 @@
             v-model="recipientForm.city"
             name="city"
             id="city"
+            @input="handleCityInput"
+            @click="handleCityInputClick"
             ref="cityRef"
             placeholder="Type and Select City from Google Dropdown List"
             :options="{
               types: ['(cities)'],
+              libraries: 'places',
               componentRestrictions: {
                 country: restrict.country_code.code.toLowerCase(),
               },
@@ -267,6 +270,26 @@ const recipientForm = reactive({
   reason: "",
 });
 
+const handleCityInput = async (e) => {
+  // console.log(e,'cityInput');
+  isLoadingCity.value = true;
+  setTimeout(() => {
+    isLoadingCity.value = !true;
+    if (recipientForm.city === "") {
+      ref(cityRef).value.$el.value.clear();
+      ref(cityRef).value.$el.value = '';
+    }
+  }, 500);
+  const value = e.target.value;
+
+  // recipientForm.city = value;
+};
+const handleCityInputClick = async (e) => {
+  console.log(e, "clci");
+
+  // ref(cityRef).value.$el.value
+};
+
 const setPlace = (e) => {
   const address = e.formatted_address;
   recipientForm.city = address;
@@ -305,9 +328,7 @@ const handleSubmit = async (values) => {
     .then((response) => {
       const result = response.data;
       console.log(result, "recipient Daata");
-      const data = {
-        
-      }
+      const data = {};
       return result;
     })
     .then((res) => {
@@ -327,7 +348,7 @@ const handleSubmit = async (values) => {
       };
       UtilsService.createTransaction(transactionData)
         .then((result) => {
-          console.log(result,'trans creation data');
+          console.log(result, "trans creation data");
           const data = result.data;
           isLoading.value = false;
           navigateTo("/upload");
