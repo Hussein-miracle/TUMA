@@ -75,11 +75,11 @@ export const useUserStore = defineStore("user", {
       
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
-      console.log(data,'login data in store');
+      // console.log(data,'login data in store');
       if (data.api_token) {
         useUserStore().token = data.api_token;
         useUserStore().user = useAppStore().getUser;
-        console.log(useUserStore().getAuthUser,'authUser');
+        // console.log(useUserStore().getAuthUser,'authUser');
         // TokenService
         TokenService.setToken(data.api_token);
       }

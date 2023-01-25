@@ -1,63 +1,116 @@
 import { defineStore } from "pinia";
-import TokenService from '@/services/token.service.js';
+import TokenService from "@/services/token.service.js";
 import AuthService from "@/services/auth.service";
 import UtilsService from "@/services/utils.service";
-
+import data from "~~/data/onboarding";
 
 export const useAppStore = defineStore("app", {
   state: () => ({
     showTodoList: false,
     // tabState:
-    userImage:'',
+    userImage: "",
 
-    remittanceMethod:'',
-    user:null,
+    remittanceMethod: "",
+    remittanceDetail: {
+      cash: {
+        converted: "",
+      },
+      bank: {
+        converted: "",
+      },
+      mobile: {
+        converted: "",
+      },
+      recipient_currency: "",
+    },
+    user: null,
     countries: [],
-    senderCurrencyDetails: null,
-    recipientCurrencyDetails: null,
-    reason:'',
-    reasons:[],
-    conversionDetails:null,
+
+    senderCurrencyDetails: {
+      sender_currency: "",
+      sender_country: "",
+      sender_currency_symbol: "",
+    },
+    recipientCurrencyDetails: {
+      recipient_currency: "",
+      recipient_country: "",
+      recipient_currency_symbol: "",
+    },
+    reason: "",
+    reasons: [],
+    conversionData: {
+      amount:''
+    },
+    restriction: {
+      country: "",
+      country_code: "",
+    },
   }),
   getters: {
     showTodo: (state) => {
       return state.showTodoList;
     },
-    getUserImage:(state)=>{
-      return state.user?.profile_picture  || null;
+    getUserImage: (state) => {
+      return state.user?.profile_picture || null;
     },
-    getMethod:(state) => {
+    getMethod: (state) => {
       return state.remittanceMethod;
     },
-    getCountriesFromStore:(state) => {
+    getRestriction: (state) => {
+      return state.restriction;
+    },
+    getCountriesFromStore: (state) => {
       // console.log(state,'logging state to check for countries');
       return state.countries;
     },
-    getSenderCurrencyDetails:(state) => {
+    getSenderCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
       return state.senderCurrencyDetails;
     },
-    getRecipientCurrencyDetails:(state) => {
+    getRecipientCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
       return state.recipientCurrencyDetails;
     },
-
-    getReasons:(state)=>{
+    getDetails: (state) => {
+      return state.remittanceDetail;
+    },
+    getReasons: (state) => {
       return state.reasons;
     },
-    getUser:(state) =>{
+    getUser: (state) => {
       return state.user;
+    },
+    getConversionData:(state)=>{
+      return state.conversionData;
     }
-
   },
   actions: {
-    setShowTodo: (value)=>{
+    setShowTodo: (value) => {
       useAppStore().showTodoList = value;
     },
-    setImage(value){
+    setImage(value) {
       useAppStore().userImage = value;
     },
-    setRemittanceMethod(value){
+    setRestriction(value) {
+      const country = value;
+      const country_code = useAppStore().getCountriesFromStore.find((c) => {
+        // console.log(c.name,'c',country)
+        if (c.name === country) {
+          return c.code.toLowerCase();
+        }
+      });
+
+      const restrictionDetails = {
+        country,
+        country_code,
+      };
+
+      // console.log(restrictionDetails,'restrict Detai;ls')
+      useAppStore().restriction = {
+       ...restrictionDetails
+      };
+    },
+    setRemittanceMethod(value) {
       // console.log(value,'remittance methid in store');
       useAppStore().remittanceMethod = value;
     },
@@ -79,29 +132,41 @@ export const useAppStore = defineStore("app", {
     },
 
     setRecipientCurrencyDetails: (value) => {
-      useAppStore().recipientCurrencyDetails = value;
+      // console.log(value, "setting res");
+      useAppStore().recipientCurrencyDetails = { ...value };
     },
 
     setSenderCurrencyDetails: (value) => {
-      useAppStore().senderCurrencyDetails = value;
+      useAppStore().senderCurrencyDetails = { ...value };
     },
     setReasons: (value) => {
       useAppStore().reasons = value;
     },
     fetchConversion: async (form) => {
-      const response = await UtilsService.getConversionRates();
+      const response = await UtilsService.getConversionRates(form);
 
-      const data =  response.data;
+      const data = response.data;
 
-      console.log(data , 'conversiondata');
+      console.log(data, "conversiondata");
+      const oldData = useAppStore().conversionData;
+      useAppStore().conversionData = { ...oldData, ...data };
 
-      useAppStore().conversionDetails = data;
+      const newData = useAppStore().conversionData;
+
+      return Promise.resolve(data);
     },
-    setAppUser:(values)=>{
+    setAppUser: (values) => {
       const olduser = useAppStore().getUser;
-      const userUpdates = {...olduser,...values,verification_code:undefined};
+      const userUpdates = { ...olduser, ...values };
 
       useAppStore().user = userUpdates;
+    },
+
+    setRemittanceDetails: (data) => {
+      useAppStore().remittanceDetail = { ...data };
+    },
+    setConversionData:(data) => {
+      useAppStore().conversionData = {...data};
     }
   },
   persist: true,

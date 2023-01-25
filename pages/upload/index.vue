@@ -5,8 +5,13 @@
 </template>
 
 <script setup>
-import snsWebSdk from '@sumsub/websdk';
-const token = '_act-sbx-d70c58bf-5614-44d1-984e-23926bc870ce';
+import snsWebSdk from "@sumsub/websdk";
+
+
+const token = "_act-sbx-d70c58bf-5614-44d1-984e-23926bc870ce";
+
+
+
 
 function launchWebSdk(accessToken = token, applicantEmail, applicantPhone) {
   let snsWebSdkInstance = snsWebSdk
@@ -48,29 +53,14 @@ function launchWebSdk(accessToken = token, applicantEmail, applicantPhone) {
     .build();
   snsWebSdkInstance.launch("#sumsub-websdk-container");
 
-
   function getNewAccessToken() {
     return Promise.resolve(token);
   }
-
-
 }
 
-onMounted(() => {
-  // const sumSub =
-  //   "https://static.sumsub.com/idensic/static/sns-websdk-builder.js";
-  // const script = document.createElement("script");
-  // script.src = sumSub;
-  // // Only run if sumSub script has not been added to the body.
-  // if (!document.querySelector(`[src="${sumSub}"]`)) {
-  //   document.body.appendChild(script);
-  // }
-
-  launchWebSdk(token,'miraacle64@gmail.com','09022803197')
-
+onMounted(async () => {
+  launchWebSdk(token, "akinyeleolubodun@yahoo.com", "+2348068869417");
 });
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style lang="scss" scoped></style>

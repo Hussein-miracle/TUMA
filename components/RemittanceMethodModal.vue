@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot appear :show="opened" as="template">
-    <Dialog as="div"  class="relative z-10">
+    <Dialog as="div" class="relative z-10">
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -31,7 +31,7 @@
             >
               <DialogTitle
                 as="h3"
-                class=" sm:text-lg font-medium leading-6 text-secondary text-center"
+                class="sm:text-lg font-medium leading-6 text-secondary text-center"
               >
                 Change Remittance Method
               </DialogTitle>
@@ -73,8 +73,8 @@
                   </div>
 
                   <div class="rate font-bold flex">
-                    <span class="unit self-end">$</span>
-                    <span class="amount">130</span>
+                    <span class="unit self-end">{{remittanceDetail.recipient_currency }}</span>
+                    <span class="amount">{{remittanceDetail.cash.converted || '0.00'}}</span>
                   </div>
                 </div>
                 <div
@@ -107,8 +107,8 @@
                   </div>
 
                   <div class="rate font-bold flex">
-                    <span class="unit self-end">$</span>
-                    <span class="amount">110</span>
+                    <span class="unit self-end">{{remittanceDetail.recipient_currency}}</span>
+                    <span class="amount">{{remittanceDetail.bank.converted || '0.00'}}</span>
                   </div>
                 </div>
                 <div
@@ -142,8 +142,8 @@
                   </div>
 
                   <div class="rate font-bold flex">
-                    <span class="unit self-end">$</span>
-                    <span class="amount">100</span>
+                    <span class="unit self-end">{{remittanceDetail.recipient_currency }}</span>
+                    <span class="amount">{{remittanceDetail.mobile.converted || '0.00'}}</span>
                   </div>
                 </div>
               </div>
@@ -166,6 +166,7 @@
 </template>
 
 <script setup>
+import {storeToRefs} from 'pinia';
 import { useAppStore } from "@/store/app/index";
 import {
   TransitionRoot,
@@ -176,20 +177,29 @@ import {
 } from "@headlessui/vue";
 
 const props = defineProps(["opened", "closeModal"]);
+const store =  useAppStore();
+const {remittanceDetail} = storeToRefs(store);
+
 
 const remittanceMethod = ref("");
+// const remittanceDetails = reactive({
+//   cash: '',
+//   mobile: '',
+//   bank: '',
+//   recipient_currency: '',
+// });
 
 const updateRemittanceMethod = async () => {
-  if(remittanceMethod.value.length){
+  if (remittanceMethod.value.length) {
     useAppStore().setRemittanceMethod(remittanceMethod.value);
     props.closeModal();
     // navigateTo('/upload');
   }
 };
 
-onMounted(()=>{
+onMounted(() => {
   remittanceMethod.value = useAppStore().getMethod;
-})
+});
 </script>
 
 <style lang="scss" scoped>

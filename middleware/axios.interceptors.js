@@ -28,13 +28,13 @@ const setupInterceptor = () => {
 
   axiosInstance.interceptors.response.use(
     (response) => {
-      console.log(response, "interception ");
-
+      
       const msg = response.data.message;
 
       if (checkStatus(response.data.status)) {
+        // console.log(response, "interception ");
         return response;
-      } {
+      }else{
         createToast(msg, {
           showIcon: true,
           type: "warning",

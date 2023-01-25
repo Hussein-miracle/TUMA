@@ -10,6 +10,7 @@ export default defineNuxtRouteMiddleware((item) => {
 
   if (!authenticated) {
     clearUserDetails();
-    return navigateTo("/sign-in");
+    logout();
+    return navigateTo("/login");
   }
 });

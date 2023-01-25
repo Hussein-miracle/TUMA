@@ -184,6 +184,7 @@ const handleSubmit = async () => {
       const res = await useUserStore().verifyOtp(data);
 
       console.log(res, "data after verfity");
+      const msg = res.message;
       createToast(`${msg}⚡⚡`,{
         type:'success',
         showIcon:true,

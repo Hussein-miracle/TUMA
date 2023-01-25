@@ -54,29 +54,44 @@
             }"
             class="hidden loader h-[50%] w-[50%]"
           ></span>
-          <VeeField
+
+          <GMapAutocomplete
+            @place_changed="setPlace"
             type="text"
             v-model="recipientForm.city"
             name="city"
             id="city"
             ref="cityRef"
-            placeholder="City"
-          />
+            placeholder="Type and Select City from Google Dropdown List"
+            :options="{
+              types: ['(cities)'],
+              componentRestrictions: {
+                country: restrict.country_code.code.toLowerCase(),
+              },
+            }"
+          >
+          </GMapAutocomplete>
 
           <label for="city" class="mb-2 text-ash-1">City</label>
 
-          <VeeErrorMsg
+          <!-- <VeeErrorMsg
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
             name="city"
-          />
+          /> -->
         </div>
 
         <div class="item-select flex flex-col-reverse my-1 w-full">
+          <VeeErrorMsg
+            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+            name="country"
+          />
+
+          <VeeErrorMsg
+            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+            name="phone"
+          />
+
           <div class="flex w-full bg-secondary">
-            <VeeErrorMsg
-              class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-              name="country"
-            />
             <vee-field
               as="select"
               name="country"
@@ -85,12 +100,28 @@
               class="w-[30%] p-1"
               v-model="recipientForm.country"
             >
+              <option value="" disabled>Dial Code</option>
               <option
                 v-for="country in flags"
                 class="text-secondary"
                 :value="country.code"
-                :selected="country.code == 'NG'"
                 :key="country.dial_code"
+                :selected="
+                  restrict.country_code.code.toLowerCase() ===
+                  country.code.toLowerCase()
+                "
+                :disabled="
+                  restrict.country_code.code.toLowerCase() !==
+                  country.code.toLowerCase()
+                "
+                :class="{
+                  'opacity-90 text-whitelike cursor-not-allowed !bg-slate-600':
+                    restrict.country_code.code.toLowerCase() !==
+                    country.code.toLowerCase(),
+                  '!bg-primary !cursor-pointer':
+                    restrict.country_code.code.toLowerCase() ===
+                    country.code.toLowerCase(),
+                }"
               >
                 {{ `${country.flag} ${country.dial_code}` }}
               </option>
@@ -107,21 +138,28 @@
           </div>
 
           <label for="phone_number" class="mb-2 text-ash-1">Phone Number</label>
-
-          <VeeErrorMsg
-            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="phone"
-          />
         </div>
 
+        <!-- <VeeErrorMsg
+            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+            name="reason"
+          /> -->
         <select
           class="rem_sel focus:outline-primary bg-whitelike rounded-sm px-1 py-1 m-2 sm:w-72 text-primary focus:text-secondary"
-          v-model="reasonForRemittance"
+          v-model="recipientForm.reason"
+          id="reason"
+          name="reason"
         >
           <option value="" disabled>Select Reason for Remittance</option>
 
-          <option class="option" :value="item.reason" v-for="item in reasons" :key="item.reason">{{item.reason}}</option>
-
+          <option
+            class="option"
+            :value="item.reason"
+            v-for="item in reasons"
+            :key="item.id"
+          >
+            {{ item.reason }}
+          </option>
         </select>
 
         <div class="deliver w-full flex flex-col items-center">
@@ -146,7 +184,10 @@
               </div>
             </div>
 
-            <div class="text-ash-3 cursor-pointer hover:text-ash-2 transition-all duration-75" @click="toggleModal" >
+            <div
+              class="text-ash-3 cursor-pointer hover:text-ash-2 transition-all duration-75"
+              @click="toggleModal"
+            >
               Change
             </div>
           </div>
@@ -170,24 +211,43 @@
 
 <script setup>
 import * as yup from "yup";
+import { watchDebounced } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import flags from "@/data/countries";
 import { useAppStore } from "@/store/app/index";
-import { geocodeResponseToCityState } from "@/utils/index";
-
-
+import UtilsService from "@/services/utils.service";
 
 const isLoading = ref(false);
 const isLoadingCity = ref(false);
 const cityRef = ref(null);
 const isOpen = ref(false);
+const reasonForRemittance = ref("");
+
 const store = useAppStore();
-const reasonForRemittance = ref('');
 
-const { getMethod: remittanceMethod  , reasons } = storeToRefs(store);
+const { getRestriction: restrict } = storeToRefs(store);
 
-// console.log(state , 'state');
+// console.log(restrict,'restrict');
+definePageMeta({
+  layout: false,
+  middleware: ["auth"],
+});
 
+const {
+  getRecipientCurrencyDetails: recipientCurrencyDetails,
+  getMethod: remittanceMethod,
+  reasons,
+  countries,
+} = storeToRefs(store);
+
+// const restrictTo = countries.value.filter((country) => {
+//   console.log(country, "cont", recipientCurrencyDetails.recipient_country);
+//   if (country.name === recipientCurrencyDetails.recipient_country) {
+//     return country.code;
+//   }
+// });
+
+// console.log(restrictTo,'RES');
 function closeModal() {
   isOpen.value = false;
 }
@@ -204,69 +264,109 @@ const recipientForm = reactive({
   city: "",
   country: "",
   phone: "",
+  reason: "",
 });
+
+const setPlace = (e) => {
+  const address = e.formatted_address;
+  recipientForm.city = address;
+};
 
 const recipientSchema = yup.object().shape({
   country: yup.string().required("Country is required!"),
   first_name: yup.string().required("First name is required!"),
   last_name: yup.string().required("Last name is required!"),
   phone: yup.string().required("Phone is required!"),
-  city: yup.string().required(""),
+  // city: yup.string().required("City is Required"),
+  // reason: yup.string().required("Reason is required"),
 });
 
 let city;
+
 const handleSubmit = async (values) => {
-  console.log(values);
+  // console.log(values, "v");
 
-  // navigateTo('/upload');
+  isLoading.value = true;
+
+  const recipientCreationData = {
+    first_name: recipientForm.first_name,
+    last_name: recipientForm.last_name,
+    phone_number: recipientForm.phone,
+    address: recipientForm.city,
+  };
+
+  console.log(recipientCreationData, "RDDDDD!!!");
+
+  const reason_id = reasons.value.find(
+    (r) => r.reason === recipientForm.reason
+  ).id;
+
+  UtilsService.createRecipient(recipientCreationData)
+    .then((response) => {
+      const result = response.data;
+      console.log(result, "recipient Daata");
+      return result;
+    })
+    .then((res) => {
+      const {
+        recipientCurrencyDetails,
+        senderCurrencyDetails,
+        conversionData,
+      } = useAppStore();
+      // console.log(conversionData, "convData");
+      const transactionData = {
+        from_currency: senderCurrencyDetails.sender_currency,
+        amount: conversionData.amount,
+        to_currency: recipientCurrencyDetails.recipient_currency,
+        // to_user: res.ruid,
+        reason_id,
+      };
+
+      console.log(transactionData, "creating Trans");
+
+      // UtilsService.createTransaction(transactionData)
+      //   .then((result) => {
+      //     isLoading.value = false;
+      // navigateTo("/upload");
+      // })
+      //   .catch((err) => {
+      //     isLoading.value = false;
+      //     console.log(err, "err");
+      //   });
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      console.log(err, "err");
+    });
 };
-
 const onCityBlur = async () => {
-  const api_key = "AIzaSyCiC_PwVKq0LjEIKD3blen35rwOEWe-U34";
+  isLoadingCity.value = true;
 
-  if (recipientForm.city.length) {
-    //make a request to the google geocode api with the zipcode as the address parameter and your api key
-    isLoadingCity.value = true;
-    fetch(
-      `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?address=${recipientForm.city}&key=${api_key}`
-    )
-      .then(async (response) => {
-        // isLoadingCity.value = !true;
-        const data = await response.json();
-        console.log(data, "city fetch res");
-        setTimeout(() => {
-          isLoadingCity.value = false;
-        }, 500);
-        //parse the response for a list of matching city/state
-        // const possibleLocalities = geocodeResponseToCityState(response);
-        // fillCityAndStateFields(possibleLocalities);
-      })
-      .catch((err) => {
-        console.log(err, "error fetching city");
-      });
-  }
+  setTimeout(() => {
+    isLoadingCity.value = !true;
+  }, 250);
 };
-
-function fillCityAndStateFields(localities) {
-  var locality = localities[0];
-
-  //use the first city/state object
-
-  recipientForm.city = `${locality.city} ${locality.state}`;
-}
-
-onMounted( () => {
+onMounted(() => {
   city = document.querySelector("#city");
   city.addEventListener("blur", onCityBlur);
 });
 
-onBeforeMount( async () => {
-  useAppStore().fetchReasons();
-
-})
+onBeforeMount(async () => {
+  await useAppStore().fetchReasons();
+});
 onUnmounted(() => {
   city.removeEventListener("blur", onCityBlur);
 });
+watchDebounced(
+  recipientForm,
+  async () => {
+    console.log(recipientForm, "form recipient");
+  },
+  {
+    debounce: 250,
+    maxWait: 500,
+  }
+);
 </script>
 
 <style lang="scss" scoped>

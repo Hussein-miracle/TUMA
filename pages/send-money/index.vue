@@ -15,7 +15,10 @@
         >
           <div class="div font-bold flex items-center gap-x-1">
             <span class="unit self-end">
-              {{ conversionDetails.recipient_country_code }}
+              {{
+                senderCurrencyDetails.sender_currency_symbol ||
+                senderCurrencyDetails.sender_currency
+              }}
             </span>
 
             <input
@@ -43,9 +46,14 @@
         >
           <div class="div font-bold flex items-center gap-x-2">
             <span class="unit self-end">{{
-              conversionDetails.recipient_currency
+              recipientCurrencyDetails.recipient_currency_symbol ||
+              recipientCurrencyDetails.recipient_currency
             }}</span>
-            <span class="amount text-xl">0.00</span>
+            <span class="amount text-xl" v-if="amount">
+              {{ amount }}
+            </span>
+            <span class="amount text-xl" v-else>0.00</span>
+            <!-- <span class="amount text-xl" >0.00</span> -->
           </div>
 
           <div class="line bg-ash-1"></div>
@@ -59,7 +67,7 @@
     >
       <div
         class="legend flex items-center justify-between w-full"
-        @click="conversionDetails.sub_type = 'cash'"
+        @click="remittanceMethod = 'cash'"
       >
         <div
           class="option cursor-pointer flex gap-x-2 flex-row-reverse items-center justify-start text-left"
@@ -71,7 +79,7 @@
             type="radio"
             name="cash"
             id="cash"
-            v-model="conversionDetails.sub_type"
+            v-model="remittanceMethod"
             value="cash"
             hidden
           />
@@ -82,29 +90,33 @@
           >
             <span
               :class="{
-                '!block': conversionDetails.sub_type === 'cash',
-                hidden: conversionDetails.sub_type !== 'cash',
+                '!block': remittanceMethod === 'cash',
+                hidden: remittanceMethod !== 'cash',
               }"
             >
             </span>
           </label>
         </div>
 
-        <div class="rate font-bold flex">
-          <span class="unit self-end">$</span>
-          <span class="amount">0.00</span>
+        <div class="rate font-bold flex gap-x-1">
+          <span class="unit self-end">{{
+            recipientCurrencyDetails.recipient_currency_symbol ||
+            recipientCurrencyDetails.recipient_currency
+          }}</span>
+          <span class="amount" v-if="cashValue">{{ cashValue }}</span>
+          <span class="amount" v-else>0.00</span>
         </div>
       </div>
       <div
         class="legend flex items-center justify-between w-full cursor-pointer"
-        @click="conversionDetails.sub_type = 'bank'"
+        @click="remittanceMethod = 'bank'"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
         >
           <label>Bank</label>
           <input
-            v-model="conversionDetails.sub_type"
+            v-model="remittanceMethod"
             type="radio"
             name="bank"
             id="bank"
@@ -117,29 +129,33 @@
           >
             <span
               :class="{
-                '!block': conversionDetails.sub_type === 'bank',
-                hidden: conversionDetails.sub_type !== 'bank',
+                '!block': remittanceMethod === 'bank',
+                hidden: remittanceMethod !== 'bank',
               }"
             ></span>
           </label>
         </div>
 
-        <div class="rate font-bold flex">
-          <span class="unit self-end">$</span>
-          <span class="amount">0.00</span>
+        <div class="rate font-bold flex gap-x-1">
+          <span class="unit self-end">{{
+            recipientCurrencyDetails.recipient_currency_symbol ||
+            recipientCurrencyDetails.recipient_currency
+          }}</span>
+          <span class="amount" v-if="bankValue">{{ bankValue }}</span>
+          <span class="amount" v-else>0.00</span>
         </div>
       </div>
 
       <div
         class="legend cursor-pointer flex items-center justify-between w-full"
-        @click="conversionDetails.sub_type = 'mobile'"
+        @click="remittanceMethod = 'mobile'"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
         >
           <label for="mobile">Mobile</label>
           <input
-            v-model="conversionDetails.sub_type"
+            v-model="remittanceMethod.value"
             type="radio"
             name="mobile"
             id="mobile"
@@ -153,16 +169,20 @@
           >
             <span
               :class="{
-                '!block': conversionDetails.sub_type === 'mobile',
-                hidden: conversionDetails.sub_type !== 'mobile',
+                '!block': remittanceMethod === 'mobile',
+                hidden: remittanceMethod !== 'mobile',
               }"
             ></span>
           </label>
         </div>
 
-        <div class="rate font-bold flex">
-          <span class="unit self-end">$</span>
-          <span class="amount">0.00</span>
+        <div class="rate font-bold flex gap-x-1">
+          <span class="unit self-end">{{
+            recipientCurrencyDetails.recipient_currency_symbol ||
+            recipientCurrencyDetails.recipient_currency
+          }}</span>
+          <span class="amount" v-if="mobileValue">{{ mobileValue }}</span>
+          <span class="amount" v-else>0.00</span>
         </div>
       </div>
     </div>
@@ -179,9 +199,85 @@
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 import { watchDebounced } from "@vueuse/core";
+
+const store = useAppStore();
+const {
+  getSenderCurrencyDetails: senderCurrencyDetails,
+  getRecipientCurrencyDetails: recipientCurrencyDetails,
+} = storeToRefs(store);
+// console.log(senderCurrencyDetails.value,'sssssss!!!');
+// console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
+// const { conversionData: {converted_amount: { cash, bank, mobile },
+//   best_value} } = useAppStore();
+
+const amount = ref("");
+
+const bestValue = ref({
+  cash: {
+    initial_amount: "",
+    commission: "",
+    final_amount: "",
+    converted: "",
+  },
+});
+const cashValue = ref("");
+const bankValue = ref("");
+const mobileValue = ref("");
+
+const conversionData = reactive({
+  recipient_currency: "",
+  recipient_country: "",
+  sender_currency: "",
+  sender_country: "",
+
+  conversion_rate: "",
+
+  methods: {
+    cash: "",
+    bank: "",
+    mobile: "",
+  },
+
+  converted_amount: {
+    cash: {
+      initial_amount: "",
+      commission: "",
+      final_amount: "",
+      converted: "",
+    },
+    bank: {
+      initial_amount: "",
+      commission: "",
+      final_amount: "",
+      converted: "",
+    },
+    mobile: {
+      initial_amount: "",
+      commission: "",
+      final_amount: "",
+      converted: "",
+    },
+  },
+
+  best_value: {
+    cash: {
+      initial_amount: "",
+      commission: "",
+      final_amount: "",
+      converted: "",
+    },
+  },
+});
+
+const assignConvertedAmount = () => {
+  for (const item in bestValue.value) {
+    amount.value = bestValue.value[item].converted;
+  }
+};
 
 useHead({
   title: "Send Money",
@@ -194,19 +290,30 @@ const {
 const conversionDetails = reactive({
   amount: "",
   client_id: TUMA_CLIENT_ID,
-  recipient_country_code: "NG",
-  recipient_currency: "USD",
-  sub_type: "",
+  recipient_country: recipientCurrencyDetails.value.recipient_country,
+  recipient_currency: recipientCurrencyDetails.value.recipient_currency,
+  sender_currency: senderCurrencyDetails.value.sender_currency,
+  sender_country: senderCurrencyDetails.value.sender_country,
 });
+
+const updateMethods = async () => {};
 
 const remittanceMethod = ref("");
 
 const isLoadingCountries = ref(false);
 
 const handleContinue = () => {
-  if (conversionDetails.sub_type !== ""  && conversionDetails.amount !== '') {
-    useAppStore().setRemittanceMethod(conversionDetails.sub_type);
-    console.log(conversionDetails.sub_type, "method");
+  if (conversionDetails.amount !== "" && remittanceMethod.value !== "") {
+    useAppStore().setRemittanceMethod(remittanceMethod.value);
+
+    // console.log(conversionDetails,'cDDDDD!!!HEy')
+    const data = {
+      recipient_currency: conversionDetails.recipient_currency,
+      recipient_country: conversionDetails.recipient_country,
+    };
+    useAppStore().setRecipientCurrencyDetails(data);
+    useAppStore().setRestriction(data.recipient_country);
+    console.log(remittanceMethod.value, "method");
     navigateTo("/recipient");
   }
 };
@@ -217,11 +324,8 @@ const handleContinue = () => {
 //   setCountries(data.data);
 // };
 
-let amountInput;
-
 onMounted(() => {
   remittanceMethod.value = useAppStore().getMethod || "";
-  // amountInput = document.querySelector("#userInput");
 });
 
 onBeforeMount(async () => {
@@ -235,12 +339,71 @@ onBeforeMount(async () => {
 watchDebounced(
   conversionDetails,
   () => {
-    if (!!conversionDetails.amount) {
-      useAppStore().fetchConversion(conversionDetails);
+    if (conversionDetails.amount !== "") {
+      let allowAction = true;
+      //  console.log(conversionDetails,'cDDDDD!!!HEy hiii!');
+
+      conversionDetails.recipient_country =
+        recipientCurrencyDetails.value.recipient_country;
+      conversionDetails.recipient_currency =
+        recipientCurrencyDetails.value.recipient_currency;
+
+      conversionDetails.sender_currency =
+        senderCurrencyDetails.value.sender_currency;
+      conversionDetails.sender_country =
+        senderCurrencyDetails.value.sender_country;
+
+      for (const item in conversionDetails) {
+        if (conversionDetails[item] === "") {
+          allowAction = false;
+          return;
+        }
+      }
+
+      console.log(conversionDetails, "cDDDDD!!!HEy hiii! how far!!!");
+
+      if (allowAction) {
+        UtilsService.getConversionRates(conversionDetails).then((response) => {
+          const result = response.data;
+
+          // console.log(result, "res");
+
+          const cash = result.converted_amount.cash;
+          const bank = result.converted_amount.bank;
+          const mobile = result.converted_amount.mobile;
+          // console.log(cash,'cash');
+
+          const details = {
+            cash,
+            mobile,
+            bank,
+            recipient_currency: result.recipient_currency,
+          };
+
+          useAppStore().setConversionData({
+            amount:conversionDetails.amount,
+          })
+
+          useAppStore().setRemittanceDetails(details);
+
+          cashValue.value = String(cash?.converted);
+          bankValue.value = String(bank?.converted);
+          mobileValue.value = String(mobile?.converted);
+
+          bestValue.value = { ...result.best_value };
+
+          assignConvertedAmount();
+        });
+      }
     }
   },
-  { debounce: 500, maxWait: 1000 }
+  { debounce: 800, maxWait: 1200 }
 );
+
+definePageMeta({
+  layout:false,
+  middleware:['auth']
+})
 </script>
 
 <style lang="scss" scoped>

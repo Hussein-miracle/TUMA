@@ -35,10 +35,10 @@ class AuthService {
     const response = await axiosInstance.post("auth/register/verify", details);
 
 
-    console.log('verify res',response);
+    // console.log('verify res',response);
 
-    if (response.data.access_token) {
-      TokenService.setToken(response.data.access_token);
+    if (response.data.api_token) {
+      TokenService.setToken(response.data.api_token);
     }
     return response;
   }

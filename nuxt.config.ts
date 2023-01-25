@@ -33,6 +33,9 @@ export default defineNuxtConfig({
       script: [
         // <script src="https://myawesome-lib.js"></script>
         // { src: 'https://awesome-lib.js' }
+        // {
+        //   src:`https://maps.googleapis.com/maps/api/js?key=${process.env.NUXT_GOOGLE_API_KEY}`
+        // }
       ],
       link: [
         ,
@@ -44,6 +47,10 @@ export default defineNuxtConfig({
       style: [
         // <style type="text/css">:root { color: red }</style>
         // { children: ':root { color: red }', type: 'text/css' }
+
+        // { children: ':root { color: red }', type: 'text/css' }
+        // { children: ':root { color: red }', type: 'text/css' }
+        
       ],
       noscript: [
         // <noscript>Javascript is required</noscript>
@@ -55,8 +62,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Public keys that are exposed to the client
     public: {
+      GOOGLE_API_KEY:process.env.NUXT_GOOGLE_API_KEY,
       TUMA_CLIENT_ID : process.env.NUXT_TUMA_CLIENT_ID,
       API_BASE_URL:process.env.NUXT_API_BASE_URL,
     },
   },
+  build:{
+    transpile: ["@fawmi/vue-google-maps"],
+  }
 });
