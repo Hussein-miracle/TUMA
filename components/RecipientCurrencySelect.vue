@@ -18,7 +18,7 @@
         <span>{{ selectedCountry?.name }}</span>
         </div>
 
-      <span v-else class="text-whitelike mx-auto">Select Currency</span>
+      <span v-else class="text-whitelike mx-auto">Select  Currency</span>
 
       <icons-select-arrow
         :rotate="isOpen"
@@ -68,7 +68,7 @@
                 <span v-if="selectedCountry?.name">{{
                   selectedCountry?.name
                 }}</span>
-                <span v-else> Select Country Currency</span>
+                <span v-else> Select Recipient Country Currency</span>
               </DialogTitle>
               <div class="mt-2 overflow-y-scroll custom-scroll">
                 <template v-if="countries.length > 0">

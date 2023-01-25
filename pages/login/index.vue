@@ -84,6 +84,9 @@
 
 <script setup>
 import * as yup from "yup";
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
 import { useUserStore } from "@/store/auth/index";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
@@ -130,7 +133,7 @@ const handleSubmit = async (values) => {
 
         const errResponse = err?.response;
         if(errResponse.status === 400){
-          createToast(`User Authentication Failed.`, {
+          createToast(`Invalid Email or Password.`, {
           showIcon: true,
           type: "warning",
           transition: "bounce",
@@ -153,9 +156,7 @@ definePageMeta({
 });
 
 onMounted(() => {
-  // if(!!emailRef.value){
-  //   emailRef.value.focus();
-  // }
+    // ref(emailRef).value.focus();
 });
 </script>
 

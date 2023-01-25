@@ -308,6 +308,7 @@ const handleSubmit = async (values) => {
       return result;
     })
     .then((res) => {
+      const response = res;
       const {
         recipientCurrencyDetails,
         senderCurrencyDetails,
@@ -318,21 +319,20 @@ const handleSubmit = async (values) => {
         from_currency: senderCurrencyDetails.sender_currency,
         amount: conversionData.amount,
         to_currency: recipientCurrencyDetails.recipient_currency,
-        // to_user: res.ruid,
+        to_user: response.ruid,
         reason_id,
       };
-
-      console.log(transactionData, "creating Trans");
-
-      // UtilsService.createTransaction(transactionData)
-      //   .then((result) => {
-      //     isLoading.value = false;
-      // navigateTo("/upload");
-      // })
-      //   .catch((err) => {
-      //     isLoading.value = false;
-      //     console.log(err, "err");
-      //   });
+      UtilsService.createTransaction(transactionData)
+        .then((result) => {
+          console.log(result,'trans creation data');
+          const data = result.data;
+          isLoading.value = false;
+          // navigateTo("/upload");
+        })
+        .catch((err) => {
+          isLoading.value = false;
+          console.log(err, "err");
+        });
     })
     .catch((err) => {
       isLoading.value = false;

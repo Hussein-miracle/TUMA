@@ -147,7 +147,7 @@ export const useAppStore = defineStore("app", {
 
       const data = response.data;
 
-      console.log(data, "conversiondata");
+      // console.log(data, "conversiondata");
       const oldData = useAppStore().conversionData;
       useAppStore().conversionData = { ...oldData, ...data };
 

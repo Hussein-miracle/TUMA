@@ -65,7 +65,7 @@
                 <span v-if="selectedCountry?.name">{{
                   selectedCountry?.name
                 }}</span>
-                <span v-else> Select Country Currency</span>
+                <span v-else> Select Sender Country Currency</span>
               </DialogTitle>
               <div class="mt-2 overflow-y-scroll custom-scroll px-2">
                 <template v-if="countries.length > 0">
