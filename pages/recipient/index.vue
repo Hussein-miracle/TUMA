@@ -277,7 +277,7 @@ const handleCityInput = async (e) => {
     isLoadingCity.value = !true;
     if (recipientForm.city === "") {
       ref(cityRef).value.$el.value.clear();
-      ref(cityRef).value.$el.value = '';
+      ref(cityRef).value.$el.value = "";
     }
   }, 500);
   const value = e.target.value;
@@ -350,8 +350,9 @@ const handleSubmit = async (values) => {
         .then((result) => {
           console.log(result, "trans creation data");
           const data = result.data;
+          useAppStore().setTransactionRef(data.reference);
           isLoading.value = false;
-          navigateTo("/upload");
+          navigateTo("/payment");
           return data;
         })
         .catch((err) => {

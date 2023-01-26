@@ -47,10 +47,14 @@ export const useAppStore = defineStore("app", {
       country: "",
       country_code: "",
     },
+    transaction_ref:'',
   }),
   getters: {
     showTodo: (state) => {
       return state.showTodoList;
+    },
+    getTransactionRef:(state) => {
+      return state.transaction_ref;
     },
     getUserImage: (state) => {
       return state.user?.profile_picture || null;
@@ -176,6 +180,10 @@ export const useAppStore = defineStore("app", {
     },
     setTransactionData:(data) => {
       useAppStore().transaction = {...data};
+    },
+    setTransactionRef:(data) => {
+      console.log(data, 'data for trans  ref')
+      useAppStore().transaction_ref = data;
     }
   },
   persist: true,

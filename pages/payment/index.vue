@@ -2,7 +2,10 @@
   <div class="add-card flex flex-col items-center w-full">
     <h2 class="text-secondary text-2xl font-bold">Card Details</h2>
 
-    <div class="add-card__input flex flex-col items-center w-full">
+    <div
+      class="add-card__input flex flex-col items-center w-full"
+      :class="{ 'flex items-center justify-center': isLoading === true }"
+    >
       <!-- <VeeForm
         class="flex flex-col gap-y-3 items-center mt-6 w-[90%] add-card__form sm:w-[70%] md:w-[50%] self-center"
         @submit="handleSubmit"
@@ -109,9 +112,14 @@
         />
       </VeeForm> -->
 
-      <div id="st-notification-frame"></div>
+      <div class="spinner" v-if="isLoading === true">
+        <div class="cube1"></div>
+        <div class="cube2"></div>
+      </div>
 
-      <form id="st-form" action="" >
+      <div id="st-notification-frame" v-if="isLoading === false"></div>
+
+      <form id="st-form" action="" v-if="isLoading === false">
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
@@ -124,6 +132,9 @@
 </template>
 
 <script setup>
+import { useAppStore } from "@/store/app/index";
+import UtilsService from "@/services/utils.service";
+
 const isLoading = ref(false);
 
 const cardDetails = reactive({
@@ -134,16 +145,41 @@ const cardDetails = reactive({
   save_card: false,
 });
 
+const det = reactive({
+  token: "",
+});
+
 definePageMeta({
   layout: false,
 });
 
-const initTrustPayment = async () => {
-  const st = SecureTrading({
-    jwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImFjY291bnR0eXBlZGVzY3JpcHRpb24iOiJFQ09NIiwiYmFzZWFtb3VudCI6IjEwNTAiLCJjdXJyZW5jeWlzbzNhIjoiR0JQIiwib3JkZXJyZWZlcmVuY2UiOiI0NjU1NzY4NjQ1NjRhYmNkZWgiLCJzaXRlcmVmZXJlbmNlIjoidGVzdF9kYWdkYWdsdGQxMTI1NjgiLCJyZXF1ZXN0dHlwZWRlc2NyaXB0aW9ucyI6WyJUSFJFRURRVUVSWSIsIkFVVEgiXX0sImlhdCI6MTY3MzkwODY1MiwiaXNzIjoiand0QGRhZ2RhZ2x0ZC5jb20ifQ.3Udtai0igiRg0RQFLwlKRtQv60f0_4nLBpX_iZ7cjnY",
-  });
+const getTrustToken = async () => {
+  isLoading.value = true;
+  const reference = useAppStore().getTransactionRef;
+  const data = {
+    transaction_ref: reference,
+  };
+  // console.log(data, 'for you too')
+  const response = await UtilsService.postToTrustPayment(data);
 
-  st.Components();
+  // console.log(response, "res for trust");
+
+  const jwtToken = response.data["jwt-token"];
+  const st = response.data.st;
+  const res = {
+    jwtToken,
+    st,
+  };
+  console.log(res, "trust res");
+  isLoading.value = false;
+  return res;
+};
+
+const initTrustPayment = async (token) => {
+  const st = SecureTrading({
+    jwt: token,
+  });
+  return st.Components();
 };
 
 const handleSubmit = async (values) => {
@@ -155,21 +191,16 @@ const handleSubmit = async (values) => {
   }, 500);
 };
 
-onMounted (async () => {
-  const trustSource = "https://cdn.eu.trustpayments.com/js/latest/st.js";
-
-  const trustScript = document.createElement("script");
-
-  trustScript.src = trustSource;
-
-  if (!document.querySelector(`[src="${trustSource}"]`)) {
-    document.body.appendChild(trustScript);
-  }
-
-  await initTrustPayment();
-
-
-
+onBeforeMount(async () => {
+  getTrustToken()
+    .then(async (res) => {
+      const token = res.jwtToken;
+      const result = await initTrustPayment(token);
+      console.log(result, "trustPayment result");
+    })
+    .catch((err) => {
+      console.log(err, "err");
+    });
 });
 
 watch(cardDetails, () => {
@@ -211,5 +242,70 @@ watch(cardDetails, () => {
 .circle {
   border: 1.5px solid #212746;
   border-radius: 50%;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.cube1,
+.cube2 {
+  background-color: #333;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
+  animation: sk-cubemove 1.8s infinite ease-in-out;
+}
+
+.cube2 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+@-webkit-keyframes sk-cubemove {
+  25% {
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  }
+  50% {
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  }
+  75% {
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg)
+      scale(0.5);
+  }
+  100% {
+    -webkit-transform: rotate(-360deg);
+  }
+}
+
+@keyframes sk-cubemove {
+  25% {
+    transform: translateX(42px) rotate(-90deg) scale(0.5);
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  }
+  50% {
+    transform: translateX(42px) translateY(42px) rotate(-179deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+  }
+  50.1% {
+    transform: translateX(42px) translateY(42px) rotate(-180deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  }
+  75% {
+    transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg)
+      scale(0.5);
+  }
+  100% {
+    transform: rotate(-360deg);
+    -webkit-transform: rotate(-360deg);
+  }
 }
 </style>
