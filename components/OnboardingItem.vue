@@ -63,7 +63,7 @@ const handleLogin = () => {
 };
 
 const handleSignup = () => {
-  navigateTo("/signup");
+  navigateTo("/register");
 };
 </script>
 

@@ -4,21 +4,21 @@
       :imgUrl="details1.imgUrl"
       :title="details1.title"
       :description="details1.description"
-      :index='index'
+      :index="index"
       v-if="index === 1"
-      :setIndexVal='setIndexVal'
+      :setIndexVal="setIndexVal"
     />
     <onboarding-item
-      :setIndexVal='setIndexVal'
+      :setIndexVal="setIndexVal"
       :imgUrl="details2.imgUrl"
-      :index='index'
+      :index="index"
       :title="details2.title"
       :description="details2.description"
       v-if="index === 2"
     />
     <onboarding-item
-      :setIndexVal='setIndexVal'
-      :index='index'
+      :setIndexVal="setIndexVal"
+      :index="index"
       :imgUrl="details3.imgUrl"
       :title="details3.title"
       :description="details3.description"
@@ -28,45 +28,66 @@
 </template>
 <script setup>
 import { useUserStore } from "@/store/auth/index";
+import { useAppStore } from "@/store/app/index";
+import UtilsService from "@/services/utils.service";
 import data from "@/data/onboarding";
 import { assets } from "@/utils/index";
 
 const { logout } = useUserStore();
+const {setCountries} = useAppStore();
 const index = ref(1);
-const [details1,details2,details3] = data;
+const [details1, details2, details3] = data;
 
 const setIndexVal = (val) => {
-  index.value = val;
+  index.value = val; 
 };
 
 const modifyIndex = () => {
-  if(index.value > 0 && index.value < data.length){
+  if (index.value > 0 && index.value < data.length) {
     index.value++;
-  }else if(index.value === data.length ){
+  } else if (index.value === data.length) {
     index.value = 1;
   }
-}
+};
 
 useHead({
+
   title: "Onboarding",
-  // link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
+
+
+  link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
+
 });
+
+
+
 definePageMeta({
   layout: false,
 });
 
 let interval;
 
+// const fetchCountries = async () => {
+//   const data = await UtilsService.getCountries();
+//   setCountries(data.data);
+// };
+
 onMounted(() => {
   interval = setInterval(() => {
-    modifyIndex();
+    // if(!hovered.value){
+      modifyIndex();
+    // }
   }, 5500);
 });
+
+// onBeforeMount(() => {
+//   fetchCountries();
+// })
 
 
 onBeforeUnmount(() => {
   clearInterval(interval);
-})
+});
 </script>
 <style lang="scss" scoped>
 .onboarding {

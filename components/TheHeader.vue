@@ -2,15 +2,15 @@
   <header
     class="theheader text-white flex justify-evenly items-center w-full py-1 bg-secondary"
   >
-    <NuxtLink to="transactions" class="custom flex items-center">
+    <NuxtLink to="transactions" class="custom flex items-center" @click="navigateTo('/transactions')">
       <!-- <icons-transactions :v2="currentRoute === 'transactions' " :v1="currentRoute !== 'transactions' "/> -->
       <span class="mx-2">Transaction Logs</span>
     </NuxtLink>
-    <NuxtLink to="send-money" class="custom flex items-center">
+    <NuxtLink to="send-money" class="custom flex items-center" @click="navigateTo('/send-money')">
       <!-- <icons-send />  -->
       <span class="mx-2">Send Money</span>
     </NuxtLink>
-    <NuxtLink to="profile" class="custom flex items-center">
+    <NuxtLink to="profile" class="custom flex items-center" @click="navigateTo('/profile')">
       <!-- <icons-profile :v2="currentRoute === 'profile' " /> -->
       <span class="mx-2">Profile</span>
     </NuxtLink>

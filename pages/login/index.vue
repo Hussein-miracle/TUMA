@@ -73,7 +73,7 @@
         <p class="text-ash-1 cursor-pointer " @click="navigateTo('/forgot-password')">Forgot  my password?</p>
       </div>
 
-      <button-primary type='submit' :text="'login'" :disable='isLoading === true' />
+      <button-primary type='submit' :text="'login'" :disabled='isLoading === true' :class="{'opacity-80 cursor-not-allowed':isLoading === true}"/>
     </VeeForm>
 
 
@@ -84,10 +84,14 @@
 
 <script setup>
 import * as yup from "yup";
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
+import { useUserStore } from "@/store/auth/index";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 
-
+const { login } = useUserStore();
 const { show, toggleShow } = useToggle();
 
 const isLoading = ref(false);
@@ -96,7 +100,7 @@ const emailRef = ref(null);
 const loginForm = reactive({
   email: "",
   password: "",
-  remember:'',
+  remember:false,
 });
 
 const loginSchema = yup.object().shape({
@@ -118,7 +122,30 @@ const loginSchema = yup.object().shape({
 
 const handleSubmit = async (values) => {
   isLoading.value = true;
-  console.log(values);
+  try {
+    login(loginForm)
+      .then((result) => {
+        isLoading.value = !true;
+        navigateTo("/send-money");
+      })
+      .catch((err) => {
+        isLoading.value = !true;
+
+        const errResponse = err?.response;
+        if(errResponse.status === 400){
+          createToast(`Invalid Email or Password.`, {
+          showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          position: "top-right",
+        });
+        }
+
+      });
+  } catch (err) {
+    isLoading.value = !true;
+    console.error(err);
+  }
 };
 
 useHead({
@@ -129,9 +156,7 @@ definePageMeta({
 });
 
 onMounted(() => {
-  // if(!!emailRef.value){
-  //   emailRef.value.focus();
-  // }
+    // ref(emailRef).value.focus();
 });
 </script>
 

@@ -9,15 +9,15 @@ class AuthService {
   }
   async postLogin(details) {
     // console.log(details , 'details')
-    return await axiosInstance.post("/login", details);
+    return await axiosInstance.post("auth/login", details);
   }
   async postLogout() {
     return await axiosInstance.post("/logout");
   }
-  async createAccount(details) {
-    console.log(details,'details')
+  async register(details) {
+    // console.log(details,'details')
     // try {
-    const res = await axiosInstance.post("/signup", details);
+    const res = await axiosInstance.post("/auth/register", details);
 
     console.log(res , 'res');
     // const response = await axiosInstance.post("/signup",details);
@@ -32,13 +32,13 @@ class AuthService {
   }
 
   async verifyOtp(details) {
-    const response = await axiosInstance.post("/verify/code", details);
+    const response = await axiosInstance.post("auth/register/verify", details);
 
 
-    // console.log('Refresh?',response);
+    // console.log('verify res',response);
 
-    if (response.data.access_token) {
-      TokenService.setToken(response.data.access_token);
+    if (response.data.api_token) {
+      TokenService.setToken(response.data.api_token);
     }
     return response;
   }

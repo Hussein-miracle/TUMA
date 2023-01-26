@@ -12,9 +12,9 @@
       :status="'cancelled'"
       @click="navigateTo('/transactions/gfhjww2_22gfecvdfff_eddsSds')"
     />
-    <transaction-log :status="'completed'" />
+    <transaction-log :status="'completed'"  @click="navigateTo('/transactions/gfhjww2_22gdsfdfff_eSds')"/>
 
-    <spacer :y="true" :size="4" />
+    <spacer :y="true" :size="6" />
   </div>
 </template>
 

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useAppStore } from "../app";
 import TokenService from '@/services/token.service.js';
 import AuthService from "@/services/auth.service"
 
@@ -18,6 +19,9 @@ export const useUserStore = defineStore("user", {
     } ,
     getTempUser: (state) => {
       return state.tempUser;
+    },
+    getAuthUser:(state) => {
+      return state.user;
     }
   },
   actions: {
@@ -54,7 +58,9 @@ export const useUserStore = defineStore("user", {
     verifyOtp: (form) => {
       return AuthService.verifyOtp(form).then(
         (response) => {
+          // console.log(response,'verifi res');
           // useUserStore().setUserDetails(response.data.data)
+          navigateTo('/login');
           return Promise.resolve(response.data);
         },
         (error) => {
@@ -63,23 +69,24 @@ export const useUserStore = defineStore("user", {
       );
     },
     setUserDetails: (response) => {
-      const data = response.data;
+      const data = response.data.data;
 
-      const expired = data.expires_in;
+      // const expired = data.expires_in;
       
-      const expirationDate = new Date(new Date().getTime() + expired * 1000);
+      // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
-
-      if (data.access_token) {
-        useUserStore().token = data.access_token;
-        useUserStore().user = data.user;
+      // console.log(data,'login data in store');
+      if (data.api_token) {
+        useUserStore().token = data.api_token;
+        useUserStore().user = useAppStore().getUser;
+        // console.log(useUserStore().getAuthUser,'authUser');
         // TokenService
-        TokenService.setToken(data.access_token);
+        TokenService.setToken(data.api_token);
       }
 
-      if(expired){
-        TokenService.setExpiration(expirationDate);
-      }
+      // if(expired){
+      //   TokenService.setExpiration(expirationDate);
+      // }
     },
     setTemp:(details) => {
       const state = useUserStore();

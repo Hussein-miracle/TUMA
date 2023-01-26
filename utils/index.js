@@ -41,7 +41,7 @@ export const refreshToken = async () => {
   //     return { ...prev, accessToken: response.data.accessToken }
   // });
 
-  return response.data.accessToken;
+  return response.data.api_token;
 };
 
 export const assets = {
@@ -50,8 +50,18 @@ export const assets = {
   tumayellowdark: "#fec02f1a",
 };
 
-
-
 export const stringToHtmlEntity = (str) => {
-  return str.replace(/[^a-z0-9\s]/ugm, s => "&#" + s.codePointAt(0) + ";");
+  return str.replace(/[^a-z0-9\s]/gmu, (s) => "&#" + s.codePointAt(0) + ";");
 };
+
+
+
+
+export const getRandomIndex = (max) => {
+  const index = Math.floor(Math.random() * (max));
+
+  return index;
+};
+
+
+
