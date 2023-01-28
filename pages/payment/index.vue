@@ -1,11 +1,13 @@
 <template>
-  <div class="add-card flex flex-col items-center w-full">
+  <div class="add-card flex flex-col items-center w-full pt-4">
     <h2 class="text-secondary text-2xl font-bold">Card Details</h2>
 
     <div
       class="add-card__input flex flex-col items-center w-full"
       :class="{ 'flex items-center justify-center': isLoading === true }"
     >
+    <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
+    <div id="st-notification-frame" v-if="isLoading === false"></div>
       <!-- <VeeForm
         class="flex flex-col gap-y-3 items-center mt-6 w-[90%] add-card__form sm:w-[70%] md:w-[50%] self-center"
         @submit="handleSubmit"
@@ -117,7 +119,7 @@
         <div class="cube2"></div>
       </div>
 
-      <div id="st-notification-frame" v-if="isLoading === false"></div>
+
 
       <form id="st-form" action="" v-if="isLoading === false">
         <div id="st-card-number" class="st-card-number"></div>
