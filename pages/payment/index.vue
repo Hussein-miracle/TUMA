@@ -123,7 +123,11 @@
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
-        <button type="submit" id="st-form__submit" class="st-form__submit">
+        <button
+          type="submit"
+          id="st-form__submit"
+          class="st-form__submit btn bg-primary text-secondary rounded-md my-1 md:my-2 mx-auto md:w-80"
+        >
           Pay securely
         </button>
       </form>
@@ -219,10 +223,16 @@ watch(cardDetails, () => {
 </script>
 
 <style lang="scss" scoped>
+@use "sass:math";
+@function pxToRem($px) {
+  @return math.div($px, 16) + rem;
+}
+
 .add-card {
   &__form {
     .item {
-      input {
+      input,
+      #st-security-code-input {
         border: none;
         border-bottom-width: 1.5px;
         border-bottom-style: solid;
@@ -236,6 +246,38 @@ watch(cardDetails, () => {
         @apply text-primary;
       }
     }
+  }
+}
+
+#st-security-code-input,#expiration-date__input,#st-card-number-input {
+  border: none;
+  border-bottom-width: 1.5px;
+  border-bottom-style: solid;
+  @apply border-b-ash-1 p-2;
+
+  &:focus {
+    @apply border-b-primary p-2;
+    outline: none;
+  }
+
+  &:focus + label {
+    @apply text-primary;
+  }
+}
+
+.btn {
+  max-width: pxToRem(375);
+  padding: 6px 10px;
+  height: 3rem;
+  text-transform: uppercase;
+  // background-color: transparent;
+  outline: none;
+  border: none;
+  display: block;
+
+  &:focus {
+    outline: none;
+    border: none;
   }
 }
 
