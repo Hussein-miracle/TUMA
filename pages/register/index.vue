@@ -4,7 +4,7 @@
       Join the revolution
     </h2>
     <VeeForm
-      class="flex flex-col gap-y-3 items-center mt-4 signup__form w-[40%] self-center"
+      class="flex flex-col gap-y-3 items-center mt-4 signup__form w-[85%] sm:w-[50%] self-center"
       :validation-schema="signupSchema"
       @submit="handleSubmit"
     >

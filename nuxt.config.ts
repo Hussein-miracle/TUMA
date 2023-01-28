@@ -32,7 +32,11 @@ export default defineNuxtConfig({
       ],
       script: [
         // <script src="https://myawesome-lib.js"></script>
+      
+
         { src: "https://cdn.eu.trustpayments.com/js/latest/st.js" }
+
+
         // {
         //   src:`https://maps.googleapis.com/maps/api/js?key=${process.env.NUXT_GOOGLE_API_KEY}`
         // }

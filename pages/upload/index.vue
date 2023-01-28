@@ -10,7 +10,6 @@ import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
 
-const token = "_act-sbx-d70c58bf-5614-44d1-984e-23926bc870ce";
 
 const handleLoadSumSub = async () => {
   UtilsService.getSumSubToken().then((result) => {

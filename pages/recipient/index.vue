@@ -276,7 +276,7 @@ const handleCityInput = async (e) => {
   setTimeout(() => {
     isLoadingCity.value = !true;
     if (recipientForm.city === "") {
-      ref(cityRef).value.$el.value.clear();
+      // ref(cityRef).value.$el.value.clear();
       ref(cityRef).value.$el.value = "";
     }
   }, 500);
@@ -285,7 +285,7 @@ const handleCityInput = async (e) => {
   // recipientForm.city = value;
 };
 const handleCityInputClick = async (e) => {
-  console.log(e, "clci");
+ // console.log(e, "clci");
 
   // ref(cityRef).value.$el.value
 };
@@ -318,7 +318,7 @@ const handleSubmit = async (values) => {
     address: recipientForm.city,
   };
 
-  console.log(recipientCreationData, "RDDDDD!!!");
+ // console.log(recipientCreationData, "RDDDDD!!!");
 
   const reason_id = reasons.value.find(
     (r) => r.reason === recipientForm.reason
@@ -386,7 +386,7 @@ onUnmounted(() => {
 watchDebounced(
   recipientForm,
   async () => {
-    console.log(recipientForm, "form recipient");
+    // console.log(recipientForm, "form recipient");
   },
   {
     debounce: 250,

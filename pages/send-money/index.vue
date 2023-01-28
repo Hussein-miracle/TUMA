@@ -16,8 +16,7 @@
           <div class="div font-bold flex items-center gap-x-1">
             <span class="unit self-end">
               {{
-                senderCurrencyDetails.sender_currency_symbol ||
-                senderCurrencyDetails.sender_currency
+                senderCurrencyDetails.sender_currency_symbol 
               }}
             </span>
 
@@ -46,8 +45,7 @@
         >
           <div class="div font-bold flex items-center gap-x-2">
             <span class="unit self-end">{{
-              recipientCurrencyDetails.recipient_currency_symbol ||
-              recipientCurrencyDetails.recipient_currency
+              recipientCurrencyDetails.recipient_currency_symbol 
             }}</span>
             <span class="amount text-xl" v-if="amount">
               {{ amount }}
@@ -100,8 +98,7 @@
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol ||
-            recipientCurrencyDetails.recipient_currency
+            recipientCurrencyDetails.recipient_currency_symbol 
           }}</span>
           <span class="amount" v-if="cashValue">{{ cashValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -138,8 +135,7 @@
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol ||
-            recipientCurrencyDetails.recipient_currency
+            recipientCurrencyDetails.recipient_currency_symbol 
           }}</span>
           <span class="amount" v-if="bankValue">{{ bankValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -178,8 +174,7 @@
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol ||
-            recipientCurrencyDetails.recipient_currency
+            recipientCurrencyDetails.recipient_currency_symbol 
           }}</span>
           <span class="amount" v-if="mobileValue">{{ mobileValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -211,8 +206,8 @@ const {
 } = storeToRefs(store);
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
-// const { conversionData: {converted_amount: { cash, bank, mobile },
-//   best_value} } = useAppStore();
+
+
 
 const amount = ref("");
 
@@ -228,51 +223,6 @@ const cashValue = ref("");
 const bankValue = ref("");
 const mobileValue = ref("");
 
-const conversionData = reactive({
-  recipient_currency: "",
-  recipient_country: "",
-  sender_currency: "",
-  sender_country: "",
-
-  conversion_rate: "",
-
-  methods: {
-    cash: "",
-    bank: "",
-    mobile: "",
-  },
-
-  converted_amount: {
-    cash: {
-      initial_amount: "",
-      commission: "",
-      final_amount: "",
-      converted: "",
-    },
-    bank: {
-      initial_amount: "",
-      commission: "",
-      final_amount: "",
-      converted: "",
-    },
-    mobile: {
-      initial_amount: "",
-      commission: "",
-      final_amount: "",
-      converted: "",
-    },
-  },
-
-  best_value: {
-    cash: {
-      initial_amount: "",
-      commission: "",
-      final_amount: "",
-      converted: "",
-    },
-  },
-});
-
 const assignConvertedAmount = () => {
   for (const item in bestValue.value) {
     amount.value = bestValue.value[item].converted;
@@ -283,13 +233,13 @@ useHead({
   title: "Send Money",
 });
 
-const {
-  public: { TUMA_CLIENT_ID },
-} = useRuntimeConfig();
+// const {
+//   public: { TUMA_CLIENT_ID },
+// } = useRuntimeConfig();
 
 const conversionDetails = reactive({
   amount: "",
-  client_id: TUMA_CLIENT_ID,
+  client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
   recipient_country: recipientCurrencyDetails.value.recipient_country,
   recipient_currency: recipientCurrencyDetails.value.recipient_currency,
   sender_currency: senderCurrencyDetails.value.sender_currency,
@@ -313,7 +263,7 @@ const handleContinue = () => {
     };
     useAppStore().setRecipientCurrencyDetails(data);
     useAppStore().setRestriction(data.recipient_country);
-    console.log(remittanceMethod.value, "method");
+    // console.log(remittanceMethod.value, "method");
     navigateTo("/recipient");
   }
 };
@@ -360,7 +310,7 @@ watchDebounced(
         }
       }
 
-      console.log(conversionDetails, "cDDDDD!!!HEy hiii! how far!!!");
+      // console.log(conversionDetails, "cDDDDD!!!HEy hiii! how far!!!");
 
       if (allowAction) {
         UtilsService.getConversionRates(conversionDetails).then((response) => {
@@ -397,7 +347,7 @@ watchDebounced(
       }
     }
   },
-  { debounce: 800, maxWait: 1200 }
+  { debounce: 600, maxWait: 1000 }
 );
 
 definePageMeta({
