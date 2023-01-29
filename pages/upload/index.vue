@@ -1,6 +1,10 @@
 <template>
   <div class="upload">
-    <div id="sumsub-websdk-container"></div>
+    <div class="spinner" v-show="isLoading === true">
+      <div class="cube1"></div>
+      <div class="cube2"></div>
+    </div>
+    <div id="sumsub-websdk-container" v-show="isLoading === false"></div>
   </div>
 </template>
 
@@ -10,21 +14,34 @@ import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
 
+definePageMeta({
+  title: "Upload Details",
+  layout: false,
+  middleware: ["auth", "checkroute"],
+});
+
+const isLoading = ref(false);
 
 const handleLoadSumSub = async () => {
-  UtilsService.getSumSubToken().then((result) => {
-    const token = result.sumsub.token;
-    const userId = result.sumsub.userId;
-    return token;
-  }).then(async(token) => {
-    const {getAuthUser:{email,phone}} = useUserStore();
-    // console.log(getAuthUser,'auth user');
-    const applicantEmail = email;
-    const applicantPhone = phone;
-    launchWebSdk(token,applicantEmail,applicantPhone);
-  }).catch((err) => {
-    console.log(err,'error loading sumsub');
-  });
+  isLoading.value = true;
+  UtilsService.getSumSubToken()
+    .then((result) => {
+      const token = result.sumsub.token;
+      const userId = result.sumsub.userId;
+      return token;
+    })
+    .then(async (token) => {
+      const {
+        getAuthUser: { email, phone },
+      } = useUserStore();
+      // console.log(getAuthUser,'auth user');
+      const applicantEmail = email;
+      const applicantPhone = phone;
+      launchWebSdk(token, applicantEmail, applicantPhone);
+    })
+    .catch((err) => {
+      console.log(err, "error loading sumsub");
+    });
 };
 
 async function getNewAccessToken() {
@@ -66,6 +83,7 @@ function launchWebSdk(accessToken = token, applicantEmail, applicantPhone) {
       console.log("onError", payload);
     })
     .onMessage((type, payload) => {
+      isLoading.value = false;
       console.log("onMessage", type, payload);
     })
     .build();
@@ -78,10 +96,75 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.upload{
-  margin:0;
-  padding:0;
+.upload {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
   height: fit-content;
+}
+
+.spinner {
+  margin: 100px auto;
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.cube1,
+.cube2 {
+  background-color: #333;
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  -webkit-animation: sk-cubemove 1.8s infinite ease-in-out;
+  animation: sk-cubemove 1.8s infinite ease-in-out;
+}
+
+.cube2 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+@-webkit-keyframes sk-cubemove {
+  25% {
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  }
+  50% {
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  }
+  75% {
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg)
+      scale(0.5);
+  }
+  100% {
+    -webkit-transform: rotate(-360deg);
+  }
+}
+
+@keyframes sk-cubemove {
+  25% {
+    transform: translateX(42px) rotate(-90deg) scale(0.5);
+    -webkit-transform: translateX(42px) rotate(-90deg) scale(0.5);
+  }
+  50% {
+    transform: translateX(42px) translateY(42px) rotate(-179deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-179deg);
+  }
+  50.1% {
+    transform: translateX(42px) translateY(42px) rotate(-180deg);
+    -webkit-transform: translateX(42px) translateY(42px) rotate(-180deg);
+  }
+  75% {
+    transform: translateX(0px) translateY(42px) rotate(-270deg) scale(0.5);
+    -webkit-transform: translateX(0px) translateY(42px) rotate(-270deg)
+      scale(0.5);
+  }
+  100% {
+    transform: rotate(-360deg);
+    -webkit-transform: rotate(-360deg);
+  }
 }
 </style>

@@ -1,6 +1,38 @@
 <template>
-  <div class="recipient flex flex-col items-center">
-    <h2 class="text-secondary text-3xl my-2">Recipient</h2>
+  <div class="recipient flex flex-col items-center overflow-x-hidden">
+    <h2
+      class="text-secondary text-3xl my-2"
+      v-if="formerRecipients.length <= 0"
+    >
+      Recipient
+    </h2>
+
+    <div
+      class="former-recipients flex flex-col items-center gap-y-4 overflow-hidden whitespace-nowrap mt-4"
+      v-if="formerRecipients.length > 0 && showOtherRecipient === true"
+    >
+      <h4 class="text-secondary text-left">Choose Recipient</h4>
+
+      <div
+        class="recipients w-[80vw] overflow-auto whitespace-nowrap px-2 py-2"
+      >
+        <recipient
+          v-for="(item, index) in formerRecipients"
+          :key="index"
+          :firstname="item.first_name"
+          :lastname="item.last_name"
+          @click="handleSelectRecipient(item)"
+          :selected="!!itemSelected && itemSelected.id === item.id"
+        />
+      </div>
+
+      <div
+        class="bg-primary w-12 h-12 rounded-full flex items-center justify-center font-bold"
+      >
+        OR
+      </div>
+      <h4 class="mx-auto text-center">Enter New Recipient Details</h4>
+    </div>
 
     <div class="recipient__content w-full flex flex-col items-center">
       <VeeForm
@@ -77,25 +109,29 @@
 
           <label for="city" class="mb-2 text-ash-1">City</label>
 
-          <!-- <VeeErrorMsg
-            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="city"
-          /> -->
-        </div>
-
-        <div class="item-select flex flex-col-reverse my-1 w-full">
           <VeeErrorMsg
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="country"
+            name="city"
           />
+        </div>
 
+        <div class="item flex flex-col-reverse my-1 w-full relative">
           <VeeErrorMsg
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
             name="phone"
           />
 
-          <div class="flex w-full bg-secondary">
-            <vee-field
+          <VeeField
+            class="pl-10 w-full"
+            type="text"
+            v-model="recipientForm.phone"
+            name="phone"
+            id="phone"
+            placeholder="Recipient Phone Number"
+          />
+
+          <!-- <div class="flex w-full"> -->
+          <!-- <vee-field
               as="select"
               name="country"
               id="country"
@@ -128,28 +164,21 @@
               >
                 {{ `${country.flag} ${country.dial_code}` }}
               </option>
-            </vee-field>
+            </vee-field> -->
 
-            <VeeField
-              class="w-[70%]"
-              type="text"
-              v-model="recipientForm.phone"
-              name="phone"
-              id="phone"
-              placeholder="0704 259 9732"
-            />
-          </div>
+          <!-- </div> -->
 
-          <label for="phone_number" class="mb-2 text-ash-1">Phone Number</label>
+          <label for="phone" class="mb-2 text-ash-1">Phone Number</label>
         </div>
 
-        <!-- <VeeErrorMsg
-            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="reason"
-          /> -->
-        <select
+        <VeeErrorMsg
+          class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+          name="reason"
+        />
+        <VeeField
+          as="select"
           class="rem_sel focus:outline-primary bg-whitelike rounded-sm px-1 py-1 m-2 sm:w-72 text-primary focus:text-secondary"
-          v-model="recipientForm.reason"
+          v-model.lazy="recipientForm.reason"
           id="reason"
           name="reason"
         >
@@ -159,11 +188,11 @@
             class="option"
             :value="item.reason"
             v-for="item in reasons"
-            :key="item.id"
+            :key="item.reason"
           >
             {{ item.reason }}
           </option>
-        </select>
+        </VeeField>
 
         <div class="deliver w-full flex flex-col items-center">
           <h2 class="text-black text-left font-semibold text-xl self-start">
@@ -216,6 +245,8 @@
 import * as yup from "yup";
 import { watchDebounced } from "@vueuse/core";
 import { storeToRefs } from "pinia";
+import intlTelInput from "intl-tel-input";
+import "intl-tel-input/build/css/intlTelInput.css";
 import flags from "@/data/countries";
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
@@ -224,6 +255,30 @@ const isLoading = ref(false);
 const isLoadingCity = ref(false);
 const cityRef = ref(null);
 const isOpen = ref(false);
+
+const itemSelected = ref(null);
+
+const formerRecipients = ref([
+  // {
+  //   first_name: "Tade",
+  //   last_name: "Bola",
+  //   id: "1",
+  //   city:'kano state'
+  // },
+  // {
+  //   id: "2",
+  //   first_name: "kavi",
+  //   last_name: "dagdag",
+  //   city:'lagos state'
+  // },
+  // {
+  //   id: "3",
+  //   first_name: "olubodun",
+  //   last_name: "akinyele",
+  //   city:'ile ife Nigeria'
+  // },
+]);
+
 const reasonForRemittance = ref("");
 
 const store = useAppStore();
@@ -233,7 +288,7 @@ const { getRestriction: restrict } = storeToRefs(store);
 // console.log(restrict,'restrict');
 definePageMeta({
   layout: false,
-  middleware: ["auth"],
+  middleware: ["auth", "checkroute"],
 });
 
 const {
@@ -251,6 +306,8 @@ const {
 // });
 
 // console.log(restrictTo,'RES');
+const showOtherRecipient = ref(true);
+
 function closeModal() {
   isOpen.value = false;
 }
@@ -270,6 +327,15 @@ const recipientForm = reactive({
   reason: "",
 });
 
+const handleSelectRecipient = (recipient) => {
+  itemSelected.value = recipient;
+
+  // console.log(recipient, "recipient selected");
+  recipientForm.first_name = recipient.first_name;
+  recipientForm.last_name = recipient.last_name;
+  recipientForm.city = recipient.city;
+};
+
 const handleCityInput = async (e) => {
   // console.log(e,'cityInput');
   isLoadingCity.value = true;
@@ -282,11 +348,10 @@ const handleCityInput = async (e) => {
   }, 500);
   const value = e.target.value;
 
-  // recipientForm.city = value;
+  recipientForm.city = value;
 };
 const handleCityInputClick = async (e) => {
- // console.log(e, "clci");
-
+  // console.log(e, "clci");
   // ref(cityRef).value.$el.value
 };
 
@@ -296,75 +361,73 @@ const setPlace = (e) => {
 };
 
 const recipientSchema = yup.object().shape({
-  country: yup.string().required("Country is required!"),
+  // country: yup.string().required("Country is required!"),
   first_name: yup.string().required("First name is required!"),
   last_name: yup.string().required("Last name is required!"),
   phone: yup.string().required("Phone is required!"),
   // city: yup.string().required("City is Required"),
-  // reason: yup.string().required("Reason is required"),
+  reason: yup.string().required("Reason for payment is required"),
 });
 
 let city;
 
 const handleSubmit = async (values) => {
-  // console.log(values, "v");
+  console.log(values, "v");
 
   isLoading.value = true;
 
-  const recipientCreationData = {
-    first_name: recipientForm.first_name,
-    last_name: recipientForm.last_name,
-    phone_number: recipientForm.phone,
-    address: recipientForm.city,
-  };
+  try {
+    const recipientCreationData = {
+      first_name: recipientForm.first_name,
+      last_name: recipientForm.last_name,
+      phone_number: recipientForm.phone,
+      address: recipientForm.city,
+    };
 
- // console.log(recipientCreationData, "RDDDDD!!!");
+    // console.log(recipientCreationData, "RDDDDD!!!");
 
-  const reason_id = reasons.value.find(
-    (r) => r.reason === recipientForm.reason
-  ).id;
+    const reasonSel = reasons.value.find(
+      (r) => {
+        if(r?.reason === recipientForm.reason){
+          return r;
+        }
+      }
+    );
 
-  UtilsService.createRecipient(recipientCreationData)
-    .then((response) => {
-      const result = response.data;
-      console.log(result, "recipient Daata");
-      const data = {};
-      return result;
-    })
-    .then((res) => {
-      const response = res;
-      const {
-        recipientCurrencyDetails,
-        senderCurrencyDetails,
-        conversionData,
-      } = useAppStore();
-      // console.log(conversionData, "convData");
-      const transactionData = {
-        from_currency: senderCurrencyDetails.sender_currency,
-        amount: conversionData.amount,
-        to_currency: recipientCurrencyDetails.recipient_currency,
-        to_user: response.ruid,
-        reason_id,
-      };
-      UtilsService.createTransaction(transactionData)
-        .then((result) => {
-          console.log(result, "trans creation data");
-          const data = result.data;
-          useAppStore().setTransactionRef(data.reference);
-          isLoading.value = false;
-          navigateTo("/payment");
-          return data;
+    const reason_id = reasonSel.id;
+
+    if (!!reason_id) {
+      UtilsService.createRecipient(recipientCreationData)
+        .then((response) => {
+          const result = response.data;
+          console.log(result, "recipient creation result");
+          const paymentSummary = {
+            result: {
+              ...result,
+              address: recipientCreationData.address,
+            },
+            reasonId:reason_id,
+          };
+
+          localStorage.setItem("progged", JSON.stringify(true));
+
+          // TODO Add this to pinia store;
+          localStorage.setItem("payS", JSON.stringify(paymentSummary));
+
+          navigateTo("/payment-summary");
+          return result;
         })
         .catch((err) => {
           isLoading.value = false;
           console.log(err, "err");
         });
-    })
-    .catch((err) => {
-      isLoading.value = false;
-      console.log(err, "err");
-    });
+    }
+  } catch (err) {
+    isLoading.value = false;
+    console.log(err, "err");
+  }
 };
+
 const onCityBlur = async () => {
   isLoadingCity.value = true;
 
@@ -374,6 +437,10 @@ const onCityBlur = async () => {
 };
 onMounted(() => {
   city = document.querySelector("#city");
+  const phone = document.querySelector("#phone");
+  intlTelInput(phone, {
+    // any initialisation options go here
+  });
   city.addEventListener("blur", onCityBlur);
 });
 
@@ -416,6 +483,16 @@ watchDebounced(
   }
 }
 
+.iti__flag {
+  background-image: url("path/to/flags.png");
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .iti__flag {
+    background-image: url("path/to/flags@2x.png");
+  }
+}
+
 .loader {
   width: 28px;
   height: 28px;
@@ -434,5 +511,15 @@ watchDebounced(
   100% {
     transform: rotate(360deg);
   }
+}
+
+.r {
+  --shadow-color: 0deg 0% 57%;
+  --shadow-elevation-medium: 0.3px 0.5px 0.8px hsl(var(--shadow-color) / 0.24),
+    1.1px 2.1px 3.1px -0.5px hsl(var(--shadow-color) / 0.33),
+    2.4px 4.8px 6.9px -0.9px hsl(var(--shadow-color) / 0.42),
+    5.4px 10.8px 15.6px -1.4px hsl(var(--shadow-color) / 0.51);
+
+  box-shadow: var(--shadow-elevation-medium);
 }
 </style>

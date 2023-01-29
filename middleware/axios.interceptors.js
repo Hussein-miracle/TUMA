@@ -2,7 +2,7 @@ import { createToast } from "mosha-vue-toastify";
 // import the styling for the toast
 import "mosha-vue-toastify/dist/style.css";
 
-// import  {useUserStore} from '@/store/auth/index';
+
 import axiosInstance from "@/services/axios.instance";
 import TokenService from "@/services/token.service";
 import AuthService from "~~/services/auth.service";
@@ -52,7 +52,16 @@ const setupInterceptor = () => {
       // console.log(originalConfig, "cg");
 
       if (originalConfig?.url !== "/login" && status === 401) {
+        createToast('Please Log In again.', {
+          showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          // position:'top-center'
+        });
 
+        setTimeout(() => {
+          initLogout();
+        },250)
 
         return;
       }

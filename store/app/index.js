@@ -25,8 +25,9 @@ export const useAppStore = defineStore("app", {
     },
     user: null,
     countries: [],
-    transaction:{
-      applicantEmail:'',applicantPhone:''
+    transaction: {
+      applicantEmail: "",
+      applicantPhone: "",
     },
     senderCurrencyDetails: {
       sender_currency: "",
@@ -41,19 +42,40 @@ export const useAppStore = defineStore("app", {
     reason: "",
     reasons: [],
     conversionData: {
-      amount:''
+      amount: "",
     },
     restriction: {
       country: "",
       country_code: "",
     },
-    transaction_ref:'',
+    transaction_ref: "",
+
+    paymentSummary: {
+      cash: {
+        initial_amount: 0,
+        commission: 0,
+        final_amount: 0,
+        converted: 0,
+      },
+      bank: {
+        initial_amount: 0,
+        commission: 0,
+        final_amount: 0,
+        converted: 0,
+      },
+      mobile: {
+        initial_amount: 0,
+        commission: 0,
+        final_amount: 0,
+        converted: 0,
+      },
+    },
   }),
   getters: {
     showTodo: (state) => {
       return state.showTodoList;
     },
-    getTransactionRef:(state) => {
+    getTransactionRef: (state) => {
       return state.transaction_ref;
     },
     getUserImage: (state) => {
@@ -73,8 +95,8 @@ export const useAppStore = defineStore("app", {
       // console.log(state,'logging state to check for countries');
       return state.senderCurrencyDetails;
     },
-    
-    getTransaction:(state) => {
+
+    getTransaction: (state) => {
       return state.transaction;
     },
     getRecipientCurrencyDetails: (state) => {
@@ -90,9 +112,9 @@ export const useAppStore = defineStore("app", {
     getUser: (state) => {
       return state.user;
     },
-    getConversionData:(state)=>{
+    getConversionData: (state) => {
       return state.conversionData;
-    }
+    },
   },
   actions: {
     setShowTodo: (value) => {
@@ -100,6 +122,12 @@ export const useAppStore = defineStore("app", {
     },
     setImage(value) {
       useAppStore().userImage = value;
+    },
+    setPaymentSummary:(value) => {
+      const oldSummary = useAppStore().paymentSummary;
+      const newSummary = {...oldSummary,...value};
+      console.log(newSummary ,'new summary to updat')
+      useAppStore().paymentSummary = newSummary;
     },
     setRestriction(value) {
       const country = value;
@@ -117,7 +145,7 @@ export const useAppStore = defineStore("app", {
 
       // console.log(restrictionDetails,'restrict Detai;ls')
       useAppStore().restriction = {
-       ...restrictionDetails
+        ...restrictionDetails,
       };
     },
     setRemittanceMethod(value) {
@@ -175,16 +203,16 @@ export const useAppStore = defineStore("app", {
     setRemittanceDetails: (data) => {
       useAppStore().remittanceDetail = { ...data };
     },
-    setConversionData:(data) => {
-      useAppStore().conversionData = {...data};
+    setConversionData: (data) => {
+      useAppStore().conversionData = { ...data };
     },
-    setTransactionData:(data) => {
-      useAppStore().transaction = {...data};
+    setTransactionData: (data) => {
+      useAppStore().transaction = { ...data };
     },
-    setTransactionRef:(data) => {
-      console.log(data, 'data for trans  ref')
+    setTransactionRef: (data) => {
+      // console.log(data, 'data for trans  ref')
       useAppStore().transaction_ref = data;
-    }
+    },
   },
   persist: true,
 });

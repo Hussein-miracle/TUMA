@@ -103,7 +103,7 @@ export const useUserStore = defineStore("user", {
       const state = useUserStore();
       state.user = null;
       state.token = null;
-      navigateTo('/sign-in');
+      navigateTo('/login');
     },
     clearTemp: () => {
       const state = useUserStore();

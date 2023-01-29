@@ -121,16 +121,16 @@
 
 
 
-      <form id="st-form" action="" v-if="isLoading === false">
+      <form id="st-form" :action="location" v-if="isLoading === false">
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
         <button
           type="submit"
           id="st-form__submit"
-          class="st-form__submit btn bg-primary text-secondary rounded-md my-1 md:my-2 mx-auto md:w-80"
+          class="st-form__submit btn bg-primary text-secondary rounded-md my-1 md:my-2 mx-auto md:w-80 max-w-md"
         >
-          Pay securely
+          Pay
         </button>
       </form>
     </div>
@@ -138,6 +138,10 @@
 </template>
 
 <script setup>
+
+const location = `${window.location.origin}/transaction-success`;
+
+
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 
@@ -176,7 +180,7 @@ const getTrustToken = async () => {
     jwtToken,
     st,
   };
-  console.log(res, "trust res");
+  // console.log(res, "trust res");
   isLoading.value = false;
   return res;
 };

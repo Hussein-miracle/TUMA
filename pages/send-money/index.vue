@@ -27,6 +27,7 @@
               class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
               placeholder="0.00"
               v-model="conversionDetails.amount"
+              :disabled='!conversionDetails.sender_country && !conversionDetails.recipient_country'
             />
           </div>
 
@@ -199,6 +200,7 @@ import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 import { watchDebounced } from "@vueuse/core";
 
+const router = useRouter();
 const store = useAppStore();
 const {
   getSenderCurrencyDetails: senderCurrencyDetails,
@@ -232,6 +234,9 @@ const assignConvertedAmount = () => {
 useHead({
   title: "Send Money",
 });
+definePageMeta({
+  title:'Recipient'
+})
 
 // const {
 //   public: { TUMA_CLIENT_ID },
@@ -264,7 +269,9 @@ const handleContinue = () => {
     useAppStore().setRecipientCurrencyDetails(data);
     useAppStore().setRestriction(data.recipient_country);
     // console.log(remittanceMethod.value, "method");
+    localStorage.setItem('progged',JSON.stringify(true));
     navigateTo("/recipient");
+    // router.push({path:'/recipient',props:{ programatic:true } });
   }
 };
 
@@ -275,7 +282,7 @@ const handleContinue = () => {
 // };
 
 onMounted(() => {
-  remittanceMethod.value = useAppStore().getMethod || "";
+
 });
 
 onBeforeMount(async () => {
@@ -289,7 +296,8 @@ onBeforeMount(async () => {
 watchDebounced(
   conversionDetails,
   () => {
-    if (conversionDetails.amount !== "") {
+    if (conversionDetails.amount !== "" && !!conversionDetails.recipient_country  && !!conversionDetails.sender_country && !!conversionDetails.recipient_currency) {
+
       let allowAction = true;
       //  console.log(conversionDetails,'cDDDDD!!!HEy hiii!');
 
@@ -317,11 +325,14 @@ watchDebounced(
           const result = response.data;
 
           // console.log(result, "res");
-
-          const cash = result.converted_amount.cash;
-          const bank = result.converted_amount.bank;
-          const mobile = result.converted_amount.mobile;
+          const converted_amount = result.converted_amount;
+          console.log(converted_amount,'conved amout')
+          const cash = converted_amount.cash;
+          const bank = converted_amount.bank;
+          const mobile = converted_amount.mobile;
           // console.log(cash,'cash');
+
+          useAppStore().setPaymentSummary(converted_amount);
 
           const details = {
             cash,
