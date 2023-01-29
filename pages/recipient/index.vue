@@ -400,7 +400,7 @@ const handleSubmit = async (values) => {
       UtilsService.createRecipient(recipientCreationData)
         .then((response) => {
           const result = response.data;
-          console.log(result, "recipient creation result");
+          // console.log(result, "recipient creation result");
           const paymentSummary = {
             result: {
               ...result,
@@ -438,6 +438,7 @@ const onCityBlur = async () => {
 onMounted(() => {
   city = document.querySelector("#city");
   const phone = document.querySelector("#phone");
+  // TODO : customise intlTelInput to design
   intlTelInput(phone, {
     // any initialisation options go here
   });

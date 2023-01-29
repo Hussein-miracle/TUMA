@@ -121,7 +121,7 @@
 
 
 
-      <form id="st-form" :action="location" v-if="isLoading === false">
+      <form id="st-form" :action="`${location}`" v-if="isLoading === false">
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
@@ -139,7 +139,9 @@
 
 <script setup>
 
-const location = `${window.location.origin}/transaction-success`;
+const location = ref(`${window.location.origin}/transaction-success`);
+
+console.log(location.value , 'location to redirect to');
 
 
 import { useAppStore } from "@/store/app/index";
@@ -204,6 +206,7 @@ const handleSubmit = async (values) => {
 onBeforeMount(async () => {
   getTrustToken()
     .then(async (res) => {
+      console.log(res ,'response before passing jwt to trust');
       const token = res.jwtToken;
       const result = await initTrustPayment(token);
       console.log(result, "trustPayment result");
@@ -213,19 +216,19 @@ onBeforeMount(async () => {
     });
 });
 
-watch(cardDetails, () => {
-  if (!!cardDetails.card_number) {
-    const len = cardDetails.card_number.length;
+// watch(cardDetails, () => {
+//   if (!!cardDetails.card_number) {
+//     const len = cardDetails.card_number.length;
 
-    if (len === 5) {
-      cardDetails.card_number = `${cardDetails.card_number} `;
-    }
+//     if (len === 5) {
+//       cardDetails.card_number = `${cardDetails.card_number} `;
+//     }
 
-    if (len === 10) {
-      cardDetails.card_number = `${cardDetails.card_number} `;
-    }
-  }
-});
+//     if (len === 10) {
+//       cardDetails.card_number = `${cardDetails.card_number} `;
+//     }
+//   }
+// });
 </script>
 
 <style lang="scss" scoped>
