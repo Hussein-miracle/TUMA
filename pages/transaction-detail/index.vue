@@ -185,7 +185,7 @@ onMounted(() => {
 
   const queryKeys = Object.keys(query);
 
-  console.log(queryKeys, "qK");
+  // console.log(queryKeys, "qK");
 
   if (queryKeys.length >= 1) {
     const origin = window.location.origin;

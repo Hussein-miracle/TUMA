@@ -43,8 +43,8 @@ const handleLoadSumSub = async () => {
       const applicantEmail = getAuthUser.value.email;
       const applicantPhone = getAuthUser.value.phone;
 
-      // console.log(applicantEmail,'email')
-      // console.log(applicantPhone,'phone')
+      console.log(applicantEmail,'email')
+      console.log(applicantPhone,'phone')
 
       launchWebSdk(token, applicantEmail, applicantPhone);
 
