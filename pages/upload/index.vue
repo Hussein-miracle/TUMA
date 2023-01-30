@@ -9,6 +9,7 @@
 </template>
 
 <script setup>
+import {storeToRefs} from 'pinia';
 import snsWebSdk from "@sumsub/websdk";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
@@ -31,13 +32,22 @@ const handleLoadSumSub = async () => {
       return token;
     })
     .then(async (token) => {
-      const {
-        getAuthUser: { email, phone },
-      } = useUserStore();
-      // console.log(getAuthUser,'auth user');
-      const applicantEmail = email;
-      const applicantPhone = phone;
+      const  store = useUserStore();
+      const {getAuthUser} = storeToRefs(store);
+
+
+
+
+
+
+      const applicantEmail = getAuthUser.value.email;
+      const applicantPhone = getAuthUser.value.phone;
+
+      // console.log(applicantEmail,'email')
+      // console.log(applicantPhone,'phone')
+
       launchWebSdk(token, applicantEmail, applicantPhone);
+
     })
     .catch((err) => {
       console.log(err, "error loading sumsub");

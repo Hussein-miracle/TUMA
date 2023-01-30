@@ -139,9 +139,9 @@
 
 <script setup>
 
-const location = ref(`${window.location.origin}/transaction-success`);
+const location = ref(`${window.location.origin}/transaction-detail`);
 
-console.log(location.value , 'location to redirect to');
+// console.log(location.value , 'location to redirect to');/
 
 
 import { useAppStore } from "@/store/app/index";
@@ -190,26 +190,27 @@ const getTrustToken = async () => {
 const initTrustPayment = async (token) => {
   const st = SecureTrading({
     jwt: token,
+    formId:'st-form',
   });
   return st.Components();
 };
 
-const handleSubmit = async (values) => {
-  isLoading.value = true;
-  console.log(values, "card details val");
+// const handleSubmit = async (values) => {
+//   isLoading.value = true;
+//   console.log(values, "card details val");
 
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 500);
-};
+//   setTimeout(() => {
+//     isLoading.value = false;
+//   }, 500);
+// };
 
 onBeforeMount(async () => {
   getTrustToken()
     .then(async (res) => {
-      console.log(res ,'response before passing jwt to trust');
+      // console.log(res ,'response before passing jwt to trust');
       const token = res.jwtToken;
       const result = await initTrustPayment(token);
-      console.log(result, "trustPayment result");
+      // console.log(result, "trustPayment result");
     })
     .catch((err) => {
       console.log(err, "err");
