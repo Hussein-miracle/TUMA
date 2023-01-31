@@ -70,6 +70,9 @@ const handleLoadSumSub = async () => {
   isLoading.value = true;
   UtilsService.getSumSubToken()
     .then((result) => {
+      const store = useUserStore();
+  const { getAuthUser } = storeToRefs(store);
+console.log(getAuthUser.value,'auth user')
       const token = result.sumsub.token;
       const userId = result.sumsub.userId;
       return token;
