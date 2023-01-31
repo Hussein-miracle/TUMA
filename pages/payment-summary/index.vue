@@ -135,7 +135,7 @@ const handleCreateTransaction = async () => {
   // console.log(conversionData, "convData");
   const data = JSON.parse(localStorage.getItem("payS"));
   // console.log(data, "from store Pays");
-  const response = data.result;
+  const response = data?.result;
   const reason_id = data?.reasonId;
 
   localStorage.removeItem("payS");
