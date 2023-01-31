@@ -15,6 +15,9 @@ import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
 
+      const store = useUserStore();
+  const { user  } = storeToRefs(store);
+console.log(user.value,'user')
 definePageMeta({
   title: "Upload Details",
   layout: false,
@@ -59,6 +62,7 @@ function launchWebSdk(accessToken, applicantEmail, applicantPhone) {
       console.log("onMessage", type, payload);
     })
     .build();
+
   snsWebSdkInstance.launch("#sumsub-websdk-container");
 }
 
@@ -71,11 +75,10 @@ const handleLoadSumSub = async () => {
       return token;
     })
     .then(async (token) => {
-      const store = useUserStore();
-      const { getAuthUser } = storeToRefs(store);
 
-      const applicantEmail = getAuthUser.value.email;
-      const applicantPhone = getAuthUser.value.phone;
+
+      const applicantEmail = user.value.email;
+      const applicantPhone = user.value.phone;
 
       console.log(applicantEmail, "email");
 
@@ -88,7 +91,7 @@ const handleLoadSumSub = async () => {
       };
 
       console.log(res,'data just befoe initing sumsub');
-      
+
       return res;
     })
     .then(({ token, applicantEmail, applicantPhone }) => {
