@@ -147,9 +147,10 @@
       <button-primary
         :type="'button'"
         :text="'Upload'"
-        class="uppercase !text-secondary font-semibold text-xl"
+        class="uppercase !text-secondary font-semibold text-xl my-1"
         @click="handleUpload"
       />
+
     </div>
   </div>
 </template>
@@ -177,6 +178,7 @@ const fetchTrustPaymentDetail = async () => {
     isLoading.value = false;
     showSuccess.value=!true;
   },5300);
+  
 };
 onMounted(() => {
   fetchTrustPaymentDetail();
