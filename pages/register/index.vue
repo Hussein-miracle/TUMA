@@ -27,7 +27,7 @@
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
-          v-model="signupForm.full_name"
+          v-model="signupForm.last_name"
           name="last_name"
           id="last_name"
           placeholder="Last Name"
@@ -65,30 +65,6 @@
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full">
-        <!-- <div class="flex w-full "> -->
-        <!-- <VeeErrorMsg
-            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="country"
-          />
-          <vee-field
-            as="select"
-            name="country"
-            id="country"
-            placeholder="+234"
-            class="w-[30%] p-1"
-            v-model="signupForm.country"
-          >
-            <option
-              v-for="country in flags"
-              class="text-secondary"
-              :value="country.code"
-              :selected="country.code == 'NG'"
-              :key="country.dial_code"
-            >
-              {{ `${country.flag} ${country.dial_code}` }}
-            </option>
-          </vee-field> -->
-
         <VeeField
           type="text"
           v-model="signupForm.phone"
@@ -96,15 +72,123 @@
           id="phone"
           placeholder="0704 259 9732"
         />
-
         <label for="phone" class="mb-2 text-ash-1">Phone Number</label>
-        <!-- </div> -->
-
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="phone"
         />
+      </div>
+
+      <div class="item flex flex-col-reverse my-1 w-full">
+        <template v-if="countries.length > 0">
+          <div
+            class="inset-0 flex items-center justify-center border-solid border-2 rounded-md border-ash-2 cursor-pointer text-primary"
+            :class="{'!border-primary': selectedCountry && selectedCountry?.name}"
+            @click="setSeeSelectTrue"
+          >
+            <div
+              class="mx-auto flex gap-x-1 items-center cursor-pointer"
+              v-if="selectedCountry && selectedCountry?.name"
+            >
+              <img
+                v-if="selectedCountry && !!selectedCountry.flag"
+                :src="selectedCountry?.flag"
+                class="object-contain w-4 h-4"
+              />
+              <span>{{ selectedCountry?.name }}</span>
+            </div>
+
+            <span v-else class="text-ash-1 mx-auto">Select Country</span>
+          </div>
+          <TransitionRoot appear :show="seeSelect" as="template">
+            <Dialog as="div" class="relative z-10">
+              <TransitionChild
+                as="template"
+                enter="duration-300 ease-out"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="duration-200 ease-in"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+              >
+                <div class="fixed inset-0 bg-black bg-opacity-25" />
+              </TransitionChild>
+
+              <div class="fixed inset-0 overflow-y-auto">
+                <div
+                  class="flex flex-col min-h-full items-center justify-center p-4 text-center"
+                >
+                  <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0 scale-95"
+                    enter-to="opacity-100 scale-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100 scale-100"
+                    leave-to="opacity-0 scale-95"
+                  >
+                    <DialogPanel
+                      class=" max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all w-[50vw] h-[70vh] flex flex-col items-center"
+                    >
+                      <DialogTitle
+                        as="h3"
+                        class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
+                      >
+                        <img
+                          v-if="selectedCountry && !!selectedCountry?.flag"
+                          :src="selectedCountry?.flag"
+                          class="object-contain w-4 h-4"
+                        />
+                        <span v-if="selectedCountry?.name">{{
+                          selectedCountry?.name
+                        }}</span>
+                        <span v-else> Select Country</span>
+                      </DialogTitle>
+                      <div class="mt-2 overflow-y-scroll custom-scroll px-2">
+                        <template v-if="countries.length > 0">
+                          <div
+                            class="options flex gap-x-2 items-center cursor-pointer hover:bg-ash-1 px-2 py-1 rounded-sm"
+                            @click="handleSelectCountry(country)"
+                            v-for="country in countries"
+                            :class="{
+                              '!bg-ash-1':
+                                country &&
+                                selectedCountry?.name ===
+                                  country?.name,
+                            }"
+                            :key="country.name"
+                          >
+                            <img
+                              v-if="country.flag"
+                              :src="country.flag"
+                              class="object-contain w-4 h-4"
+                            />
+                            <span>{{ country?.name }}</span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="loader w-36 h-36"></div>
+                        </template>
+                      </div>
+                    </DialogPanel>
+                  </TransitionChild>
+                </div>
+              </div>
+            </Dialog>
+          </TransitionRoot>
+        </template>
+        <template v-else>
+          <div class="loader w-36 h-36"></div>
+        </template>
+        <VeeField
+          type="text"
+          v-model="signupForm.country"
+          name="country"
+          id="country"
+          hidden
+        />
+        <label for="country" class="mb-2 text-ash-1" :class="{'!text-primary': selectedCountry && selectedCountry?.name}">Country</label>
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full relative">
@@ -198,6 +282,13 @@
 
 <script setup>
 import * as yup from "yup";
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/vue";
 import intlTelInput from "intl-tel-input";
 import "intl-tel-input/build/css/intlTelInput.css";
 import validatePassword from "@/composables_/validatePassword";
@@ -206,21 +297,24 @@ import flags from "@/data/countries";
 import AuthService from "@/services/auth.service";
 import { useAppStore } from "@/store/app/index";
 
-const {
-  public: { TUMA_CLIENT_ID },
-} = useRuntimeConfig();
+// const {
+//   public: { TUMA_CLIENT_ID },
+// } = useRuntimeConfig();
 
 const { show, toggleShow } = useToggle();
+const { show: seeSelect, toggleShow: toggleSelect, setShowTrue:setSeeSelectTrue,setShowFalse:setSeeSelectFalse } = useToggle();
 //
 // console.log(flags, "fgs");
+const appStore = useAppStore();
 const isLoading = ref(false);
-
+const countries = computed(() => appStore.getCountriesFromStore);
 const dial_code = ref("");
+const selectedCountry = ref("");
 
 const tac = ref(false);
 
 const signupForm = reactive({
-  client_uuid: TUMA_CLIENT_ID,
+  client_uuid: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
   first_name: "",
   last_name: "",
   email: "",
@@ -230,6 +324,13 @@ const signupForm = reactive({
   country: "",
 });
 
+const handleSelectCountry = (country) => {
+  // console.log(country,'country');
+  selectedCountry.value = country;
+  signupForm.country = country.code;
+  setSeeSelectFalse();
+  // console.log(selectedCountry.value,'Sv');
+};
 const signupSchema = yup.object().shape({
   client_uuid: yup.string().required(),
   email: yup
@@ -265,7 +366,7 @@ const signupSchema = yup.object().shape({
 
 const handleSubmit = async (values) => {
   isLoading.value = true;
-  // console.log(values);
+  console.log(values, "reg values");
 
   try {
     AuthService.register(values)
@@ -299,14 +400,17 @@ onMounted(() => {
   const phone = document.querySelector("#phone");
   // TODO : customise intlTelInput to design
   intlTelInput(phone, {
-    initialCountry: "auto",
+    // initialCountry: "auto",
     // any initialisation options go here
   });
 });
 
-// watch(signupForm, () => {
-//   console.log(signupForm,'sF');
-// });
+onBeforeMount(async () => {
+  useAppStore().fetchCountries();
+});
+watch(signupForm, () => {
+  console.log(signupForm,'sF');
+});
 </script>
 
 <style lang="scss" scoped>

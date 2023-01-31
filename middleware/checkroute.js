@@ -25,15 +25,15 @@ export default defineNuxtRouteMiddleware((item) => {
     }
   }
 
-  // if (item.name === "upload") {
-  //   const progged = JSON.parse(localStorage.getItem("progged"));
-  //   // console.log(progged,'progged');
-  //   localStorage.removeItem("progged");
+  if (item.name === "upload") {
+    const progged = JSON.parse(localStorage.getItem("progged"));
+    // console.log(progged,'progged');
+    localStorage.removeItem("progged");
 
-  //   if (progged !== true) {
-  //     return navigateTo("/send-money");
-  //   }
-  // }
+    if (progged !== true) {
+      return navigateTo("/send-money");
+    }
+  }
 
   if (item.name === "transaction-detail") {
     const progged = JSON.parse(localStorage.getItem("progged"));
