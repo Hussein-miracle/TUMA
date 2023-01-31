@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import {storeToRefs} from 'pinia';
+import { storeToRefs } from "pinia";
 import snsWebSdk from "@sumsub/websdk";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
@@ -23,45 +23,7 @@ definePageMeta({
 
 const isLoading = ref(false);
 
-const handleLoadSumSub = async () => {
-  isLoading.value = true;
-  UtilsService.getSumSubToken()
-    .then((result) => {
-      const token = result.sumsub.token;
-      const userId = result.sumsub.userId;
-      return token;
-    })
-    .then(async (token) => {
-      const  store = useUserStore();
-      const {getAuthUser} = storeToRefs(store);
-
-
-
-
-
-
-      const applicantEmail = getAuthUser.value.email;
-      const applicantPhone = getAuthUser.value.phone;
-
-      console.log(applicantEmail,'email')
-      console.log(applicantPhone,'phone')
-
-      launchWebSdk(token, applicantEmail, applicantPhone);
-
-    })
-    .catch((err) => {
-      console.log(err, "error loading sumsub");
-    });
-};
-
-async function getNewAccessToken() {
-  const result = await UtilsService.getSumSubToken();
-  const token = result.sumsub.token;
-  const userId = result.sumsub.userId;
-  return token;
-}
-
-function launchWebSdk(accessToken = token, applicantEmail, applicantPhone) {
+function launchWebSdk(accessToken, applicantEmail, applicantPhone) {
   let snsWebSdkInstance = snsWebSdk
     .init(accessToken, () => getNewAccessToken())
     .withConf({
@@ -98,6 +60,50 @@ function launchWebSdk(accessToken = token, applicantEmail, applicantPhone) {
     })
     .build();
   snsWebSdkInstance.launch("#sumsub-websdk-container");
+}
+
+const handleLoadSumSub = async () => {
+  isLoading.value = true;
+  UtilsService.getSumSubToken()
+    .then((result) => {
+      const token = result.sumsub.token;
+      const userId = result.sumsub.userId;
+      return token;
+    })
+    .then(async (token) => {
+      const store = useUserStore();
+      const { getAuthUser } = storeToRefs(store);
+
+      const applicantEmail = getAuthUser.value.email;
+      const applicantPhone = getAuthUser.value.phone;
+
+      console.log(applicantEmail, "email");
+
+      console.log(applicantPhone, "phone");
+
+      const res = {
+        applicantEmail,
+        applicantPhone,
+        token,
+      };
+
+      console.log(res,'data just befoe initing sumsub');
+      
+      return res;
+    })
+    .then(({ token, applicantEmail, applicantPhone }) => {
+      launchWebSdk(token, applicantEmail, applicantPhone);
+    })
+    .catch((err) => {
+      console.log(err, "error loading sumsub");
+    });
+};
+
+async function getNewAccessToken() {
+  const result = await UtilsService.getSumSubToken();
+  const token = result.sumsub.token;
+  // const userId = result.sumsub.userId;
+  return token;
 }
 
 onMounted(async () => {
