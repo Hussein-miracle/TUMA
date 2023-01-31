@@ -25,11 +25,12 @@
         <div class="flex justify-between items-center">
           <p>They will receive</p>
           <div class="flex items-center gap-x-1">
-            <span
-              >
-              
-              {{ recipientCurrencyDetails.recipient_currency_symbol || recipientCurrencyDetails.recipient_currency }}
-                  {{ summary.converted }}
+            <span>
+              {{
+                recipientCurrencyDetails.recipient_currency_symbol ||
+                recipientCurrencyDetails.recipient_currency
+              }}
+              {{ summary.converted }}
             </span>
             <span>{{ remittanceMethod }}</span>
           </div>
@@ -49,7 +50,10 @@
 
         <div class="flex justify-between items-center">
           <p>Commission</p>
-          <div class="flex items-center gap-x-1"> {{ senderCurrencyDetails.sender_currency_symbol }} {{ summary.commission }}</div>
+          <div class="flex items-center gap-x-1">
+            {{ senderCurrencyDetails.sender_currency_symbol }}
+            {{ summary.commission }}
+          </div>
         </div>
       </div>
     </div>
@@ -131,33 +135,37 @@ const handleCreateTransaction = async () => {
   // console.log(conversionData, "convData");
   const data = JSON.parse(localStorage.getItem("payS"));
   // console.log(data, "from store Pays");
+  const response = data.result;
+  const reason_id = data?.reasonId;
 
   localStorage.removeItem("payS");
 
-  const reason_id = data.reasonId;
-  const response = data.result;
+  if (reason_id !== null) {
+    const transactionData = {
+      from_currency: senderCurrencyDetails.sender_currency,
+      amount: conversionData.amount,
+      to_currency: recipientCurrencyDetails.recipient_currency,
+      to_user: response.ruid,
+      reason_id: +reason_id,
+    };
 
-  const transactionData = {
-    from_currency: senderCurrencyDetails.sender_currency,
-    amount: conversionData.amount,
-    to_currency: recipientCurrencyDetails.recipient_currency,
-    to_user: response.ruid,
-    reason_id,
-  };
+    UtilsService.createTransaction(transactionData)
+      .then((result) => {
+        console.log(result, "trans creation data");
 
-  UtilsService.createTransaction(transactionData)
-    .then((result) => {
-      console.log(result, "trans creation data");
-      const data = result.data;
-      useAppStore().setTransactionRef(data.reference);
-      isLoading.value = false;
+        const data = result.data;
 
-      navigateTo("/add-card");
-    })
-    .catch((err) => {
-      isLoading.value = false;
-      console.log(err, "err");
-    });
+        useAppStore().setTransactionRef(data.reference);
+
+        isLoading.value = false;
+
+        return navigateTo("/add-card");
+      })
+      .catch((err) => {
+        isLoading.value = false;
+        console.log(err, "err");
+      });
+  }
 };
 
 onMounted(async () => {

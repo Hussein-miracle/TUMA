@@ -414,9 +414,7 @@ const handleSubmit = async (values) => {
           // TODO Add this to pinia store;
           localStorage.setItem("payS", JSON.stringify(paymentSummary));
 
-          navigateTo("/payment-summary");
-          
-          return result;
+          return navigateTo("/payment-summary");
         })
         .catch((err) => {
           isLoading.value = false;

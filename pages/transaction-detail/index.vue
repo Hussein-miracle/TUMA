@@ -176,9 +176,9 @@ const fetchTrustPaymentDetail = async () => {
   isLoading.value = !false;
   setTimeout(() => {
     isLoading.value = false;
-    showSuccess.value=!true;
+    showSuccess.value = true;
   },5300);
-  
+
 };
 onMounted(() => {
   fetchTrustPaymentDetail();
