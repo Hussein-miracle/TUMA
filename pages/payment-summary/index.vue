@@ -152,14 +152,13 @@ const handleCreateTransaction = async () => {
     UtilsService.createTransaction(transactionData)
       .then((result) => {
         console.log(result, "trans creation data");
-
         const data = result.data;
 
         useAppStore().setTransactionRef(data.reference);
 
         isLoading.value = false;
 
-        return navigateTo("/add-card");
+        navigateTo("/add-card");
       })
       .catch((err) => {
         isLoading.value = false;

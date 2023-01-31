@@ -126,7 +126,7 @@ export const useAppStore = defineStore("app", {
     setPaymentSummary:(value) => {
       const oldSummary = useAppStore().paymentSummary;
       const newSummary = {...oldSummary,...value};
-      console.log(newSummary ,'new summary to updat')
+      // console.log(newSummary ,'new summary to updat')
       useAppStore().paymentSummary = newSummary;
     },
     setRestriction(value) {
@@ -207,7 +207,9 @@ export const useAppStore = defineStore("app", {
       useAppStore().conversionData = { ...data };
     },
     setTransactionData: (data) => {
+
       useAppStore().transaction = { ...data };
+      
     },
     setTransactionRef: (data) => {
       // console.log(data, 'data for trans  ref')

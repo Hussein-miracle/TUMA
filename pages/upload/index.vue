@@ -9,15 +9,12 @@
 </template>
 
 <script setup>
-import { storeToRefs } from "pinia";
 import snsWebSdk from "@sumsub/websdk";
+import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
 
-      const store = useUserStore();
-  const { user  } = storeToRefs(store);
-console.log(user.value,'user')
 definePageMeta({
   title: "Upload Details",
   layout: false,
@@ -70,35 +67,20 @@ const handleLoadSumSub = async () => {
   isLoading.value = true;
   UtilsService.getSumSubToken()
     .then((result) => {
-      const store = useUserStore();
-  const { getAuthUser } = storeToRefs(store);
-console.log(getAuthUser.value,'auth user')
+      console.log(result, "result from be for sumsub");
+      const email = result.email_address;
+      const phone = result.phone;
       const token = result.sumsub.token;
       const userId = result.sumsub.userId;
-      return token;
-    })
-    .then(async (token) => {
-
-
-      const applicantEmail = user.value.email;
-      const applicantPhone = user.value.phone;
-
-      console.log(applicantEmail, "email");
-
-      console.log(applicantPhone, "phone");
-
-      const res = {
-        applicantEmail,
-        applicantPhone,
+      const data = {
+        email,
+        phone,
         token,
       };
-
-      console.log(res,'data just befoe initing sumsub');
-
-      return res;
+      return data;
     })
-    .then(({ token, applicantEmail, applicantPhone }) => {
-      launchWebSdk(token, applicantEmail, applicantPhone);
+    .then(async ({ email, phone, token }) => {
+      launchWebSdk(token, email, phone);
     })
     .catch((err) => {
       console.log(err, "error loading sumsub");

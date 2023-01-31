@@ -400,7 +400,7 @@ const handleSubmit = async (values) => {
       UtilsService.createRecipient(recipientCreationData)
         .then((response) => {
           const result = response.data;
-          // console.log(result, "recipient creation result");
+          console.log(result, "recipient creation result");
           const paymentSummary = {
             result: {
               ...result,
@@ -414,7 +414,7 @@ const handleSubmit = async (values) => {
           // TODO Add this to pinia store;
           localStorage.setItem("payS", JSON.stringify(paymentSummary));
 
-          return navigateTo("/payment-summary");
+          navigateTo("/payment-summary");
         })
         .catch((err) => {
           isLoading.value = false;

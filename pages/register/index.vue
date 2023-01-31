@@ -43,17 +43,17 @@
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
-          v-model="signupForm.email"
-          name="email"
-          id="email"
-          placeholder="Email"
-        />
-        <VeeField
-          type="text"
           v-model="signupForm.client_uuid"
           name="client_uuid"
           id="client_uuid"
           hidden
+        />
+        <VeeField
+          type="text"
+          v-model="signupForm.email"
+          name="email"
+          id="email"
+          placeholder="Email"
         />
 
         <label for="email" class="mb-2 text-ash-1">Email</label>
@@ -64,9 +64,9 @@
         />
       </div>
 
-      <div class="item-select flex flex-col-reverse my-1 w-full">
-        <div class="flex w-full bg-secondary">
-          <VeeErrorMsg
+      <div class="item flex flex-col-reverse my-1 w-full">
+        <!-- <div class="flex w-full "> -->
+        <!-- <VeeErrorMsg
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
             name="country"
           />
@@ -87,19 +87,19 @@
             >
               {{ `${country.flag} ${country.dial_code}` }}
             </option>
-          </vee-field>
+          </vee-field> -->
 
-          <VeeField
-            class="w-[70%]"
-            type="text"
-            v-model="signupForm.phone"
-            name="phone"
-            id="phone"
-            placeholder="0704 259 9732"
-          />
-        </div>
+        <VeeField
+          type="text"
+          v-model="signupForm.phone"
+          name="phone"
+          id="phone"
+          placeholder="0704 259 9732"
+        />
 
-        <label for="phone_number" class="mb-2 text-ash-1">Phone Number</label>
+        <label for="phone" class="mb-2 text-ash-1">Phone Number</label>
+        <!-- </div> -->
+
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
@@ -198,11 +198,13 @@
 
 <script setup>
 import * as yup from "yup";
+import intlTelInput from "intl-tel-input";
+import "intl-tel-input/build/css/intlTelInput.css";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 import flags from "@/data/countries";
-import AuthService from '@/services/auth.service';
-import {useAppStore} from '@/store/app/index';
+import AuthService from "@/services/auth.service";
+import { useAppStore } from "@/store/app/index";
 
 const {
   public: { TUMA_CLIENT_ID },
@@ -218,7 +220,7 @@ const dial_code = ref("");
 const tac = ref(false);
 
 const signupForm = reactive({
-  client_uuid: TUMA_CLIENT_ID ,
+  client_uuid: TUMA_CLIENT_ID,
   first_name: "",
   last_name: "",
   email: "",
@@ -229,7 +231,7 @@ const signupForm = reactive({
 });
 
 const signupSchema = yup.object().shape({
-  client_uuid:yup.string().required(),
+  client_uuid: yup.string().required(),
   email: yup
     .string()
     .required("Please input a valid email address")
@@ -261,37 +263,29 @@ const signupSchema = yup.object().shape({
   phone: yup.string().required("Phone is required!"),
 });
 
-
-
 const handleSubmit = async (values) => {
   isLoading.value = true;
   // console.log(values);
 
-
-  try{
-    AuthService.register(values).then((result) => {
-      // console.log(result,'res reg');
-      const data = result.data.data;
-      // console.log(data,'after reg');
-      const user = data.user;
-      console.log(user,'user after reg');
-      useAppStore().setAppUser(user);
-      isLoading.value = false;
-      navigateTo('register/verification');
-    }).catch((err) => {
-      isLoading.value = false;
-    console.log(err,'err');
-
-    })
-  }catch(err){
+  try {
+    AuthService.register(values)
+      .then((result) => {
+        // console.log(result,'res reg');
+        const data = result.data.data;
+        // console.log(data,'after reg');
+        const user = data.user;
+        console.log(user, "user after reg");
+        useAppStore().setAppUser(user);
+        isLoading.value = false;
+        navigateTo("register/verification");
+      })
+      .catch((err) => {
+        isLoading.value = false;
+        console.log(err, "err");
+      });
+  } catch (err) {
     isLoading.value = false;
-
   }
-
-
-
-
-
 };
 
 useHead({
@@ -299,6 +293,15 @@ useHead({
 });
 definePageMeta({
   layout: false,
+});
+
+onMounted(() => {
+  const phone = document.querySelector("#phone");
+  // TODO : customise intlTelInput to design
+  intlTelInput(phone, {
+    initialCountry: "auto",
+    // any initialisation options go here
+  });
 });
 
 // watch(signupForm, () => {

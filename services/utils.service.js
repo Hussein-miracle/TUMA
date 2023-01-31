@@ -70,6 +70,15 @@ class UtilsService{
     return data;
   }
 
+
+  async getTransactions(){
+    const response =  await axiosInstance.get(`/transactions`);
+  
+    const data = response.data.data;
+  
+    return data;
+  }
+
 }
 
 
