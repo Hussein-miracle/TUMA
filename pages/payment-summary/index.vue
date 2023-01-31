@@ -134,7 +134,7 @@ const handleCreateTransaction = async () => {
 
   localStorage.removeItem("payS");
 
-  const reason_id = data.reason_id;
+  const reason_id = data.reasonId;
   const response = data.result;
 
   const transactionData = {

@@ -394,9 +394,9 @@ const handleSubmit = async (values) => {
       }
     );
 
-    const reason_id = reasonSel.id;
+    const reason_id = reasonSel.id || null;
 
-    if (!!reason_id) {
+    if (reason_id !== null) {
       UtilsService.createRecipient(recipientCreationData)
         .then((response) => {
           const result = response.data;
@@ -415,6 +415,7 @@ const handleSubmit = async (values) => {
           localStorage.setItem("payS", JSON.stringify(paymentSummary));
 
           navigateTo("/payment-summary");
+          
           return result;
         })
         .catch((err) => {
