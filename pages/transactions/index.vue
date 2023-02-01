@@ -12,15 +12,39 @@
       :status="'cancelled'"
       @click="navigateTo('/transactions/gfhjww2_22gfecvdfff_eddsSds')"
     />
-    <transaction-log :status="'completed'"  @click="navigateTo('/transactions/gfhjww2_22gdsfdfff_eSds')"/>
+    <transaction-log
+      :status="'completed'"
+      @click="navigateTo('/transactions/gfhjww2_22gdsfdfff_eSds')"
+    />
 
     <spacer :y="true" :size="6" />
   </div>
 </template>
 
 <script setup>
+import UtilsService from "@/services/utils.service";
+
+useHead({
+  title: "Trasaction Logs",
+});
+
+const fetchAllTransactions = async () => {
+  UtilsService.getTransactions()
+    .then((response) => {
+      console.log(response, "res");
+    })
+    .catch((err) => {
+      console.log(err, "err");
+    });
+};
+
 definePageMeta({
-  // layout: false,
+  layout:'default',
+    middleware: ["auth"],
+});
+
+onBeforeMount(async () => {
+  fetchAllTransactions();
 });
 </script>
 

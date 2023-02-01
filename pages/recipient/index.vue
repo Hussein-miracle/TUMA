@@ -287,7 +287,7 @@ const { getRestriction: restrict } = storeToRefs(store);
 
 // console.log(restrict,'restrict');
 definePageMeta({
-  layout: false,
+  layout: "default",
   middleware: ["auth", "checkroute"],
 });
 
@@ -386,13 +386,11 @@ const handleSubmit = async (values) => {
 
     // console.log(recipientCreationData, "RDDDDD!!!");
 
-    const reasonSel = reasons.value.find(
-      (r) => {
-        if(r?.reason === recipientForm.reason){
-          return r;
-        }
+    const reasonSel = reasons.value.find((r) => {
+      if (r?.reason === recipientForm.reason) {
+        return r;
       }
-    );
+    });
 
     const reason_id = reasonSel.id || null;
 
@@ -406,7 +404,7 @@ const handleSubmit = async (values) => {
               ...result,
               address: recipientCreationData.address,
             },
-            reasonId:reason_id,
+            reasonId: reason_id,
           };
 
           localStorage.setItem("progged", JSON.stringify(true));

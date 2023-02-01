@@ -234,9 +234,7 @@ const assignConvertedAmount = () => {
 useHead({
   title: "Send Money",
 });
-definePageMeta({
-  title:'Recipient'
-})
+
 
 // const {
 //   public: { TUMA_CLIENT_ID },
@@ -358,11 +356,11 @@ watchDebounced(
       }
     }
   },
-  { debounce: 600, maxWait: 1000 }
+  { debounce: 800, maxWait: 1000 }
 );
 
 definePageMeta({
-  layout:false,
+  layout:'default',
   middleware:['auth']
 })
 </script>
