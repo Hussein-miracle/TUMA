@@ -1,5 +1,8 @@
 <template>
   <div class="send-money px-6 py-3 relative flex flex-col items-center">
+    <h5 class="text-secondary font-semibold text-xl self-start text-left">
+     Welcome {{user.fname}}.
+    </h5>
     <h3 class="text-white font-semibold text-2xl self-start text-left">
       Send Money
     </h3>
@@ -27,7 +30,7 @@
               class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
               placeholder="0.00"
               v-model="conversionDetails.amount"
-              :disabled='!conversionDetails.sender_country && !conversionDetails.recipient_country'
+              :disabled=" !conversionDetails.sender_country || !conversionDetails.recipient_country"
             />
           </div>
 
@@ -197,15 +200,21 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
+import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
 import { watchDebounced } from "@vueuse/core";
 
 const router = useRouter();
 const store = useAppStore();
+const authstore = useUserStore();
+
 const {
   getSenderCurrencyDetails: senderCurrencyDetails,
   getRecipientCurrencyDetails: recipientCurrencyDetails,
 } = storeToRefs(store);
+
+const {user} = storeToRefs(authstore);
+// console.log(user,'authRefs');
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
 
@@ -324,7 +333,7 @@ watchDebounced(
 
           // console.log(result, "res");
           const converted_amount = result.converted_amount;
-          console.log(converted_amount,'conved amout')
+          // console.log(converted_amount,'conved amout')
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
           const mobile = converted_amount.mobile;
@@ -337,6 +346,7 @@ watchDebounced(
             mobile,
             bank,
             recipient_currency: result.recipient_currency,
+            conversion_rate: result.conversion_rate,
           };
 
           useAppStore().setConversionData({

@@ -116,19 +116,29 @@
         </div>
 
         <div class="item flex flex-col-reverse my-1 w-full relative">
-          <VeeErrorMsg
-            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="phone"
-          />
-
           <VeeField
             class="pl-10 w-full"
             type="text"
             v-model="recipientForm.phone"
             name="phone"
             id="phone"
+            hidden
             placeholder="Recipient Phone Number"
           />
+
+          <vue-tel-input
+            type="text"
+            v-model="recipientForm.phone"
+            name="phone2"
+            id="phone2"
+            defaultCountry="US"
+            mode="international"
+            :placeholder="'Recipient Phone Number e.g +1 234 567633'"
+            class="pl-10 w-full"
+            @focus="focusedPhone = true"
+            @blur="focusedPhone = false"
+          ></vue-tel-input>
+          <!-- @close='focusedPhone = false' -->
 
           <!-- <div class="flex w-full"> -->
           <!-- <vee-field
@@ -168,7 +178,19 @@
 
           <!-- </div> -->
 
-          <label for="phone" class="mb-2 text-ash-1">Phone Number</label>
+          <label
+            for="phone"
+            class="mb-2 text-ash-1"
+            :class="{
+              '!text-primary': focusedPhone === true,
+              '!text-ash-1': focusedPhone === false,
+            }"
+            >Phone Number</label
+          >
+          <VeeErrorMsg
+            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+            name="phone"
+          />
         </div>
 
         <VeeErrorMsg
@@ -245,8 +267,9 @@
 import * as yup from "yup";
 import { watchDebounced } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import intlTelInput from "intl-tel-input";
-import "intl-tel-input/build/css/intlTelInput.css";
+import { VueTelInput } from "vue-tel-input";
+import "vue-tel-input/dist/vue-tel-input.css";
+
 import flags from "@/data/countries";
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
@@ -255,7 +278,7 @@ const isLoading = ref(false);
 const isLoadingCity = ref(false);
 const cityRef = ref(null);
 const isOpen = ref(false);
-
+const focusedPhone = ref(false);
 const itemSelected = ref(null);
 
 const formerRecipients = ref([
@@ -372,7 +395,7 @@ const recipientSchema = yup.object().shape({
 let city;
 
 const handleSubmit = async (values) => {
-  console.log(values, "v");
+  // console.log(values, "v");
 
   isLoading.value = true;
 
@@ -398,7 +421,7 @@ const handleSubmit = async (values) => {
       UtilsService.createRecipient(recipientCreationData)
         .then((response) => {
           const result = response.data;
-          console.log(result, "recipient creation result");
+          // console.log(result, "recipient creation result");
           const paymentSummary = {
             result: {
               ...result,
@@ -434,11 +457,6 @@ const onCityBlur = async () => {
 };
 onMounted(() => {
   city = document.querySelector("#city");
-  const phone = document.querySelector("#phone");
-  // TODO : customise intlTelInput to design
-  intlTelInput(phone, {
-    // any initialisation options go here
-  });
   city.addEventListener("blur", onCityBlur);
 });
 

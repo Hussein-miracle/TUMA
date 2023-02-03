@@ -26,6 +26,7 @@
     "mosha-vue-toastify": "^1.0.23",
     "pinia": "^2.0.27",
     "vee-validate": "^4.7.3",
+    "vue-tel-input": "^6.0.5",
     "yup": "^0.32.11"
   }
 }

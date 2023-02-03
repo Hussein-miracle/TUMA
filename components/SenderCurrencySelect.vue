@@ -85,7 +85,7 @@
                 </template>
               </div>
 
-              <div class="mt-4 self-center">
+              <!-- <div class="mt-4 self-center">
                 <button
                   type="button"
                   class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -93,7 +93,7 @@
                 >
                   Continue
                 </button>
-              </div>
+              </div> -->
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -137,15 +137,6 @@ function openModal() {
   isOpen.value = true;
 }
 
-const handleSelectCountry = (country) => {
-  // console.log(country,'country');
-  selectedCountryDetails.sender_currency = country.currency_code;
-  selectedCountryDetails.sender_country = country.name;
-  selectedCountryDetails.sender_currency_symbol = country.currency_symbol;
-  selectedCountry.value = country;
-  // console.log(selectedCountry.value,'Sv');
-};
-
 const handleContinue = async () => {
     let allowSubmit = true;
   for(const item in selectedCountryDetails){
@@ -166,6 +157,17 @@ const handleContinue = async () => {
   //   closeModal();
   // }
 }
+
+const handleSelectCountry = (country) => {
+  // console.log(country,'country');
+  selectedCountryDetails.sender_currency = country.currency_code;
+  selectedCountryDetails.sender_country = country.name;
+  selectedCountryDetails.sender_currency_symbol = country.currency_symbol;
+  selectedCountry.value = country;
+  // console.log(selectedCountry.value,'Sv');
+  handleContinue();
+};
+
 
 onBeforeMount(async () => {
   // await fetchCountries();

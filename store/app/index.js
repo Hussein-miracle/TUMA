@@ -78,6 +78,9 @@ export const useAppStore = defineStore("app", {
     getTransactionRef: (state) => {
       return state.transaction_ref;
     },
+    getRemittance: (state) => {
+      return state.remittanceDetail;
+    },
     getUserImage: (state) => {
       return state.user?.profile_picture || null;
     },

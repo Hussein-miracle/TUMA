@@ -95,7 +95,7 @@
                 </template>
               </div>
 
-              <div class="mt-4 self-center">
+              <!-- <div class="mt-4 self-center">
                 <button
                   type="button"
                   class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
@@ -103,7 +103,7 @@
                 >
                   Continue
                 </button>
-              </div>
+              </div> -->
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -134,28 +134,13 @@ const countries = computed(() => appStore.getCountriesFromStore);
 const index = getRandomIndex(15);
 // console.log(index , 'index in recipient');
 
+
 const selectedCountry = ref("");
 const selectedCountryDetails = reactive({
   recipient_currency: "",
   recipient_currency_symbol: "",
   recipient_country: "",
 });
-
-const handleSelectCountry = (country) => {
-  // console.log(country,'country');
-  selectedCountryDetails.recipient_currency = country.currency_code;
-  selectedCountryDetails.recipient_country = country.name;
-  selectedCountryDetails.recipient_currency_symbol = country.currency_symbol;
-  selectedCountry.value = country;
-  // console.log(selectedCountry.value,'Sv');
-};
-
-function closeModal() {
-  isOpen.value = false;
-}
-function openModal() {
-  isOpen.value = true;
-}
 
 const handleContinue = async () => {
   let allowSubmit = true;
@@ -172,6 +157,26 @@ const handleContinue = async () => {
   }
 
 };
+
+
+const handleSelectCountry = (country) => {
+  // console.log(country,'country');
+  selectedCountryDetails.recipient_currency = country.currency_code;
+  selectedCountryDetails.recipient_country = country.name;
+  selectedCountryDetails.recipient_currency_symbol = country.currency_symbol;
+  selectedCountry.value = country;
+  // console.log(selectedCountry.value,'Sv');
+
+   handleContinue()
+};
+
+function closeModal() {
+  isOpen.value = false;
+}
+function openModal() {
+  isOpen.value = true;
+}
+
 
 onBeforeMount(async () => {
   // await fetchCountries();

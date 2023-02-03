@@ -44,7 +44,7 @@
         <div class="flex justify-between items-center">
           <p>Exchange rate</p>
           <div class="flex items-center gap-x-1">
-            <span>1.3725</span>
+            {{  recipientCurrencyDetails.recipient_currency}} <span>{{remittanceDetail.conversion_rate}}</span>
           </div>
         </div>
 
@@ -92,6 +92,7 @@ const {
   remittanceMethod,
   paymentSummary,
   senderCurrencyDetails,
+  remittanceDetail,
   recipientCurrencyDetails,
 } = storeToRefs(appStore);
 console.log(paymentSummary, "summaryData");
@@ -117,7 +118,7 @@ const summaryDetails = reactive({
 
 const fetchRes = () => {
   const data = JSON.parse(localStorage.getItem("payS"));
-  // console.log(data, "from store Pays");
+  console.log(data, "from store Pays");
   const result = data.result;
 
   console.log(result, "res");
