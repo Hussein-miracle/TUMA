@@ -5,18 +5,18 @@
         class="profile__details--content flex flex-col justify-between text-secondary"
       >
         <span class="profile__details--content__name font-bold"
-          >Ismail Nnamdi</span
+          >{{user.name}}</span
         >
 
         <span class="profile__details--content__email"
-          >ismailnnamdi@gmail.com</span
+          >{{user.email}}</span
         >
       </div>
 
       <div
-        class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary bg-secondary w-14 h-14"
+        class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary bg-secondary w-14 h-14 uppercase"
       >
-        IN
+        {{user.fname[0]}} {{user.sname[0]}}
       </div>
     </div>
 
@@ -45,8 +45,8 @@
         class="profile__items--item text-ash-1 flex px-2 py-2 w-full cursor-pointer"
 
         
-        @click="navigateTo('/upload')"
       >
+        <!-- @click="navigateTo('/upload')" -->
         <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center">
           <div
             class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
@@ -128,6 +128,11 @@
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/store/app/index";
+import { useUserStore } from "@/store/auth/index";
+
+
 
 useHead({
   title: "Profile",
@@ -137,13 +142,17 @@ definePageMeta({
   layout: "default",
 });
 
+const authstore = useUserStore();
+const {user} = storeToRefs(authstore);
+
+console.log(user,'user');
 
 const logout = () => {
-  navigateTo('/login')
+  authstore.logout();
 }
 
 
-const key = 'sbx:IxVDi0FRSgbqL2HRMruyEoZ3';
+// const key = 'sbx:IxVDi0FRSgbqL2HRMruyEoZ3';
 
 
 

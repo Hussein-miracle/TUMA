@@ -8,7 +8,12 @@
 
 
       <div class="status-text" :class="{'text-primary': status === 'pending' , 'text-ash-1' : status === 'awaiting-pickup' , 'text-cancelled': status === 'cancelled','text-greenlike': status === 'completed'}"  >
-        {{status}}
+        <span v-if="status === 'pending'">
+          pending-approval
+        </span>
+        <span v-else>
+          {{status}}
+        </span>
       </div>
   </div>
 </template>
