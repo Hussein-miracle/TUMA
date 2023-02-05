@@ -65,26 +65,57 @@
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full">
+
+
         <VeeField
           type="text"
           v-model="signupForm.phone"
           name="phone"
           id="phone"
           placeholder="0704 259 9732"
+          hidden
         />
-        <label for="phone" class="mb-2 text-ash-1">Phone Number</label>
 
-        <VeeErrorMsg
+        <vue-tel-input
+          type="text"
+          v-model="signupForm.phone"
+          name="phone2"
+          id="phone2"
+          defaultCountry="US"
+          mode="international"
+          placeholder="'Recipient Phone Number e.g +1 234 567633'"
+          class="pl-10 w-full"
+          @focus="focusedPhone = true"
+          @blur="focusedPhone = false"
+        ></vue-tel-input>
+
+        <label
+          for="phone"
+          class="mb-2 text-ash-1"
+          :class="{
+            '!text-primary': focusedPhone === true,
+            '!text-ash-1': focusedPhone === false,
+          }"
+          >Phone Number</label
+
+
+        >
+
+
+                <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="phone"
         />
+        
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full">
         <template v-if="countries.length > 0">
           <div
             class="inset-0 flex items-center justify-center border-solid border-2 rounded-md border-ash-2 cursor-pointer text-primary"
-            :class="{'!border-primary': selectedCountry && selectedCountry?.name}"
+            :class="{
+              '!border-primary': selectedCountry && selectedCountry?.name,
+            }"
             @click="setSeeSelectTrue"
           >
             <div
@@ -129,7 +160,7 @@
                     leave-to="opacity-0 scale-95"
                   >
                     <DialogPanel
-                      class=" max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all w-[50vw] h-[70vh] flex flex-col items-center"
+                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all w-[50vw] h-[70vh] flex flex-col items-center"
                     >
                       <DialogTitle
                         as="h3"
@@ -154,8 +185,7 @@
                             :class="{
                               '!bg-ash-1':
                                 country &&
-                                selectedCountry?.name ===
-                                  country?.name,
+                                selectedCountry?.name === country?.name,
                             }"
                             :key="country.name"
                           >
@@ -188,7 +218,12 @@
           id="country"
           hidden
         />
-        <label for="country" class="mb-2 text-ash-1" :class="{'!text-primary': selectedCountry && selectedCountry?.name}">Country</label>
+        <label
+          for="country"
+          class="mb-2 text-ash-1"
+          :class="{ '!text-primary': selectedCountry && selectedCountry?.name }"
+          >Country</label
+        >
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full relative">
@@ -289,23 +324,27 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/vue";
-import intlTelInput from "intl-tel-input";
-import "intl-tel-input/build/css/intlTelInput.css";
+
+import { VueTelInput } from "vue-tel-input";
+import "vue-tel-input/dist/vue-tel-input.css";
+
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 import flags from "@/data/countries";
 import AuthService from "@/services/auth.service";
 import { useAppStore } from "@/store/app/index";
 
-// const {
-//   public: { TUMA_CLIENT_ID },
-// } = useRuntimeConfig();
-
 const { show, toggleShow } = useToggle();
-const { show: seeSelect, toggleShow: toggleSelect, setShowTrue:setSeeSelectTrue,setShowFalse:setSeeSelectFalse } = useToggle();
+const {
+  show: seeSelect,
+  toggleShow: toggleSelect,
+  setShowTrue: setSeeSelectTrue,
+  setShowFalse: setSeeSelectFalse,
+} = useToggle();
 //
 // console.log(flags, "fgs");
 const appStore = useAppStore();
+const focusedPhone = ref(false);
 const isLoading = ref(false);
 const countries = computed(() => appStore.getCountriesFromStore);
 const dial_code = ref("");
@@ -366,16 +405,17 @@ const signupSchema = yup.object().shape({
 
 const handleSubmit = async (values) => {
   isLoading.value = true;
-  console.log(values, "reg values");
+  // console.log(values, "reg values");
+  signupForm.phone = signupForm.phone.split(' ').join('')
 
   try {
-    AuthService.register(values)
+    AuthService.register(signupForm)
       .then((result) => {
         // console.log(result,'res reg');
         const data = result.data.data;
         // console.log(data,'after reg');
         const user = data.user;
-        console.log(user, "user after reg");
+        // console.log(user, "user after reg");
         useAppStore().setAppUser(user);
         isLoading.value = false;
         navigateTo("register/verification");
@@ -396,20 +436,13 @@ definePageMeta({
   layout: false,
 });
 
-onMounted(() => {
-  const phone = document.querySelector("#phone");
-  // TODO : customise intlTelInput to design
-  intlTelInput(phone, {
-    // initialCountry: "auto",
-    // any initialisation options go here
-  });
-});
+onMounted(() => {});
 
 onBeforeMount(async () => {
   useAppStore().fetchCountries();
 });
 watch(signupForm, () => {
-  console.log(signupForm,'sF');
+  // console.log(signupForm, "sF");
 });
 </script>
 

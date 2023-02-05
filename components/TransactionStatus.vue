@@ -1,12 +1,13 @@
 <template>
   <div class="transaction-status flex gap-x-2 items-center">
-      <icons-pending v-if="status === 'pending-approval' " />
+
+      <icons-pending v-if="status === 'pending' " />
       <icons-cancelled v-show="status === 'cancelled'  "/>
       <icons-awaiting-pickup v-show="status  === 'awaiting-pickup' " />
       <icons-completed v-show="status === 'completed' " />
 
 
-      <div class="status-text" :class="{'text-primary': status === 'pending-approval' , 'text-ash-1' : status === 'awaiting-pickup' , 'text-cancelled': status === 'cancelled','text-greenlike': status === 'completed'}"  >
+      <div class="status-text" :class="{'text-primary': status === 'pending' , 'text-ash-1' : status === 'awaiting-pickup' , 'text-cancelled': status === 'cancelled','text-greenlike': status === 'completed'}"  >
         {{status}}
       </div>
   </div>

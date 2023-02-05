@@ -9,9 +9,9 @@
 
     <div
       class="former-recipients flex flex-col items-center gap-y-4 overflow-hidden whitespace-nowrap mt-4"
-      v-if="formerRecipients.length > 0 && showOtherRecipient === true"
+      v-if="formerRecipients.length > 0"
     >
-      <h4 class="text-secondary text-left">Choose Recipient</h4>
+      <h4 class="text-secondary text-2xl text-left">Choose Recipient</h4>
 
       <div
         class="recipients w-[80vw] overflow-auto whitespace-nowrap px-2 py-2"
@@ -22,7 +22,7 @@
           :firstname="item.first_name"
           :lastname="item.last_name"
           @click="handleSelectRecipient(item)"
-          :selected="!!itemSelected && itemSelected.id === item.id"
+          :selected="!!itemSelected && itemSelected.ruid === item.ruid"
         />
       </div>
 
@@ -87,15 +87,24 @@
             class="hidden loader h-[50%] w-[50%]"
           ></span>
 
+          <VeeField
+            class="pl-10 w-full"
+            type="text"
+            v-model="recipientForm.address"
+            name="address"
+            id="address"
+            hidden
+            placeholder="Recipient Address"
+          />
           <GMapAutocomplete
             @place_changed="setPlace"
             type="text"
-            v-model="recipientForm.city"
-            name="city"
-            id="city"
+            v-model="recipientForm.address"
+            name="address2"
+            id="address2"
             @input="handleCityInput"
             @click="handleCityInputClick"
-            ref="cityRef"
+            ref="addressRef"
             placeholder="Type and Select City from Google Dropdown List"
             :options="{
               types: ['(cities)'],
@@ -107,11 +116,11 @@
           >
           </GMapAutocomplete>
 
-          <label for="city" class="mb-2 text-ash-1">City</label>
+          <label for="address" class="mb-2 text-ash-1">City</label>
 
           <VeeErrorMsg
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="city"
+            name="address"
           />
         </div>
 
@@ -269,38 +278,20 @@ import { watchDebounced } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { VueTelInput } from "vue-tel-input";
 import "vue-tel-input/dist/vue-tel-input.css";
-
-import flags from "@/data/countries";
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 
 const isLoading = ref(false);
 const isLoadingCity = ref(false);
-const cityRef = ref(null);
+
+const fetching = ref(false);
+
+const addressRef = ref(null);
 const isOpen = ref(false);
 const focusedPhone = ref(false);
 const itemSelected = ref(null);
 
-const formerRecipients = ref([
-  // {
-  //   first_name: "Tade",
-  //   last_name: "Bola",
-  //   id: "1",
-  //   city:'kano state'
-  // },
-  // {
-  //   id: "2",
-  //   first_name: "kavi",
-  //   last_name: "dagdag",
-  //   city:'lagos state'
-  // },
-  // {
-  //   id: "3",
-  //   first_name: "olubodun",
-  //   last_name: "akinyele",
-  //   city:'ile ife Nigeria'
-  // },
-]);
+const formerRecipients = ref([]);
 
 const reasonForRemittance = ref("");
 
@@ -309,6 +300,7 @@ const store = useAppStore();
 const { getRestriction: restrict } = storeToRefs(store);
 
 // console.log(restrict,'restrict');
+
 definePageMeta({
   layout: "default",
   middleware: ["auth", "checkroute"],
@@ -321,15 +313,20 @@ const {
   countries,
 } = storeToRefs(store);
 
-// const restrictTo = countries.value.filter((country) => {
-//   console.log(country, "cont", recipientCurrencyDetails.recipient_country);
-//   if (country.name === recipientCurrencyDetails.recipient_country) {
-//     return country.code;
-//   }
-// });
-
-// console.log(restrictTo,'RES');
-const showOtherRecipient = ref(true);
+const fetchRecipients = async () => {
+  fetching.value = true;
+  UtilsService.getRecipients()
+    .then((response) => {
+      const data = response.data;
+      // console.log(data , ' data for get recipients');
+      formerRecipients.value = data;
+      fetching.value = false;
+    })
+    .catch((err) => {
+      fetching.value = false;
+      console.log(err, "err");
+    });
+};
 
 function closeModal() {
   isOpen.value = false;
@@ -344,19 +341,24 @@ function toggleModal() {
 const recipientForm = reactive({
   first_name: "",
   last_name: "",
-  city: "",
-  country: "",
+  address: "",
   phone: "",
   reason: "",
 });
 
 const handleSelectRecipient = (recipient) => {
   itemSelected.value = recipient;
-
+  // const reasonSel = reasons.value.find((r) => {
+  //   if (r?.reason === recipientForm.reason) {
+  //     return r;
+  //   }
+  // });
   // console.log(recipient, "recipient selected");
+
   recipientForm.first_name = recipient.first_name;
   recipientForm.last_name = recipient.last_name;
-  recipientForm.city = recipient.city;
+  recipientForm.address = recipient.address;
+  recipientForm.phone = recipient.phone_number;
 };
 
 const handleCityInput = async (e) => {
@@ -364,14 +366,14 @@ const handleCityInput = async (e) => {
   isLoadingCity.value = true;
   setTimeout(() => {
     isLoadingCity.value = !true;
-    if (recipientForm.city === "") {
-      // ref(cityRef).value.$el.value.clear();
-      ref(cityRef).value.$el.value = "";
-    }
+    // if (recipientForm.address === "") {
+    //   // ref(cityRef).value.$el.value.clear();
+    //   ref(addressRef).value.$el.value = "";
+    // }
   }, 500);
   const value = e.target.value;
 
-  recipientForm.city = value;
+  recipientForm.address = value;
 };
 const handleCityInputClick = async (e) => {
   // console.log(e, "clci");
@@ -380,7 +382,7 @@ const handleCityInputClick = async (e) => {
 
 const setPlace = (e) => {
   const address = e.formatted_address;
-  recipientForm.city = address;
+  recipientForm.address = address;
 };
 
 const recipientSchema = yup.object().shape({
@@ -388,11 +390,11 @@ const recipientSchema = yup.object().shape({
   first_name: yup.string().required("First name is required!"),
   last_name: yup.string().required("Last name is required!"),
   phone: yup.string().required("Phone is required!"),
-  // city: yup.string().required("City is Required"),
+  address: yup.string().required("City is Required"),
   reason: yup.string().required("Reason for payment is required"),
 });
 
-let city;
+let address;
 
 const handleSubmit = async (values) => {
   // console.log(values, "v");
@@ -404,7 +406,7 @@ const handleSubmit = async (values) => {
       first_name: recipientForm.first_name,
       last_name: recipientForm.last_name,
       phone_number: recipientForm.phone,
-      address: recipientForm.city,
+      address: recipientForm.address,
     };
 
     // console.log(recipientCreationData, "RDDDDD!!!");
@@ -448,7 +450,7 @@ const handleSubmit = async (values) => {
   }
 };
 
-const onCityBlur = async () => {
+const onAddressBlur = async () => {
   isLoadingCity.value = true;
 
   setTimeout(() => {
@@ -456,15 +458,16 @@ const onCityBlur = async () => {
   }, 250);
 };
 onMounted(() => {
-  city = document.querySelector("#city");
-  city.addEventListener("blur", onCityBlur);
+  address = document.querySelector("#address2");
+  address.addEventListener("blur", onAddressBlur);
 });
 
 onBeforeMount(async () => {
+  fetchRecipients();
   await useAppStore().fetchReasons();
 });
 onUnmounted(() => {
-  city.removeEventListener("blur", onCityBlur);
+  address.removeEventListener("blur", onAddressBlur);
 });
 watchDebounced(
   recipientForm,

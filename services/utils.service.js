@@ -45,6 +45,12 @@ class UtilsService{
     const data = response.data;
     return data;
   }
+  async getRecipients(){
+    const response =  await axiosInstance.get(`/recipients`);
+  
+    const data = response.data;
+    return data;
+  }
 
 
   async createTransaction(details){
