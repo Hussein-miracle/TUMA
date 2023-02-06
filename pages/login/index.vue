@@ -1,5 +1,5 @@
 <template>
-  <div class="login pt-4 bg-white flex flex-col ">
+  <div class="login pt-4 bg-white flex flex-col">
     <div
       class="logo bg-transparent max-w-md text-center relative sm:left-[50%] sm:-translate-x-[50%]"
     >
@@ -11,7 +11,7 @@
     </div>
 
     <VeeForm
-      class="flex flex-col gap-y-3 items-center mt-6 login__form  sm:w-[60%] md:w-[40%] self-center"
+      class="flex flex-col gap-y-3 items-center mt-6 login__form sm:w-[60%] md:w-[40%] self-center"
       :validation-schema="loginSchema"
       @submit="handleSubmit"
     >
@@ -42,43 +42,60 @@
         />
 
         <label for="password" class="mb-2 text-ash-1">Password</label>
-        <div class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer" @click="toggleShow">
-          <icons-view-password v-if="show === true"/>
-          <icons-close-password v-if="show === false"/>
+        <div
+          class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
+          @click="toggleShow"
+        >
+          <icons-view-password v-if="show === true" />
+          <icons-close-password v-if="show === false" />
         </div>
 
         <VeeErrorMsg
-          class="text-red-600 py-1 px-1 my-1  text-xs max-w-md rounded-md bg-red-300 capitalize"
+          class="text-red-600 py-1 px-1 my-1 text-xs max-w-md rounded-md bg-red-300 capitalize"
           name="password"
         />
-
-
-
       </div>
 
-      <div class="flex items-center justify-between w-full"> 
-
-        <div class='flex gap-x-1 items-center '>
-          <icons-check class='cursor-pointer'  v-if='loginForm.remember === true'  @click="loginForm.remember = !loginForm.remember"/>
+      <div class="flex items-center justify-between w-full">
+        <div class="flex gap-x-1 items-center">
+          <icons-check
+            class="cursor-pointer"
+            v-if="loginForm.remember === true"
+            @click="loginForm.remember = !loginForm.remember"
+          />
           <span
             v-else
             class="box w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
             @click="loginForm.remember = !loginForm.remember"
           ></span>
-          <span class='text-ash-1'>Remember me</span>
-        </div> 
+          <span class="text-ash-1">Remember me</span>
+        </div>
 
-
-        
-        <p class="text-ash-1 cursor-pointer " @click="navigateTo('/forgot-password')">Forgot  my password?</p>
+        <p
+          class="text-ash-1 cursor-pointer"
+          @click="navigateTo('/forgot-password')"
+        >
+          Forgot my password?
+        </p>
       </div>
 
-      <button-primary type='submit' :text="'login'" :disabled='isLoading === true' :class="{'opacity-80 cursor-not-allowed':isLoading === true}"/>
+      <button-primary
+        type="submit"
+        :text="'login'"
+        :disabled="isLoading === true"
+        :class="{ 'opacity-80 cursor-not-allowed': isLoading === true }"
+      />
     </VeeForm>
 
-
-
-    <p class="text-ash-1 text-center">Not a member ? <span class="text-primary cursor-pointer" @click="navigateTo('/register')"> Join now</span></p>
+    <p class="text-ash-1 text-center">
+      Not a member ?
+      <span
+        class="text-primary cursor-pointer"
+        @click="navigateTo('/register')"
+      >
+        Join now</span
+      >
+    </p>
   </div>
 </template>
 
@@ -100,7 +117,7 @@ const emailRef = ref(null);
 const loginForm = reactive({
   email: "",
   password: "",
-  remember:false,
+  remember: false,
 });
 
 const loginSchema = yup.object().shape({
@@ -126,21 +143,20 @@ const handleSubmit = async (values) => {
     login(loginForm)
       .then((result) => {
         isLoading.value = !true;
-        navigateTo("/send-money");
+        return navigateTo("/send-money");
       })
       .catch((err) => {
         isLoading.value = !true;
 
         const errResponse = err?.response;
-        if(errResponse.status === 400){
+        if (errResponse.status === 400) {
           createToast(`Invalid Email or Password.`, {
-          showIcon: true,
-          type: "warning",
-          transition: "bounce",
-          position: "top-right",
-        });
+            showIcon: true,
+            type: "warning",
+            transition: "bounce",
+            position: "top-right",
+          });
         }
-
       });
   } catch (err) {
     isLoading.value = !true;
@@ -156,7 +172,7 @@ definePageMeta({
 });
 
 onMounted(() => {
-    // ref(emailRef).value.focus();
+  // ref(emailRef).value.focus();
 });
 </script>
 

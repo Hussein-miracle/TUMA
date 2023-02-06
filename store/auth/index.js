@@ -32,11 +32,11 @@ export const useUserStore = defineStore("user", {
 
       return await AuthService.postLogin(form).then(
         (response) => {
-          console.log(response,'response')
+          // console.log(response,'response')
 
 
 
-          // useUserStore().setUserDetails(response);
+          useUserStore().setUserDetails(response);
           return Promise.resolve(response.data);
         },
         (error) => {
