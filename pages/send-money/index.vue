@@ -1,7 +1,7 @@
 <template>
   <div class="send-money px-6 py-3 relative flex flex-col items-center">
     <h5 class="text-secondary font-semibold text-xl self-start text-left">
-     Welcome {{user.fname}}.
+     <!-- Welcome {{user.fname}}. -->
     </h5>
     <h3 class="text-white font-semibold text-2xl self-start text-left">
       Send Money
