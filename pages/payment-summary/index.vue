@@ -95,12 +95,12 @@ const {
   remittanceDetail,
   recipientCurrencyDetails,
 } = storeToRefs(appStore);
-console.log(paymentSummary, "summaryData");
-console.log(remittanceMethod, "rem met");
+// console.log(paymentSummary, "summaryData");
+// console.log(remittanceMethod, "rem met");
 
 const summary = paymentSummary.value[remittanceMethod.value];
 
-console.log(summary, "summary deails");
+// console.log(summary, "summary deails");
 
 const isLoading = ref(false);
 
@@ -118,10 +118,10 @@ const summaryDetails = reactive({
 
 const fetchRes = () => {
   const data = JSON.parse(localStorage.getItem("payS"));
-  console.log(data, "from store Pays");
+  // console.log(data, "from store Pays");
   const result = data.result;
 
-  console.log(result, "res");
+  //console.log(result, "res");
   for (const item in result) {
     if (item in summaryDetails) {
       summaryDetails[item] = result[item];
@@ -152,9 +152,11 @@ const handleCreateTransaction = async () => {
 
     UtilsService.createTransaction(transactionData)
       .then((result) => {
-        console.log(result, "trans creation data");
+        
+        // console.log(result, "trans creation data");
         const data = result.data;
-
+        const upload_required  = data?.upload_required;
+        useAppStore().setUploadRequired(upload_required);
         useAppStore().setTransactionRef(data.reference);
 
         isLoading.value = false;

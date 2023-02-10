@@ -32,9 +32,12 @@ export const useUserStore = defineStore("user", {
 
       return await AuthService.postLogin(form).then(
         (response) => {
-          // console.log(response,'response')
+          //console.log(response,'response')
 
+          const userData = response.data.data.user;
 
+          //console.log(userData,'userData')
+          useUserStore().setUser(userData);
 
           useUserStore().setUserDetails(response);
           return Promise.resolve(response.data);
@@ -44,10 +47,16 @@ export const useUserStore = defineStore("user", {
         }
       );
     },
+    
+    setUser:(user) =>{
+      const oldDet =  useUserStore().user;
+      console.log(oldDet,'oldD')
+      useUserStore().user = {...oldDet,...user};
+    },
     createAccount: (form) => {
       return AuthService.signUp(form).then(
         (response) => {
-          // useUserStore().setUserDetails(response);
+          useUserStore().setUserDetails(response);
           return Promise.resolve(response.data);
         },
         (error) => {
@@ -75,10 +84,10 @@ export const useUserStore = defineStore("user", {
       
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
-      // console.log(data,'login data in store');
+      console.log(data,'login data in store');
       if (data.api_token) {
         useUserStore().token = data.api_token;
-        useUserStore().user = useAppStore().getUser;
+        useUserStore().user = data.user;
         // console.log(useUserStore().getAuthUser,'authUser');
         // TokenService
         TokenService.setToken(data.api_token);

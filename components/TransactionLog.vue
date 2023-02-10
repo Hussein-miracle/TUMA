@@ -9,7 +9,7 @@
 
       <div class="flex flex-col items-start text-left gap-3">
         <div class="p">{{first_name}} {{last_name}}</div>
-        <div class="p text-ash-1 ">United States Of America</div>
+        <div class="p text-ash-1 ">{{address}}</div>
       </div>
 
 
@@ -19,7 +19,7 @@
 
     <div class="details flex flex-col items-start sm:w-[30%]  h-full self-end">
       <div class="text-secondary flex gap-x-1 sm:gap-x-2">
-        <span>{{amount}}</span>
+        <span v-money>{{amount}}</span>
         <span>{{from_currency}}</span>
       
       </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['status','amount','from_currency','first_name','last_name'])
+const props = defineProps(['status','amount','from_currency','first_name','last_name','address'])
 </script>
 
 <style lang='scss' scoped>

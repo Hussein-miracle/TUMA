@@ -84,6 +84,13 @@ class UtilsService{
   
     return data;
   }
+  async getTransaction(reference){
+    const response =  await axiosInstance.get(`/transaction/reference/${reference}`);
+  
+    const data = response.data.data;
+  
+    return data;
+  }
 
 }
 

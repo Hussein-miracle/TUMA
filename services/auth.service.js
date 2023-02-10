@@ -19,7 +19,7 @@ class AuthService {
     // try {
     const res = await axiosInstance.post("/auth/register", details);
 
-    console.log(res , 'res');
+   // console.log(res , 'res');
     // const response = await axiosInstance.post("/signup",details);
 
     return res;

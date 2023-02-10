@@ -139,7 +139,7 @@
 
 <script setup>
 
-const location = ref(`${window.location.origin}/transaction-detail`);
+const location = ref(`${window.location.origin}/transaction-status`);
 
 // console.log(location.value , 'location to redirect to');/
 

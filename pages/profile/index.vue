@@ -5,7 +5,7 @@
         class="profile__details--content flex flex-col justify-between text-secondary"
       >
         <span class="profile__details--content__name font-bold"
-          >{{user.name}}</span
+          >{{user.fname}} {{user.sname}}</span
         >
 
         <span class="profile__details--content__email"
@@ -22,7 +22,7 @@
 
     <div class="profile__items flex flex-col items-center w-full !text-tumablack">
       <div
-        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full"
+        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full bg-whitelike"
 
         @click="navigateTo('/edit-profile')"
       >
@@ -42,7 +42,7 @@
       </div>
 
       <div
-        class="profile__items--item text-ash-1 flex px-2 py-2 w-full cursor-pointer"
+        class="profile__items--item text-ash-1 flex px-2 py-2 w-full cursor-pointer bg-whitelike"
 
         
       >
@@ -63,7 +63,7 @@
       </div>
 
       <div
-        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full"
+        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full bg-whitelike"
 
         
         @click="navigateTo('/change-password')"
@@ -84,7 +84,7 @@
       </div>
 
       <div
-        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full"
+        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full bg-whitelike"
         @click="navigateTo('/contact-us')"
       >
         <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center">
@@ -103,7 +103,28 @@
       </div>
 
       <div
-        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full"
+        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full bg-whitelike"
+
+        @click="handleDeleteAccount"
+      >
+        <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center">
+          <div
+            class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
+          >
+            <icons-logout class="w-5 h-5 " />
+          </div>
+
+          <p class="!text-danger">Delete Account</p>
+        </div>
+
+        <div class="flex w-[10%] sm:w-[40%] items-center justify-end">
+          <icons-arrow-right class="justify-end" />
+        </div>
+      </div>
+
+
+      <div
+        class="profile__items--item cursor-pointer text-ash-1 flex px-2 py-2 w-full bg-whitelike"
 
         @click="logout"
       >
@@ -151,6 +172,10 @@ const logout = () => {
   authstore.logout();
 }
 
+const handleDeleteAccount = async () => {
+
+}
+
 
 // const key = 'sbx:IxVDi0FRSgbqL2HRMruyEoZ3';
 
@@ -169,7 +194,8 @@ const logout = () => {
 
 
 
-  &__details {
+ 
+ &__details {
     border-width: 1px;
     border-style: solid;
     @apply border-b-ash-1;

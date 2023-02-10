@@ -8,6 +8,7 @@ export const useAppStore = defineStore("app", {
   state: () => ({
     showTodoList: false,
     // tabState:
+    upload_required:false,
     userImage: "",
 
     remittanceMethod: "",
@@ -70,6 +71,13 @@ export const useAppStore = defineStore("app", {
         converted: 0,
       },
     },
+
+
+    currentTransaction:{
+      first_name:'',
+      last_name:'',
+      address:'',
+    },
   }),
   getters: {
     showTodo: (state) => {
@@ -101,6 +109,9 @@ export const useAppStore = defineStore("app", {
 
     getTransaction: (state) => {
       return state.transaction;
+    },
+    getCurrentTransaction: (state) => {
+      return state.currentTransaction;
     },
     getRecipientCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
@@ -183,6 +194,9 @@ export const useAppStore = defineStore("app", {
     setReasons: (value) => {
       useAppStore().reasons = value;
     },
+    setUploadRequired: (value) => {
+      useAppStore().upload_required = value;
+    },
     fetchConversion: async (form) => {
       const response = await UtilsService.getConversionRates(form);
 
@@ -212,6 +226,13 @@ export const useAppStore = defineStore("app", {
     setTransactionData: (data) => {
 
       useAppStore().transaction = { ...data };
+      
+    },
+    setCurrentTransaction: (data) => {
+
+      useAppStore().currentTransaction = { ...data };
+
+
       
     },
     setTransactionRef: (data) => {

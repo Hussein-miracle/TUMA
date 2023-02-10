@@ -140,15 +140,23 @@
         </div>
       </div>
 
-      <p class="text-center mt-2 font-semibold max-w-md mx-auto">
+      <p class="text-center mt-2 font-semibold max-w-md mx-auto" v-show="upload_required">
         One more step,click the button below to upload your details.
       </p>
 
       <button-primary
+      v-if="upload_required"
         :type="'button'"
         :text="'Upload'"
         class="uppercase !text-secondary font-semibold text-xl my-1"
         @click="handleUpload"
+      />
+      <button-primary
+      v-else
+        :type="'button'"
+        :text="'Check Transactions'"
+        class="uppercase !text-secondary font-semibold text-xl my-1"
+        @click="handleHome"
       />
 
     </div>
@@ -156,14 +164,23 @@
 </template>
 
 <script setup>
-const route = useRoute();
+import {storeToRefs} from 'pinia';
+import {useAppStore} from '@/store/app/index';
 
+const route = useRoute();
+const appStore = useAppStore();
+const {upload_required} = storeToRefs(appStore);
 const showSuccess = ref(false);
 const isLoading = ref(false);
 
 const handleRetry = () => {
   navigateTo("/send-money");
 };
+
+
+const handleHome = () => {
+  navigateTo('/transactions');
+}
 
 const handleUpload = async () => {
 

@@ -142,10 +142,12 @@ const handleSubmit = async (values) => {
   try {
     login(loginForm)
       .then((result) => {
+        // console.log(result,'res');
         isLoading.value = !true;
-        return navigateTo("/send-money");
+        navigateTo("/send-money");
       })
       .catch((err) => {
+       // console.log(err,'err login err')
         isLoading.value = !true;
 
         const errResponse = err?.response;
