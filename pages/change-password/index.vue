@@ -1,19 +1,19 @@
 <template>
   <div class="change-password flex flex-col items-center">
     <h2
-      class="verification__main--title text-3xl font-bold text-secondary mb-4 mt-4"
+      class="verification__main--title text-xl sm:text-3xl font-bold text-secondary mb-4 mt-4"
     >
       Change Password
     </h2>
     <VeeForm
-      class="flex flex-col gap-y-3 items-center mt-6 change-password__form sm:w-[60%] md:w-[40%] self-center"
+      class="flex flex-col gap-y-2 sm:gap-y-3 items-center mt-3 sm:mt-6 change-password__form w-[80%] sm:w-[60%] md:w-[40%] self-center"
       :validation-schema="changePasswordSchema"
       @submit="handleSubmit"
     >
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
           v-model.lazy="changePasswordForm.previous_password"
-          :type="s === true ? 'text' : 'password'"
+          :type="show === true ? 'text' : 'password'"
           placeholder="Previous Password"
           id="previous_password"
           name="previous_password"
@@ -22,10 +22,10 @@
         <label for="password" class="mb-2 text-ash-1">Previous Password</label>
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
-          @click="toggleS"
+          @click="toggleShow"
         >
-          <icons-view-password v-if="s === true" />
-          <icons-close-password v-if="s === false" />
+          <icons-view-password v-if="show === true" />
+          <icons-close-password v-if="show === false" />
         </div>
 
         <VeeErrorMsg
@@ -36,7 +36,7 @@
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
           v-model.lazy="changePasswordForm.new_password"
-          :type="show === true ? 'text' : 'password'"
+          :type="see === true ? 'text' : 'password'"
           placeholder="New Password"
           id="new_password"
           name="new_password"
@@ -45,10 +45,10 @@
         <label for="new_password" class="mb-2 text-ash-1">New Password</label>
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
-          @click="toggleShow"
+          @click="toggleSee"
         >
-          <icons-view-password v-if="show === true" />
-          <icons-close-password v-if="show === false" />
+          <icons-view-password v-if="see === true" />
+          <icons-close-password v-if="see === false" />
         </div>
 
         <VeeErrorMsg
@@ -84,7 +84,7 @@
         type="submit"
         :text="'change password'"
         :disable="isLoading === true"
-        class="rounded-3xl py-1 px-2 text-white"
+        class="rounded-3xl px-1 py-0.5 sm:py-1 sm:px-2 text-white"
         :class="{'opacity-70 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
@@ -96,7 +96,7 @@
 import * as yup from "yup";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
-
+import AuthService from '@/services/auth.service';
 
 
 useHead({
@@ -106,7 +106,6 @@ useHead({
 const { show, toggleShow } = useToggle();
 const { show:see, toggleShow:toggleSee } = useToggle();
 
-const { show:s, toggleShow:toggleS } = useToggle();
 
 const isLoading = ref(false);
 
@@ -131,6 +130,7 @@ const changePasswordSchema = yup.object().shape({
   confirm_password: yup
     .string()
     .required("")
+    .oneOf([yup.ref("new_password"), null], "Passwords must match")
     .test(
       "isValid",
       "Password must contain at least one lowercase letter,one uppercase letter,one digit and a special character.",
@@ -152,7 +152,14 @@ const changePasswordSchema = yup.object().shape({
 
 const handleSubmit = async (values) => {
   isLoading.value = true;
-  console.log(values);
+  // console.log(values);
+  AuthService.changePassword(values).then((response) => {
+    isLoading.value = false;
+    navigateTo('/login');
+  }).catch((err) => {
+    isLoading.value = false;
+    console.log(err,'err');
+  })
 };
 
 </script>

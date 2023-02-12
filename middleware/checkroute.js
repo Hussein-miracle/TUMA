@@ -4,7 +4,7 @@ import TokenService from "@/services/token.service";
 import { checkNetwork } from "~~/utils";
 
 export default defineNuxtRouteMiddleware((item) => {
-  // console.log(item , 'item in recipient checkRoute');
+  // console.log(item , 'item in  checkRoute');
   const route = useRoute();
 
   if (item.name === "recipient") {
@@ -13,6 +13,14 @@ export default defineNuxtRouteMiddleware((item) => {
     localStorage.removeItem("progged");
     if (progged !== true) {
       return navigateTo("/send-money");
+    }
+  }
+  if (item.name === "transactions-transactionId") {
+    const progged = JSON.parse(localStorage.getItem("progged"));
+    // console.log(progged,'progged');
+    localStorage.removeItem("progged");
+    if (progged !== true) {
+      return navigateTo("/transactions");
     }
   }
 
@@ -35,7 +43,7 @@ export default defineNuxtRouteMiddleware((item) => {
     }
   }
 
-  if (item.name === "transaction-detail") {
+  if (item.name === "transaction-status") {
     const progged = JSON.parse(localStorage.getItem("progged"));
 
     // console.log(progged,'progged');

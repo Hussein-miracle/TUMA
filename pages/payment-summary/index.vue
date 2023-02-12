@@ -113,7 +113,7 @@ const summaryDetails = reactive({
   first_name: "",
   phone_number: "",
   last_name: "",
-  address: "",
+  // address: "",
 });
 
 const fetchRes = () => {
@@ -135,7 +135,7 @@ const handleCreateTransaction = async () => {
     useAppStore();
   // console.log(conversionData, "convData");
   const data = JSON.parse(localStorage.getItem("payS"));
-  // console.log(data, "from store Pays");
+  //console.log(data, "from store Pays");
   const response = data?.result;
   const reason_id = data?.reasonId;
 
@@ -161,7 +161,11 @@ const handleCreateTransaction = async () => {
 
         isLoading.value = false;
 
-        navigateTo("/add-card");
+        if(upload_required){
+          navigateTo("/add-card");
+        }else{
+          navigateTo('/select-card');
+        }
       })
       .catch((err) => {
         isLoading.value = false;

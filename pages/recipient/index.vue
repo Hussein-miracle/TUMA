@@ -463,7 +463,7 @@ onMounted(() => {
 });
 
 onBeforeMount(async () => {
-  fetchRecipients();
+  await fetchRecipients();
   await useAppStore().fetchReasons();
 });
 onUnmounted(() => {

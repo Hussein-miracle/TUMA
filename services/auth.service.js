@@ -19,7 +19,7 @@ class AuthService {
     // try {
     const res = await axiosInstance.post("/auth/register", details);
 
-   // console.log(res , 'res');
+    // console.log(res , 'res');
     // const response = await axiosInstance.post("/signup",details);
 
     return res;
@@ -34,7 +34,6 @@ class AuthService {
   async verifyOtp(details) {
     const response = await axiosInstance.post("auth/register/verify", details);
 
-
     // console.log('verify res',response);
 
     if (response.data.api_token) {
@@ -43,12 +42,27 @@ class AuthService {
     return response;
   }
 
-  async getRefreshToken(){
+  async getRefreshToken() {
     const response = await axiosInstance.post("/refresh/token");
-    
-    console.log(response,'refreshRes');
+
+    console.log(response, "refreshRes");
 
     return response;
+  }
+
+  async changePassword(details) {
+    // try {
+    const res = await axiosInstance.post("/auth/password/change", details);
+    // console.log(res , 'res');
+    // const response = await axiosInstance.post("/signup",details);
+    const data = res.data;
+    return data;
+  }
+  async forgotPassword(details) {
+    // try {
+    const res = await axiosInstance.post("/auth/password/forgot", details);
+    const data = res.data;
+    return data;
   }
 }
 

@@ -174,7 +174,6 @@ const getTrustToken = async () => {
   // console.log(data, 'for you too')
   const response = await UtilsService.postToTrustPayment(data);
 
-  // console.log(response, "res for trust");
 
   const jwtToken = response.data["jwt-token"];
   const st = response.data.st;

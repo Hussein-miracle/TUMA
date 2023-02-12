@@ -59,6 +59,7 @@ const handleTransDetail = (transaction) => {
   }
   // console.log(data,'data');
   setCurrentTransaction(data);
+  localStorage.setItem("progged",JSON.stringify(true));
   navigateTo(`/transactions/${transaction.reference}`);;
 };
 
@@ -78,7 +79,7 @@ const fetchAllTransactions = async () => {
 
 definePageMeta({
   layout: "default",
-  middleware: ["auth"],
+  middleware: ["auth",'checkroute'],
 });
 
 onBeforeMount(async () => {

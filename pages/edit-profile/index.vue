@@ -1,37 +1,52 @@
 <template>
-  <div class="edit-profile bg-white flex flex-col py-1 ">
-
-    <h2 class='text-secondary text-center font-bold'>Edit Account</h2>
+  <div class="edit-profile bg-white flex flex-col py-1">
+    <h2 class="text-secondary text-center font-bold">Edit Account</h2>
     <VeeForm
-      class="flex flex-col edit-profile__form gap-y-3 items-center mt-4 signup__form w-[40%] self-center"
+      class="flex flex-col edit-profile__form gap-y-3 items-center mt-4 signup__form w-[85%] sm:w-[45%] self-center"
       @submit="handleSubmit"
     >
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
-          v-model="editForm.full_name"
-          name="full_name"
-          id="full_name"
-          placeholder="Full Name"
+          v-model="editForm.first_name"
+          name="first_name"
+          id="first_name"
+          placeholder="First Name"
         />
 
-        <label for="full_name" class="mb-2 text-ash-1">Full Name</label>
+        <label for="first_name" class="mb-2 text-ash-1">First Name</label>
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-          name="full_name"
+          name="first_name"
         />
       </div>
       <div class="item flex flex-col-reverse my-1 w-full">
+        <VeeField
+          type="text"
+          v-model="editForm.last_name"
+          name="last_name"
+          id="last_name"
+          placeholder="Last Name"
+        />
+
+        <label for="last_name" class="mb-2 text-ash-1">Last Name</label>
+
+        <VeeErrorMsg
+          class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+          name="last_name"
+        />
+      </div>
+      <!-- <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
           v-model="editForm.city"
           name="city"
           id="city"
           placeholder="City"
-          hidden
+          readonly="true"
         />
-          <GMapAutocomplete
+         <GMapAutocomplete
             @place_changed="setPlace"
             type="text"
              v-model="editForm.city"
@@ -45,38 +60,37 @@
               types: ['(cities)'],
               libraries: 'places',
               componentRestrictions: {
+                country: (flags.find((item) => item.name === userCountry).code.toLowerCase()),
               },
             }"
           >
-                <!-- country: restrict.country_code.code.toLowerCase(), -->
-          </GMapAutocomplete>
+          </GMapAutocomplete> -->
+      <!-- country: restrict.country_code.code.toLowerCase(), 
         <label for="city" class="mb-2 text-ash-1">City</label>
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="city"
         />
-      </div>
-
-
+      </div> -->
 
       <div class="item-select flex flex-col-reverse my-1 w-full">
+        <VeeField
+          class="w-[75%]"
+          type="text"
+          v-model="editForm.phone_number"
+          name="phone_number"
+          id="phone_number"
+          placeholder="814 359 9948"
+          hidden
+        />
 
-          <VeeField
-            class="w-[75%]"
-            type="text"
-            v-model="editForm.phone_number"
-            name="phone_number"
-            id="phone_number"
-            placeholder="814 359 9948"
-            hidden
-          />
-
-          <vue-tel-input
+        <vue-tel-input
           type="text"
           v-model="editForm.phone_number"
           name="phone_number2"
           id="phone_number2"
+          :disabled="true"
           defaultCountry="US"
           mode="international"
           placeholder="'Phone Number'"
@@ -93,8 +107,6 @@
             '!text-ash-1': focusedPhone === false,
           }"
           >Phone Number</label
-
-
         >
         <!-- </div> -->
 
@@ -104,8 +116,6 @@
         />
       </div>
 
-
-
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
@@ -113,6 +123,7 @@
           name="email"
           id="email"
           placeholder="Email"
+          readonly="true"
         />
 
         <label for="email" class="mb-2 text-ash-1">Email</label>
@@ -126,7 +137,8 @@
       <button-primary
         type="submit"
         :text="'Save'"
-        :disable="isLoading === true"
+        :disabled="isLoading === true"
+        :class="{'opacity-75 cursor-not-allowed':isLoading === true}"
       />
     </VeeForm>
   </div>
@@ -138,32 +150,88 @@ import { storeToRefs } from "pinia";
 import { VueTelInput } from "vue-tel-input";
 import "vue-tel-input/dist/vue-tel-input.css";
 
-
+import UtilsService from "@/services/utils.service";
 import useToggle from "~/composables_/useToggle";
 import { useAppStore } from "@/store/app/index";
-// import flags from "@/data/countries";
+import { useUserStore } from "@/store/auth/index";
+import flags from "@/data/countries";
+import userCountry from "@/data/timezone";
+
+// console.log(userCountry,'uCountry')
+
 const { show, toggleShow } = useToggle();
 
-
-const addressRef= ref(null);
+const addressRef = ref(null);
 const isLoading = ref(false);
 const isLoadingCity = ref(false);
+const authstore = useUserStore();
 const store = useAppStore();
+const { user } = storeToRefs(authstore);
+// console.log(user,'user');
 const { getRestriction: restrict } = storeToRefs(store);
-
 
 const focusedPhone = ref(false);
 const editForm = reactive({
-  full_name: "",
+  first_name: "",
+  last_name: "",
+  // city: "",
+  phone_number: "",
   email: "",
-  city:'',
-  phone_number:'',
-  // client_uuid:TUMA_CLIENT_ID,
 });
 
-const handleSubmit = async (values) => {
+const fetchProfile = async () => {
+  isLoading.value = true;
+  UtilsService.getProfile()
+    .then((response) => {
+      // console.log(response, "ressponse profiel");
+      const details = response;
+      for (const item in details) {
+        if (item in editForm) {
+          editForm[item] = response[item];
+        } else {
+          if (item === "phone") {
+            if (!response[item].startsWith("+")) {
+              editForm.phone_number = `+${response[item]}`;
+            } else {
+              editForm.phone_number = `${response[item]}`;
+            }
+          } else if (item === "sname") {
+            editForm.last_name = response[item];
+          } else if (item === "fname") {
+            editForm.first_name = response[item];
+          } else if (item === "address") {
+            // editForm.city = response[item];
+          }
+        }
+      }
+      isLoading.value = false;
+    })
+    .catch((err) => {
+      console.log(err, "err");
+      isLoading.value = false;
+    });
+};
 
-}
+const handleSubmit = async (values) => {
+  isLoading.value = true;
+  const data = {
+    last_name:values.last_name,
+    first_name:values.first_name
+  }
+
+  // console.log(data,'ddddata');
+  UtilsService.postProfile(data).then((user) => {
+    // console.log(user,'ress');
+    useUserStore().setUser(user);
+
+    navigateTo('/send-money');
+
+    isLoading.value = false;
+  }).catch((err) => {
+    isLoading.value = false;
+    console.log(err,'error updating')
+  })
+};
 
 let address;
 const handleCityInput = async (e) => {
@@ -181,12 +249,15 @@ const handleCityInput = async (e) => {
   editForm.city = value;
 };
 
+const handleCityInputClick = async (e) => {
+  // console.log(e, "clci");
+  // ref(cityRef).value.$el.value
+};
+
 const setPlace = (e) => {
   const add = e.formatted_address;
   editForm.city = add;
 };
-
-
 
 const onAddressBlur = async () => {
   isLoadingCity.value = true;
@@ -196,11 +267,10 @@ const onAddressBlur = async () => {
   }, 250);
 };
 
+onMounted(() => {});
 
-onMounted(() => {
-  //  address  = document.querySelector("#adress");
-  // console.log(add,'a')
-  // address.addEventListener("blur", onAddressBlur);
+onBeforeMount(async () => {
+  await fetchProfile();
 });
 onUnmounted(() => {
   // address.removeEventListener("blur", onAddressBlur);
@@ -208,7 +278,6 @@ onUnmounted(() => {
 useHead({
   title: "Edit Account",
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -231,5 +300,4 @@ useHead({
     }
   }
 }
-
 </style>

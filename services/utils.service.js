@@ -84,12 +84,31 @@ class UtilsService{
   
     return data;
   }
+  async getCards(){
+    const response =  await axiosInstance.get(`/cards`);
+  
+    const data = response.data.data;
+  
+    return data;
+  }
   async getTransaction(reference){
     const response =  await axiosInstance.get(`/transaction/reference/${reference}`);
   
     const data = response.data.data;
   
     return data;
+  }
+  
+
+  async getProfile(){
+  const response =  await axiosInstance.get(`/auth/profile`);
+  const data = response.data.data;
+  return data;
+  }
+  async postProfile(d){
+  const response =  await axiosInstance.post(`/auth/profile`,d);
+  const data = response.data.data;
+  return data;
   }
 
 }
