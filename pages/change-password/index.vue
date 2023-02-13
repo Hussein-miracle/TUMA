@@ -94,6 +94,9 @@
 
 <script setup>
 import * as yup from "yup";
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 import AuthService from '@/services/auth.service';
@@ -155,9 +158,22 @@ const handleSubmit = async (values) => {
   // console.log(values);
   AuthService.changePassword(values).then((response) => {
     isLoading.value = false;
+      //       createToast(`${msg}`, {
+      // showIcon: true,
+      //     type: "warning",
+      //     transition: "bounce",
+      //     // position:'top-center'
+      //   });
     navigateTo('/login');
   }).catch((err) => {
     isLoading.value = false;
+    const msg = err?.response?.data?.message;
+        createToast(`${msg}`, {
+      showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          // position:'top-center'
+        });
     console.log(err,'err');
   })
 };

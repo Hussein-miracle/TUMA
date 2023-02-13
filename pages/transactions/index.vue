@@ -1,7 +1,7 @@
 <template>
   <div
     class="transaction-logs bg-[#F4F5F7] overflow-y-scroll"
-    :class="{ 'flex items-center flex-col justify-center': fetching === true }"
+    :class="{ 'flex items-center flex-col justify-center': fetching === true || transactions.length <= 0 }"
   >
     <div class="sk-circle" v-if="fetching">
       <div class="sk-circle1 sk-child"></div>
@@ -33,16 +33,18 @@
       <spacer :y="true" :size="4" />
     </template>
 
-    <p v-else class="text-secondary text-xl">
-      You haven't made any transaction
+    <p v-else class="text-secondary text-xl mx-auto max-w-md ">
+      You haven't made any transaction yet.
     </p>
+
+
   </div>
 </template>
 
 <script setup>
 import UtilsService from "@/services/utils.service";
-import {useAppStore} from '@/store/app/index';
-const {setCurrentTransaction} = useAppStore();
+import { useAppStore } from "@/store/app/index";
+const { setCurrentTransaction } = useAppStore();
 useHead({
   title: "Trasactions",
 });
@@ -55,12 +57,12 @@ const handleTransDetail = (transaction) => {
   const data = {
     ...transaction,
     // to_user:null,
-    ...others
-  }
+    ...others,
+  };
   // console.log(data,'data');
   setCurrentTransaction(data);
-  localStorage.setItem("progged",JSON.stringify(true));
-  navigateTo(`/transactions/${transaction.reference}`);;
+  localStorage.setItem("progged", JSON.stringify(true));
+  navigateTo(`/transactions/${transaction.reference}`);
 };
 
 const fetchAllTransactions = async () => {
@@ -79,7 +81,7 @@ const fetchAllTransactions = async () => {
 
 definePageMeta({
   layout: "default",
-  middleware: ["auth",'checkroute'],
+  middleware: ["auth", "checkroute"],
 });
 
 onBeforeMount(async () => {

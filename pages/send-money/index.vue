@@ -35,8 +35,7 @@
           </div>
 
           <div class="line bg-ash-1"></div>
-          <!-- 
-<img src="../../assets/icons/nigerian-flag.svg" class="object-contain max-w-full"/> -->
+
           <sender-currency-select />
         </div>
       </div>
@@ -96,8 +95,10 @@
                 hidden: remittanceMethod !== 'cash',
               }"
             >
+            
             </span>
           </label>
+
         </div>
 
         <div class="rate font-bold flex gap-x-1">
@@ -218,7 +219,9 @@ const {user} = storeToRefs(authstore);
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
 
-
+const changingDetails = reactive({
+  amount:''
+})
 
 const amount = ref("");
 

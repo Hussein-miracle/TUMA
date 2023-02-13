@@ -1,5 +1,8 @@
 <template>
   <div class="profile bg-whitelike">
+    <delete-account-modal :showDelete='showDelete' :closeDelete='closeDelete' :openConfirmDelete='openConfirmDelete' />
+    <confirm-delete-modal :showConfirmDelete='showConfirmDelete'  :closeConfirmDelete='closeConfirmDelete' />
+
     <div class="profile__details py-6 px-5 w-full flex justify-between">
       <div
         class="profile__details--content flex flex-col justify-between text-secondary"
@@ -152,7 +155,12 @@
 import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
+import useToggle from '@/composables_/useToggle';
+// import Delet
 
+
+const {show:showDelete,setShowFalse:closeDelete,setShowTrue:openDelete} = useToggle();
+const {show:showConfirmDelete,setShowFalse:closeConfirmDelete,setShowTrue:openConfirmDelete} = useToggle();
 
 
 useHead({
@@ -166,14 +174,14 @@ definePageMeta({
 const authstore = useUserStore();
 const {user} = storeToRefs(authstore);
 
-console.log(user,'user');
+// console.log(user,'user');
 
 const logout = () => {
   authstore.logout();
 }
 
 const handleDeleteAccount = async () => {
-
+  openDelete()
 }
 
 

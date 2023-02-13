@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 import { useAppStore } from "../app";
-import TokenService from '@/services/token.service.js';
-import AuthService from "@/services/auth.service"
+import TokenService from "@/services/token.service.js";
+import AuthService from "@/services/auth.service";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
     token: null,
-    tempUser:null,
+    tempUser: null,
   }),
   getters: {
     // TODO: Plan to refactor
@@ -16,18 +16,17 @@ export const useUserStore = defineStore("user", {
     },
     isUser: (state) => {
       return state.user !== null;
-    } ,
+    },
     getTempUser: (state) => {
       return state.tempUser;
     },
-    getAuthUser:(state) => {
+    getAuthUser: (state) => {
       return state.user;
-    }
+    },
   },
   actions: {
     // TODO: chang auth storage from localstorage to cookies
     login: async (form) => {
-
       // console.log(form ,'form in store');
 
       return await AuthService.postLogin(form).then(
@@ -47,11 +46,11 @@ export const useUserStore = defineStore("user", {
         }
       );
     },
-    
-    setUser:(user) =>{
-      const oldDet =  useUserStore().user;
-      console.log(oldDet,'oldD')
-      useUserStore().user = {...oldDet,...user};
+
+    setUser: (user) => {
+      const oldDet = useUserStore().user;
+      // console.log(oldDet,'oldD')
+      useUserStore().user = { ...oldDet, ...user };
     },
     createAccount: (form) => {
       return AuthService.signUp(form).then(
@@ -69,7 +68,7 @@ export const useUserStore = defineStore("user", {
         (response) => {
           // console.log(response,'verifi res');
           // useUserStore().setUserDetails(response.data.data)
-          navigateTo('/login');
+          navigateTo("/login");
           return Promise.resolve(response.data);
         },
         (error) => {
@@ -81,10 +80,10 @@ export const useUserStore = defineStore("user", {
       const data = response.data.data;
 
       // const expired = data.expires_in;
-      
+
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
-      console.log(data,'login data in store');
+      // console.log(data,'login data in store');
       if (data.api_token) {
         useUserStore().token = data.api_token;
         useUserStore().user = data.user;
@@ -97,7 +96,7 @@ export const useUserStore = defineStore("user", {
       //   TokenService.setExpiration(expirationDate);
       // }
     },
-    setTemp:(details) => {
+    setTemp: (details) => {
       const state = useUserStore();
       state.tempUser = details;
     },
@@ -107,24 +106,28 @@ export const useUserStore = defineStore("user", {
       state.token = null;
       TokenService.removeToken();
     },
-    logout:() => {
+    logout: () => {
       TokenService.removeToken();
       const state = useUserStore();
       state.user = null;
       state.token = null;
-      navigateTo('/login');
+      navigateTo("/login");
+      setTimeout(() => {
+        console.clear();
+        setTimeout(() => {
+          console.clear();
+        }, 1000);
+      }, 500);
     },
     clearTemp: () => {
       const state = useUserStore();
       state.tempUser = null;
-    }
+    },
   },
   persist: true,
 });
 
-
-
 export const initLogout = async () => {
-  const {logout} = useUserStore();
+  const { logout } = useUserStore();
   logout();
-}
+};

@@ -116,7 +116,7 @@
         />
       </div>
 
-      <div class="item flex flex-col-reverse my-1 w-full">
+      <div class="item flex flex-col-reverse my-1 w-full ">
         <VeeField
           type="text"
           v-model="editForm.email"
@@ -124,9 +124,10 @@
           id="email"
           placeholder="Email"
           readonly="true"
+          class="cursor-not-allowed"
         />
 
-        <label for="email" class="mb-2 text-ash-1">Email</label>
+        <label for="email" class="mb-2 text-ash-1 cursor-not-allowed">Email</label>
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"

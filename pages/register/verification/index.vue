@@ -9,8 +9,7 @@
     <p class="mx-6 sm:mx-auto text-ash-1">
       Enter <span class="font-bold"> OTP </span> sent to
 
-      <span class="font-light text-secondary">+{{ user.phone }} </span
-      >
+     your mail  <span class="font-light text-md text-secondary">{{ user.email }} </span>
     </p>
 
     <VeeForm class="flex flex-col self-center my-4" @submit="handleSubmit">
@@ -114,7 +113,7 @@ const appState = useAppStore();
 
 const { getUser: user } = storeToRefs(appState);
 
-console.log(user.value, "gU");
+// console.log(user.value, "gU");
 
 const verifying = ref(false);
 
@@ -130,6 +129,10 @@ const sixthDigitRef = ref(null);
 
 useHead({
   title: "Verification",
+});
+
+definePageMeta({
+  layout: false,
 });
 
 const otpInputs = reactive({
@@ -157,17 +160,12 @@ const handlePaste = async (e) => {
   // const clipText = await navigator.clipboard.readText();
   // console.log(clipText,'clipText');
   // alert(clipText);
-
   e.stopPropagation();
   e.preventDefault();
-
   // Get pasted data via clipboard API
   const clipboardData = e.clipboardData || window.clipboardData;
-
   const pastedData = clipboardData.getData("Text");
-
   // Do whatever with pasted data
-
   checkPasteData(pastedData);
 };
 
@@ -177,24 +175,44 @@ const handleSubmit = async () => {
     email: user.value.email,
   };
 
-  console.log(data,'code data');
+  // console.log(data, "code data");
   verifying.value = true;
   try {
     if (code.value.length === 6) {
-      const res = await useUserStore().verifyOtp(data);
-
-      console.log(res, "data after verfity");
-      const msg = res.message;
-      createToast(`${msg}⚡⚡`,{
-        type:'success',
-        showIcon:true,
-        position:'top-center'
-      })
-      navigateTo('/login');
+      useUserStore()
+        .verifyOtp(data)
+        .then((res) => {
+          // console.log(res, "data after verfity");
+          const msg = res.message;
+          createToast(`${msg}⚡⚡`, {
+            type: "success",
+            showIcon: true,
+            position: "top-center",
+          });
+          verifying.value = !true;
+          navigateTo("/login");
+        })
+        .catch((err) => {
+          const msg = err?.response?.data.message;
+          createToast(`${msg}`, {
+            showIcon: true,
+            type: "warning",
+            transition: "bounce",
+            // position:'top-center'
+          });
+          verifying.value = !true;
+        });
     }
   } catch (err) {
+    const msg = err?.response?.data.message;
+    createToast(`${msg}`, {
+      showIcon: true,
+      type: "warning",
+      transition: "bounce",
+      // position:'top-center'
+    });
     verifying.value = !true;
-    console.error(err);
+    // console.error(err);
   }
 };
 

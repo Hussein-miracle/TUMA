@@ -105,7 +105,7 @@ const summary = paymentSummary.value[remittanceMethod.value];
 const isLoading = ref(false);
 
 definePageMeta({
-  layout: false,
+  // layout: false,
   middleware: ["auth", "checkroute"],
 });
 
@@ -161,11 +161,11 @@ const handleCreateTransaction = async () => {
 
         isLoading.value = false;
 
-        if(upload_required){
-          navigateTo("/add-card");
-        }else{
+        // if(upload_required){
+        //   navigateTo("/add-card");
+        // }else{
           navigateTo('/select-card');
-        }
+        // }
       })
       .catch((err) => {
         isLoading.value = false;

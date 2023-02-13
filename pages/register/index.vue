@@ -65,8 +65,6 @@
       </div>
 
       <div class="item flex flex-col-reverse my-1 w-full">
-
-
         <VeeField
           type="text"
           v-model="signupForm.phone"
@@ -97,18 +95,17 @@
             '!text-ash-1': focusedPhone === false,
           }"
           >Phone Number</label
-
-
         >
 
-
-                <VeeErrorMsg
+        <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="phone"
         />
-        
       </div>
-
+        <VeeErrorMsg
+          class="text-red-600 py-1 px-1 my-1 max-w-md rounded-md bg-red-300 capitalize"
+          name="country"
+        />
       <div class="item flex flex-col-reverse my-1 w-full">
         <template v-if="countries.length > 0">
           <div
@@ -226,7 +223,7 @@
         >
       </div>
 
-      <div class="item flex flex-col-reverse my-1 w-full relative">
+      <div class="item flex flex-col-reverse my-0.5 w-full relative">
         <VeeField
           v-model.lazy="signupForm.password"
           :type="show === true ? 'text' : 'password'"
@@ -249,7 +246,7 @@
           name="password"
         />
       </div>
-      <div class="item flex flex-col-reverse my-1 w-full relative">
+      <div class="item flex flex-col-reverse my-0.5 w-full relative">
         <VeeField
           v-model.lazy="signupForm.password_confirmation"
           :type="show === true ? 'text' : 'password'"
@@ -306,10 +303,16 @@
       />
     </VeeForm>
 
-    <p class="text-ash-1 text-center">
-      Not a member ?
+    <p class="text-secondary text-center">
+      Already have an account?
       <span class="text-primary cursor-pointer" @click="navigateTo('/login')"
         >Sign in</span
+      >
+    </p>
+    <p class="text-secondary text-center">
+      Created account but haven't verified ? 
+      <span class="text-primary cursor-pointer" @click="handleVerify"
+        >Verify</span
       >
     </p>
   </div>
@@ -317,6 +320,10 @@
 
 <script setup>
 import * as yup from "yup";
+import { createToast } from "mosha-vue-toastify";
+// import the styling for the toast
+import "mosha-vue-toastify/dist/style.css";
+
 import {
   TransitionRoot,
   TransitionChild,
@@ -333,6 +340,7 @@ import useToggle from "~/composables_/useToggle";
 import flags from "@/data/countries";
 import AuthService from "@/services/auth.service";
 import { useAppStore } from "@/store/app/index";
+import { useUserStore } from "@/store/auth/index";
 
 const { show, toggleShow } = useToggle();
 const {
@@ -403,10 +411,13 @@ const signupSchema = yup.object().shape({
   phone: yup.string().required("Phone is required!"),
 });
 
+const handleVerify = () => {
+  navigateTo("register/verification");
+}
 const handleSubmit = async (values) => {
   isLoading.value = true;
   // console.log(values, "reg values");
-  signupForm.phone = signupForm.phone.split(' ').join('')
+
 
   try {
     AuthService.register(signupForm)
@@ -417,15 +428,36 @@ const handleSubmit = async (values) => {
         const user = data.user;
         // console.log(user, "user after reg");
         useAppStore().setAppUser(user);
+        useUserStore().setUser(user);
         isLoading.value = false;
+        createToast("Registration Successfull,Please verify", {
+          showIcon: true,
+          type: "success",
+          transition: "bounce",
+          // position:'top-center'
+        });
         navigateTo("register/verification");
       })
       .catch((err) => {
+        const msg = err?.response?.data.message;
+        createToast(`${msg}`, {
+          showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          // position:'top-center'
+        });
         isLoading.value = false;
         console.log(err, "err");
       });
   } catch (err) {
-    isLoading.value = false;
+     const msg = err?.response?.data.message;
+        createToast(`${msg}`, {
+          showIcon: true,
+          type: "warning",
+          transition: "bounce",
+          // position:'top-center'
+        });
+        isLoading.value = false;
   }
 };
 
@@ -443,6 +475,9 @@ onBeforeMount(async () => {
 });
 watch(signupForm, () => {
   // console.log(signupForm, "sF");
+  if(!!signupForm.phone){
+    signupForm.phone = signupForm.phone.split(" ").join("");
+  }
 });
 </script>
 

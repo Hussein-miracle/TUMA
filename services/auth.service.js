@@ -54,10 +54,14 @@ class AuthService {
     // try {
     const res = await axiosInstance.post("/auth/password/change", details);
     // console.log(res , 'res');
+
     // const response = await axiosInstance.post("/signup",details);
+
+
     const data = res.data;
     return data;
   }
+
   async forgotPassword(details) {
     // try {
     const res = await axiosInstance.post("/auth/password/forgot", details);
