@@ -8,17 +8,16 @@
       <div
         class="text-whitelike mx-auto flex gap-x-1 items-center"
         v-if="selectedCountry && selectedCountry?.name"
-        >
-        
-         <img
-                  v-if="selectedCountry && !!selectedCountry.flag"
-                  :src="selectedCountry?.flag"
-                  class="object-contain w-4 h-4"
-                />
+      >
+        <img
+          v-if="selectedCountry && !!selectedCountry.flag"
+          :src="selectedCountry?.flag"
+          class="object-contain w-4 h-4"
+        />
         <span>{{ selectedCountry?.name }}</span>
-        </div>
+      </div>
 
-      <span v-else class="text-whitelike mx-auto">Select  Currency</span>
+      <span v-else class="text-whitelike mx-auto">Select Currency</span>
 
       <icons-select-arrow
         :rotate="isOpen"
@@ -54,7 +53,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[60vh] flex flex-col items-center"
+              class=" max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[60vh] flex flex-col items-center  sm:h-[40vh] sm:w-[30vw]"
             >
               <DialogTitle
                 as="h3"
@@ -66,11 +65,11 @@
                   class="object-contain w-4 h-4"
                 />
                 <span v-if="selectedCountry?.name">{{
-                  selectedCountry?.name
+                  selectedCountry?.currency_code
                 }}</span>
                 <span v-else> Select Recipient Country Currency</span>
               </DialogTitle>
-              <div class="mt-2 overflow-y-scroll custom-scroll">
+              <div class="mt-2 overflow-y-scroll custom-scroll px-2 w-full h-4/5">
                 <template v-if="countries.length > 0">
                   <div
                     class="options flex gap-x-2 items-center cursor-pointer hover:bg-ash-1 px-2 py-1 rounded-sm"
@@ -78,7 +77,9 @@
                     v-for="country in countries"
                     :class="{
                       '!bg-ash-1':
-                        country && selectedCountryDetails.recipient_country === country?.name,
+                        country &&
+                        selectedCountryDetails.recipient_country ===
+                          country?.name,
                     }"
                     :key="country.name"
                   >
@@ -87,23 +88,13 @@
                       :src="country.flag"
                       class="object-contain w-4 h-4"
                     />
-                    <span>{{ country?.name }}</span>
+                    <span>{{ country?.currency_code }}</span>
                   </div>
                 </template>
                 <template v-else>
-                  <div class="loader w-36 h-36"></div>
+                  <div class="loader w-3/5 h-3/5"></div>
                 </template>
               </div>
-
-              <!-- <div class="mt-4 self-center">
-                <button
-                  type="button"
-                  class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                  @click="handleContinue"
-                >
-                  Continue
-                </button>
-              </div> -->
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -132,10 +123,13 @@ const appStore = useAppStore();
 const countries = computed(() => appStore.getCountriesFromStore);
 
 const index = getRandomIndex(15);
-// console.log(index , 'index in recipient');
+const getDefault = () => {
+  const defaultCountry = countries?.value?.find((i) => i.code === "NG");
+  // useAppStore().setRecipientCurrencyDetails(defaultCountry);
+  return defaultCountry;
+};
+const selectedCountry = ref(getDefault());
 
-
-const selectedCountry = ref("");
 const selectedCountryDetails = reactive({
   recipient_currency: "",
   recipient_currency_symbol: "",
@@ -144,20 +138,18 @@ const selectedCountryDetails = reactive({
 
 const handleContinue = async () => {
   let allowSubmit = true;
-  for(const item in selectedCountryDetails){
-    if(selectedCountryDetails[item] === ''){
+  for (const item in selectedCountryDetails) {
+    if (selectedCountryDetails[item] === "") {
       allowSubmit = false;
       return;
     }
   }
 
-  if(allowSubmit === true){
+  if (allowSubmit === true) {
     useAppStore().setRecipientCurrencyDetails(selectedCountryDetails);
     closeModal();
   }
-
 };
-
 
 const handleSelectCountry = (country) => {
   // console.log(country,'country');
@@ -167,7 +159,7 @@ const handleSelectCountry = (country) => {
   selectedCountry.value = country;
   // console.log(selectedCountry.value,'Sv');
 
-   handleContinue()
+  handleContinue();
 };
 
 function closeModal() {
@@ -177,10 +169,28 @@ function openModal() {
   isOpen.value = true;
 }
 
-
 onBeforeMount(async () => {
   // await fetchCountries();
 });
+// watch(selectedCountry,() => {
+//   if(!!selectedCountry.value){
+//     console.log('lmao');
+//     useAppStore().setRecipientCurrencyDetails(selectedCountry.value);
+//   }
+// })
+
+// watch(
+//   selectedCountryDetails,
+//   () => {
+//     for (const i in selectedCountryDetails) {
+//       if (selectedCountryDetails[i] === "") {
+//         return;
+//       }
+//     }
+
+//     useAppStore().setRecipientCurrencyDetails(selectedCountryDetails);
+//   }
+// );
 </script>
 
 <style lang="scss" scoped>

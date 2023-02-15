@@ -2,14 +2,28 @@ import { defineStore } from "pinia";
 import TokenService from "@/services/token.service.js";
 import AuthService from "@/services/auth.service";
 import UtilsService from "@/services/utils.service";
-import data from "~~/data/onboarding";
-
+// code
+// :
+// "NG"
+// currency_code
+// :
+// "NGN"
+// currency_symbol
+// :
+// "₦"
+// flag
+// :
+// "https://nyc3.digitaloceanspaces.com/dagdag/flags/ng.svg"
+// name
+// :
+// "Nigeria"
 export const useAppStore = defineStore("app", {
   state: () => ({
     showTodoList: false,
     // tabState:
-    upload_required:false,
-    userImage: "",
+    upload_required: false,
+    userImage: null,
+    defaultDetails: null,
 
     remittanceMethod: "",
     remittanceDetail: {
@@ -72,11 +86,10 @@ export const useAppStore = defineStore("app", {
       },
     },
 
-
-    currentTransaction:{
-      first_name:'',
-      last_name:'',
-      address:'',
+    currentTransaction: {
+      first_name: "",
+      last_name: "",
+      address: "",
     },
   }),
   getters: {
@@ -137,9 +150,9 @@ export const useAppStore = defineStore("app", {
     setImage(value) {
       useAppStore().userImage = value;
     },
-    setPaymentSummary:(value) => {
+    setPaymentSummary: (value) => {
       const oldSummary = useAppStore().paymentSummary;
-      const newSummary = {...oldSummary,...value};
+      const newSummary = { ...oldSummary, ...value };
       // console.log(newSummary ,'new summary to updat')
       useAppStore().paymentSummary = newSummary;
     },
@@ -197,6 +210,10 @@ export const useAppStore = defineStore("app", {
     setUploadRequired: (value) => {
       useAppStore().upload_required = value;
     },
+    setDefault: (daf) => {
+      const old = {...useAppStore().defaultDetails};
+      useAppStore().defaultDetails = {...old,...daf};
+    },
     fetchConversion: async (form) => {
       const response = await UtilsService.getConversionRates(form);
 
@@ -209,6 +226,22 @@ export const useAppStore = defineStore("app", {
       const newData = useAppStore().conversionData;
 
       return Promise.resolve(data);
+    },
+    fetchDefault: async (clientId = '') => {
+      let data;
+      if(clientId){
+        data = await UtilsService.getRate(clientId);
+        console.log(data,'with Cid')
+      }else{
+        data = await UtilsService.getRate();
+        console.log(data,'without Cid')
+      }
+
+
+      // const defKey = data.currency;
+      
+      // const details =
+
     },
     setAppUser: (values) => {
       const olduser = useAppStore().getUser;
@@ -224,16 +257,10 @@ export const useAppStore = defineStore("app", {
       useAppStore().conversionData = { ...data };
     },
     setTransactionData: (data) => {
-
       useAppStore().transaction = { ...data };
-      
     },
     setCurrentTransaction: (data) => {
-
       useAppStore().currentTransaction = { ...data };
-
-
-      
     },
     setTransactionRef: (data) => {
       // console.log(data, 'data for trans  ref')

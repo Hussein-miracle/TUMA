@@ -1,7 +1,7 @@
 <template>
   <div class="send-money px-6 py-3 relative flex flex-col items-center">
     <h5 class="text-secondary font-semibold text-xl self-start text-left">
-     Welcome {{user.fname}}.
+      Welcome {{ user.fname }}.
     </h5>
     <h3 class="text-white font-semibold text-2xl self-start text-left">
       Send Money
@@ -18,9 +18,7 @@
         >
           <div class="div font-bold flex items-center gap-x-1">
             <span class="unit self-end">
-              {{
-                senderCurrencyDetails.sender_currency_symbol 
-              }}
+              {{ senderCurrencyDetails.sender_currency }}
             </span>
 
             <input
@@ -29,8 +27,12 @@
               step="0.00"
               class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
               placeholder="0.00"
-              v-model="conversionDetails.amount"
-              :disabled=" !conversionDetails.sender_country || !conversionDetails.recipient_country"
+              v-model="forwardAmount"
+              :disabled="
+                !conversionDetails.sender_currency ||
+                !conversionDetails.recipient_currency
+              "
+              @focus="handleForward(conversionDetails)"
             />
           </div>
 
@@ -48,13 +50,21 @@
         >
           <div class="div font-bold flex items-center gap-x-2">
             <span class="unit self-end">{{
-              recipientCurrencyDetails.recipient_currency_symbol 
+              recipientCurrencyDetails.recipient_currency
             }}</span>
-            <span class="amount text-xl" v-if="amount">
-              {{ amount }}
-            </span>
-            <span class="amount text-xl" v-else>0.00</span>
-            <!-- <span class="amount text-xl" >0.00</span> -->
+            <input
+              type="number"
+              id="userInput2"
+              step="0.00"
+              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
+              placeholder="0.00"
+              v-model="reverseAmount"
+              :disabled="
+                !conversionDetails.sender_currency ||
+                !conversionDetails.recipient_currency
+              "
+              @focus="handleBackward(conversionDetails)"
+            />
           </div>
 
           <div class="line bg-ash-1"></div>
@@ -95,15 +105,13 @@
                 hidden: remittanceMethod !== 'cash',
               }"
             >
-            
             </span>
           </label>
-
         </div>
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol 
+            recipientCurrencyDetails.recipient_currency_symbol
           }}</span>
           <span class="amount" v-if="cashValue">{{ cashValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -140,7 +148,7 @@
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol 
+            recipientCurrencyDetails.recipient_currency_symbol
           }}</span>
           <span class="amount" v-if="bankValue">{{ bankValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -179,7 +187,7 @@
 
         <div class="rate font-bold flex gap-x-1">
           <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol 
+            recipientCurrencyDetails.recipient_currency_symbol
           }}</span>
           <span class="amount" v-if="mobileValue">{{ mobileValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -214,16 +222,39 @@ const {
   getRecipientCurrencyDetails: recipientCurrencyDetails,
 } = storeToRefs(store);
 
-const {user} = storeToRefs(authstore);
+const countries = computed(() => store.getCountriesFromStore);
+
+const { user } = storeToRefs(authstore);
 // console.log(user,'authRefs');
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
 
-const changingDetails = reactive({
-  amount:''
-})
+// const changingDetails = reactive({
+//   amount: "",
+// });
+
+const fetchInit = ref(false);
 
 const amount = ref("");
+
+const reverseAmount = ref("0.00");
+const forwardAmount = ref("0.00");
+
+const handleForward = (conversionDetails) => {
+  const type = "forward";
+  // console.log('forward!!!',conversionDetails)
+  conversionDetails.conversion_type = type;
+  conversionDetails.amount = forwardAmount.value;
+  // console.log('forward!!!',conversionDetails)
+};
+
+const handleBackward = (conversionDetails) => {
+  const type = "reverse";
+  // console.log('backward!!!',conversionDetails)
+  conversionDetails.conversion_type = type;
+  conversionDetails.amount = reverseAmount.value;
+  // console.log('backward!!!',conversionDetails)
+};
 
 const bestValue = ref({
   cash: {
@@ -247,11 +278,6 @@ useHead({
   title: "Send Money",
 });
 
-
-// const {
-//   public: { TUMA_CLIENT_ID },
-// } = useRuntimeConfig();
-
 const conversionDetails = reactive({
   amount: "",
   client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
@@ -259,6 +285,8 @@ const conversionDetails = reactive({
   recipient_currency: recipientCurrencyDetails.value.recipient_currency,
   sender_currency: senderCurrencyDetails.value.sender_currency,
   sender_country: senderCurrencyDetails.value.sender_country,
+  conversion_type: "forward",
+  recipient_country_code: "",
 });
 
 const updateMethods = async () => {};
@@ -278,10 +306,9 @@ const handleContinue = () => {
     };
     useAppStore().setRecipientCurrencyDetails(data);
     useAppStore().setRestriction(data.recipient_country);
-    // console.log(remittanceMethod.value, "method");
-    localStorage.setItem('progged',JSON.stringify(true));
+
+    localStorage.setItem("progged", JSON.stringify(true));
     navigateTo("/recipient");
-    // router.push({path:'/recipient',props:{ programatic:true } });
   }
 };
 
@@ -290,9 +317,88 @@ const handleContinue = () => {
 //   // console.log(data.data,'countries');
 //   setCountries(data.data);
 // };
+const initialFetch = async () => {
+  if (
+    !!conversionDetails.amount &&
+    !!conversionDetails.recipient_currency &&
+    !!conversionDetails.sender_currency
+  ) {
+    let allowAction = false;
+    //  console.log(conversionDetails,'cDDDDD!!!HEy hiii!');
+    const recipient_country = countries?.value?.find((c) => {
+      if (c.name === conversionDetails.recipient_country) {
+        allowAction = true;
+        return c;
+      }
+    });
 
-onMounted(() => {
+    const recipient_country_code = recipient_country?.code;
+    // console.log(recipient_country_code, "RCCC");
+    conversionDetails.recipient_country_code = recipient_country_code;
+    // conversionDetails.recipient_country =
+    //   recipientCurrencyDetails.value.recipient_country;
 
+    // conversionDetails.recipient_currency =
+    //   recipientCurrencyDetails.value.recipient_currency;
+
+    // conversionDetails.sender_currency =
+    //   senderCurrencyDetails.value.sender_currency;
+
+    // conversionDetails.sender_country =
+    //   senderCurrencyDetails.value.sender_country;
+
+    for (const item in conversionDetails) {
+      if (!conversionDetails[item]) {
+        allowAction = false;
+      }
+    }
+
+    if (allowAction) {
+      console.log(conversionDetails,'convD')
+      UtilsService.getConversionRates(conversionDetails).then((response) => {
+        const result = response.data;
+
+        console.log(result, "res");
+        // const converted_amount = result.converted_amount;
+        // // console.log(converted_amount,'conved amout')
+        // const cash = converted_amount.cash;
+        // const bank = converted_amount.bank;
+        // const mobile = converted_amount.mobile;
+        // // console.log(cash,'cash');
+
+        // useAppStore().setPaymentSummary(converted_amount);
+
+        // const details = {
+        //   cash,
+        //   mobile,
+        //   bank,
+        //   recipient_currency: result.recipient_currency,
+        //   conversion_rate: result.conversion_rate,
+        // };
+
+        // useAppStore().setConversionData({
+        //   amount: conversionDetails.amount,
+        // });
+
+        // useAppStore().setRemittanceDetails(details);
+
+        // cashValue.value = String(cash?.converted);
+        // bankValue.value = String(bank?.converted);
+        // mobileValue.value = String(mobile?.converted);
+
+        // bestValue.value = { ...result.best_value };
+
+        // assignConvertedAmount();
+      });
+    }
+  }
+};
+onMounted(async () => {
+  conversionDetails.amount = forwardAmount.value;
+  await initialFetch();
+  // UtilsService.getRate().then((res) => {
+  //   console.log(res,'ressponse')
+  // })
 });
 
 onBeforeMount(async () => {
@@ -305,77 +411,16 @@ onBeforeMount(async () => {
 
 watchDebounced(
   conversionDetails,
-  () => {
-    if (conversionDetails.amount !== "" && !!conversionDetails.recipient_country  && !!conversionDetails.sender_country && !!conversionDetails.recipient_currency) {
-
-      let allowAction = true;
-      //  console.log(conversionDetails,'cDDDDD!!!HEy hiii!');
-
-      conversionDetails.recipient_country =
-        recipientCurrencyDetails.value.recipient_country;
-      conversionDetails.recipient_currency =
-        recipientCurrencyDetails.value.recipient_currency;
-
-      conversionDetails.sender_currency =
-        senderCurrencyDetails.value.sender_currency;
-      conversionDetails.sender_country =
-        senderCurrencyDetails.value.sender_country;
-
-      for (const item in conversionDetails) {
-        if (conversionDetails[item] === "") {
-          allowAction = false;
-          return;
-        }
-      }
-
-      // console.log(conversionDetails, "cDDDDD!!!HEy hiii! how far!!!");
-
-      if (allowAction) {
-        UtilsService.getConversionRates(conversionDetails).then((response) => {
-          const result = response.data;
-
-          // console.log(result, "res");
-          const converted_amount = result.converted_amount;
-          // console.log(converted_amount,'conved amout')
-          const cash = converted_amount.cash;
-          const bank = converted_amount.bank;
-          const mobile = converted_amount.mobile;
-          // console.log(cash,'cash');
-
-          useAppStore().setPaymentSummary(converted_amount);
-
-          const details = {
-            cash,
-            mobile,
-            bank,
-            recipient_currency: result.recipient_currency,
-            conversion_rate: result.conversion_rate,
-          };
-
-          useAppStore().setConversionData({
-            amount:conversionDetails.amount,
-          })
-
-          useAppStore().setRemittanceDetails(details);
-
-          cashValue.value = String(cash?.converted);
-          bankValue.value = String(bank?.converted);
-          mobileValue.value = String(mobile?.converted);
-
-          bestValue.value = { ...result.best_value };
-
-          assignConvertedAmount();
-        });
-      }
-    }
+  async () => {
+    initialFetch();
   },
-  { debounce: 800, maxWait: 1000 }
+  { debounce: 500, maxWait: 800 }
 );
 
 definePageMeta({
-  layout:'default',
-  middleware:['auth']
-})
+  layout: "default",
+  middleware: ["auth"],
+});
 </script>
 
 <style lang="scss" scoped>

@@ -66,9 +66,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Public keys that are exposed to the client
     public: {
-      GOOGLE_API_KEY:process.env.VITE_APP_GOOGLE_API_KEY,
-      TUMA_CLIENT_ID : process.env.VITE_APP_TUMA_CLIENT_ID,
-      API_BASE_URL:process.env.VITE_APP_API_BASE_URL,
+      
     },
   },
   build:{

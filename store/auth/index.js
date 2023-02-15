@@ -31,7 +31,7 @@ export const useUserStore = defineStore("user", {
 
       return await AuthService.postLogin(form).then(
         (response) => {
-          //console.log(response,'response')
+          // console.log(response,'response')
 
           const userData = response.data.data.user;
 
@@ -84,12 +84,12 @@ export const useUserStore = defineStore("user", {
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
       // console.log(data,'login data in store');
-      if (data.api_token) {
-        useUserStore().token = data.api_token;
+      if (data.access_token) {
+        useUserStore().token = data.access_token;
         useUserStore().user = data.user;
         // console.log(useUserStore().getAuthUser,'authUser');
         // TokenService
-        TokenService.setToken(data.api_token);
+        TokenService.setToken(data.access_token);
       }
 
       // if(expired){
@@ -112,12 +112,12 @@ export const useUserStore = defineStore("user", {
       state.user = null;
       state.token = null;
       navigateTo("/login");
-      setTimeout(() => {
-        console.clear();
-        setTimeout(() => {
-          console.clear();
-        }, 1000);
-      }, 500);
+      // setTimeout(() => {
+      //   console.clear();
+      //   setTimeout(() => {
+      //     console.clear();
+      //   }, 1000);
+      // }, 500);
     },
     clearTemp: () => {
       const state = useUserStore();

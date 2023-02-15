@@ -112,6 +112,14 @@ class UtilsService{
   return data;
   }
 
+
+
+  async getRate(clientId =import.meta.env.VITE_APP_TUMA_CLIENT_ID ){
+    const response =  await axiosInstance.get(`/client/${clientId}`);
+    const data = response.data;
+
+    return data;
+  }
 }
 
 
