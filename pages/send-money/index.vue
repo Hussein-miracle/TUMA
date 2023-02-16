@@ -18,19 +18,20 @@
         >
           <div class="div font-bold flex items-center gap-x-1">
             <span class="unit self-end">
-              {{ senderCurrencyDetails.sender_currency }}
+              {{ selectedSenderCountry.currency_symbol }}
             </span>
 
             <input
               type="number"
               id="userInput"
               step="0.00"
-              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
+              v-money-input
+              class="amount font-bold text-xl w-22 sm:w-28 focus:outline-primary rounded-lg max-w-[6rem] px-1 py-1 border-secondary border-2"
               placeholder="0.00"
-              v-model="forwardAmount"
+              v-model="changeDetails.forwardAmount"
               :disabled="
-                !conversionDetails.sender_currency ||
-                !conversionDetails.recipient_currency
+                !selectedRecipientCountry.currency_symbol ||
+                !selectedSenderCountry.currency_symbol
               "
               @focus="handleForward(conversionDetails)"
             />
@@ -38,7 +39,116 @@
 
           <div class="line bg-ash-1"></div>
 
-          <sender-currency-select />
+          <!-- <sender-currency-select /> -->
+
+          <div class="inset-0 flex items-center justify-center">
+            <button
+              type="button"
+              @click="openSenderModal"
+              class="rounded-md bg-primary px-2 py-2 text-sm max-w-[10rem] hover:bg-opacity-20 focus:outline-none flex justify-between truncate gap-x-1 items-center"
+            >
+              <div
+                class="text-whitelike mx-auto flex gap-x-1 items-center"
+                v-if="selectedSenderCountry && selectedSenderCountry?.name"
+              >
+                <img
+                  v-if="selectedSenderCountry && !!selectedSenderCountry.flag"
+                  :src="selectedSenderCountry?.flag"
+                  class="object-contain w-4 h-4"
+                />
+
+                <span>{{ selectedSenderCountry?.currency_code }}</span>
+              </div>
+
+              <span v-else class="text-whitelike mx-auto">Select Currency</span>
+              <icons-select-arrow
+                :rotate="isSenderOpen"
+                class="fill-black !w-4 !h-4"
+              />
+            </button>
+          </div>
+          <TransitionRoot appear :show="isSenderOpen" as="template">
+            <Dialog as="div" class="relative z-10">
+              <TransitionChild
+                as="template"
+                enter="duration-300 ease-out"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="duration-200 ease-in"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+              >
+                <div class="fixed inset-0 bg-black bg-opacity-25" />
+              </TransitionChild>
+
+              <div class="fixed inset-0 overflow-y-auto">
+                <div
+                  class="flex flex-col min-h-full items-center justify-center p-4 text-center"
+                >
+                  <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0 scale-95"
+                    enter-to="opacity-100 scale-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100 scale-100"
+                    leave-to="opacity-0 scale-95"
+                  >
+                    <DialogPanel
+                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all sm:h-[40vh] sm:w-[30vw] flex flex-col items-center"
+                    >
+                      <DialogTitle
+                        as="h3"
+                        class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
+                      >
+                        <img
+                          v-if="
+                            selectedSenderCountry &&
+                            !!selectedSenderCountry?.flag
+                          "
+                          :src="selectedSenderCountry?.flag"
+                          class="object-contain w-4 h-4"
+                        />
+                        <span v-if="selectedSenderCountry?.name">{{
+                          selectedSenderCountry?.currency_code
+                        }}</span>
+                        <span v-else> Select Sender Currency</span>
+                      </DialogTitle>
+                      <div
+                        class="mt-2 overflow-y-scroll custom-scroll px-2 w-full h-4/5"
+                      >
+                        <template v-if="countries.length > 0">
+                          <div
+                            class="options flex gap-x-2 items-center cursor-pointer hover:bg-ash-1 px-2 py-1 rounded-sm"
+                            @click="handleSelectSenderCountry(country)"
+                            v-for="country in countries"
+                            :class="{
+                              '!bg-ash-1':
+                                country &&
+                                selectedSenderCountry?.sender_country ===
+                                  country?.name,
+                            }"
+                            :key="country.name"
+                          >
+                            <img
+                              v-if="country.flag"
+                              :src="country.flag"
+                              class="object-contain w-4 h-4"
+                            />
+                            <span>{{ country?.currency_code }}</span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="loader w-3/5 h-3/5"></div>
+                        </template>
+                      </div>
+                    </DialogPanel>
+                  </TransitionChild>
+                </div>
+              </div>
+            </Dialog>
+          </TransitionRoot>
+          <!-- <sender-currency-select /> -->
         </div>
       </div>
 
@@ -50,25 +160,138 @@
         >
           <div class="div font-bold flex items-center gap-x-2">
             <span class="unit self-end">{{
-              recipientCurrencyDetails.recipient_currency
+              selectedRecipientCountry.currency_symbol
             }}</span>
             <input
+              v-moneyInput
               type="number"
               id="userInput2"
               step="0.00"
-              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-24 px-1 py-1 border-secondary border-2"
+              class="amount font-bold text-xl w-22 focus:outline-primary rounded-lg max-w-[6rem] sm:w-28 px-1 py-1 border-secondary border-2"
               placeholder="0.00"
-              v-model="reverseAmount"
+              v-model="changeDetails.reverseAmount"
               :disabled="
-                !conversionDetails.sender_currency ||
-                !conversionDetails.recipient_currency
+                !selectedRecipientCountry.currency_symbol ||
+                !selectedSenderCountry.currency_symbol
               "
               @focus="handleBackward(conversionDetails)"
             />
           </div>
 
           <div class="line bg-ash-1"></div>
-          <RecipientCurrencySelect />
+          <!-- <RecipientCurrencySelect /> start -->
+          <div class="inset-0 flex items-center justify-center">
+            <button
+              type="button"
+              @click="openRecipientModal"
+              class="rounded-md bg-primary px-2 py-2 text-sm font-medium hover:bg-opacity-20 focus:outline-none flex gap-x-1 items-center"
+            >
+              <div
+                class="text-whitelike mx-auto flex gap-x-1 items-center"
+                v-if="
+                  selectedRecipientCountry && selectedRecipientCountry?.name
+                "
+              >
+                <img
+                  v-if="
+                    selectedRecipientCountry && !!selectedRecipientCountry.flag
+                  "
+                  :src="selectedRecipientCountry?.flag"
+                  class="object-contain w-4 h-4"
+                />
+                <span>{{ selectedRecipientCountry?.name }}</span>
+              </div>
+
+              <span v-else class="text-whitelike mx-auto">Select Currency</span>
+
+              <icons-select-arrow
+                :rotate="isRecipientOpen"
+                class="fill-black !w-4 !h-4 mx-auto"
+              />
+            </button>
+          </div>
+          <TransitionRoot appear :show="isRecipientOpen" as="template">
+            <Dialog as="div" class="relative z-10">
+              <TransitionChild
+                as="template"
+                enter="duration-300 ease-out"
+                enter-from="opacity-0"
+                enter-to="opacity-100"
+                leave="duration-200 ease-in"
+                leave-from="opacity-100"
+                leave-to="opacity-0"
+              >
+                <div class="fixed inset-0 bg-black bg-opacity-25" />
+              </TransitionChild>
+
+              <div class="fixed inset-0 overflow-y-auto">
+                <div
+                  class="flex flex-col min-h-full items-center justify-center p-4 text-center"
+                >
+                  <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0 scale-95"
+                    enter-to="opacity-100 scale-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100 scale-100"
+                    leave-to="opacity-0 scale-95"
+                  >
+                    <DialogPanel
+                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[60vh] flex flex-col items-center sm:h-[40vh] sm:w-[30vw]"
+                    >
+                      <DialogTitle
+                        as="h3"
+                        class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
+                      >
+                        <img
+                          v-if="
+                            selectedRecipientCountry &&
+                            !!selectedRecipientCountry.flag
+                          "
+                          :src="selectedRecipientCountry?.flag"
+                          class="object-contain w-4 h-4"
+                        />
+                        <span v-if="selectedRecipientCountry?.name">{{
+                          selectedRecipientCountry?.currency_code
+                        }}</span>
+                        <span v-else> Select Recipient Country</span>
+                      </DialogTitle>
+                      <div
+                        class="mt-2 overflow-y-scroll custom-scroll px-2 w-full h-4/5"
+                      >
+                        <template v-if="countries.length > 0">
+                          <div
+                            class="options flex gap-x-2 items-center cursor-pointer hover:bg-ash-1 px-2 py-1 rounded-sm"
+                            @click="handleSelectRecipientCountry(country)"
+                            v-for="country in countries"
+                            :class="{
+                              '!bg-ash-1':
+                                country &&
+                                selectedRecipientCountryDetails.recipient_country ===
+                                  country?.name,
+                            }"
+                            :key="country.name"
+                          >
+                            <img
+                              v-if="country.flag"
+                              :src="country.flag"
+                              class="object-contain w-4 h-4"
+                            />
+                            <span>{{ country?.currency_code }}</span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="loader w-3/5 h-3/5"></div>
+                        </template>
+                      </div>
+                    </DialogPanel>
+                  </TransitionChild>
+                </div>
+              </div>
+            </Dialog>
+          </TransitionRoot>
+          <!-- <RecipientCurrencySelect /> end -->
         </div>
       </div>
     </div>
@@ -110,9 +333,16 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-          <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol
-          }}</span>
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'forward'"
+            >{{ selectedRecipientCountry.currency_symbol }}</span
+          >
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'reverse'"
+            >{{ selectedSenderCountry.currency_symbol }}</span
+          >
           <span class="amount" v-if="cashValue">{{ cashValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -147,9 +377,16 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-          <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol
-          }}</span>
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'forward'"
+            >{{ selectedRecipientCountry.currency_symbol }}</span
+          >
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'reverse'"
+            >{{ selectedSenderCountry.currency_symbol }}</span
+          >
           <span class="amount" v-if="bankValue">{{ bankValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -186,9 +423,16 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-          <span class="unit self-end">{{
-            recipientCurrencyDetails.recipient_currency_symbol
-          }}</span>
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'forward'"
+            >{{ selectedRecipientCountry.currency_symbol }}</span
+          >
+          <span
+            class="unit self-end"
+            v-show="conversionDetails.conversion_type === 'reverse'"
+            >{{ selectedSenderCountry.currency_symbol }}</span
+          >
           <span class="amount" v-if="mobileValue">{{ mobileValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -207,10 +451,18 @@
 </template>
 
 <script setup>
+import {
+  TransitionRoot,
+  TransitionChild,
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/vue";
 import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import UtilsService from "@/services/utils.service";
+import { formatStringToMoney } from "../../utils/index";
 import { watchDebounced } from "@vueuse/core";
 
 const router = useRouter();
@@ -229,22 +481,19 @@ const { user } = storeToRefs(authstore);
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
 
-// const changingDetails = reactive({
-//   amount: "",
-// });
-
-const fetchInit = ref(false);
-
-const amount = ref("");
-
-const reverseAmount = ref("0.00");
-const forwardAmount = ref("0.00");
+// CONVERSION UTILS
+const changeDetails = reactive({
+  reverseAmount: "0.00",
+  forwardAmount: "0.00",
+});
+const Amount = ref(null);
 
 const handleForward = (conversionDetails) => {
   const type = "forward";
   // console.log('forward!!!',conversionDetails)
   conversionDetails.conversion_type = type;
-  conversionDetails.amount = forwardAmount.value;
+  conversionDetails.amount = changeDetails.forwardAmount;
+  // conversionDetails.amount = forwardAmount;
   // console.log('forward!!!',conversionDetails)
 };
 
@@ -252,9 +501,126 @@ const handleBackward = (conversionDetails) => {
   const type = "reverse";
   // console.log('backward!!!',conversionDetails)
   conversionDetails.conversion_type = type;
-  conversionDetails.amount = reverseAmount.value;
+  conversionDetails.amount = changeDetails.reverseAmount;
+  // conversionDetails.amount = reverseAmount.value;
   // console.log('backward!!!',conversionDetails)
 };
+
+// SENDER
+const isSenderOpen = ref(false);
+
+const getDefaultSender = () => {
+  const defaultCountry = countries?.value?.find(
+    (item) => item.currency_code === "GBP"
+  );
+  // console.log(defaultCountry,'Dc');
+  const sample = {
+    sender_currency: defaultCountry.currency_code,
+    sender_currency_symbol: defaultCountry.currency_symbol,
+    sender_country: defaultCountry.name,
+  };
+
+  useAppStore().setSenderCurrencyDetails(sample);
+  return defaultCountry;
+};
+
+const selectedSenderCountry = ref(getDefaultSender());
+
+const selectedSenderCountryDetails = reactive({
+  sender_currency: "",
+  sender_currency_symbol: "",
+  sender_country: "",
+});
+
+function closeSenderModal() {
+  isSenderOpen.value = false;
+}
+function openSenderModal() {
+  isSenderOpen.value = true;
+}
+
+const handleContinueSender = async () => {
+  let allowSubmit = true;
+  for (const item in selectedSenderCountryDetails) {
+    if (!selectedSenderCountryDetails[item]) {
+      allowSubmit = false;
+      return;
+    }
+  }
+
+  if (allowSubmit === true) {
+    useAppStore().setSenderCurrencyDetails(selectedSenderCountryDetails);
+    closeSenderModal();
+  }
+};
+
+const handleSelectSenderCountry = (country) => {
+  selectedSenderCountryDetails.sender_currency = country.currency_code;
+  selectedSenderCountryDetails.sender_country = country.name;
+  selectedSenderCountryDetails.sender_currency_symbol = country.currency_symbol;
+  selectedSenderCountry.value = country;
+  handleContinueSender();
+};
+
+// RECIPIENT START
+const isRecipientOpen = ref(false);
+const getDefaultRecipient = () => {
+  const defaultCountry = countries?.value?.find(
+    (item) => item.currency_code === "NGN"
+  );
+  //console.log(defaultCountry,'dc');
+
+  const initialSample = {
+    recipient_currency: defaultCountry.currency_code,
+    recipient_currency_symbol: defaultCountry.currency_symbol,
+    recipient_country: defaultCountry.name,
+  };
+
+  useAppStore().setRecipientCurrencyDetails(initialSample);
+  return defaultCountry;
+};
+
+const selectedRecipientCountry = ref(getDefaultRecipient());
+
+const selectedRecipientCountryDetails = reactive({
+  recipient_currency: "",
+  recipient_currency_symbol: "",
+  recipient_country: "",
+});
+
+function closeRecipientModal() {
+  isRecipientOpen.value = false;
+}
+function openRecipientModal() {
+  isRecipientOpen.value = true;
+}
+
+const handleContinueRecipient = async () => {
+  let allowSubmit = true;
+  for (const item in selectedRecipientCountryDetails) {
+    if (selectedRecipientCountryDetails[item] === "") {
+      allowSubmit = false;
+      return;
+    }
+  }
+
+  if (allowSubmit === true) {
+    useAppStore().setRecipientCurrencyDetails(selectedRecipientCountryDetails);
+    closeRecipientModal();
+  }
+};
+const handleSelectRecipientCountry = (country) => {
+  // console.log(country,'country');
+  selectedRecipientCountryDetails.recipient_currency = country.currency_code;
+  selectedRecipientCountryDetails.recipient_country = country.name;
+  selectedRecipientCountryDetails.recipient_currency_symbol =
+    country.currency_symbol;
+  selectedRecipientCountry.value = country;
+
+  handleContinueRecipient();
+};
+
+// RECIPIENT END
 
 const bestValue = ref({
   cash: {
@@ -264,15 +630,10 @@ const bestValue = ref({
     converted: "",
   },
 });
+
 const cashValue = ref("");
 const bankValue = ref("");
 const mobileValue = ref("");
-
-const assignConvertedAmount = () => {
-  for (const item in bestValue.value) {
-    amount.value = bestValue.value[item].converted;
-  }
-};
 
 useHead({
   title: "Send Money",
@@ -281,11 +642,9 @@ useHead({
 const conversionDetails = reactive({
   amount: "",
   client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
-  recipient_country: recipientCurrencyDetails.value.recipient_country,
-  recipient_currency: recipientCurrencyDetails.value.recipient_currency,
-  sender_currency: senderCurrencyDetails.value.sender_currency,
-  sender_country: senderCurrencyDetails.value.sender_country,
+  sender_currency: "",
   conversion_type: "forward",
+  sender_currency: "",
   recipient_country_code: "",
 });
 
@@ -298,16 +657,21 @@ const isLoadingCountries = ref(false);
 const handleContinue = () => {
   if (conversionDetails.amount !== "" && remittanceMethod.value !== "") {
     useAppStore().setRemittanceMethod(remittanceMethod.value);
-
+        useAppStore().setPaymentSummary(Amount.value);
+    console.log(Amount.value,'cDDDDD!!!HEy Amount.value...')
     // console.log(conversionDetails,'cDDDDD!!!HEy')
+    const country = countries.value.find(
+      (country) => country.code === conversionDetails.recipient_country_code
+    );
+    // console.log(recipient_country , 'RCCCC')
     const data = {
-      recipient_currency: conversionDetails.recipient_currency,
-      recipient_country: conversionDetails.recipient_country,
+      recipient_currency: country.currency_code,
+      recipient_country: country.name,
     };
     useAppStore().setRecipientCurrencyDetails(data);
     useAppStore().setRestriction(data.recipient_country);
 
-    localStorage.setItem("progged", JSON.stringify(true));
+    // localStorage.setItem("progged", JSON.stringify(true));
     navigateTo("/recipient");
   }
 };
@@ -318,34 +682,34 @@ const handleContinue = () => {
 //   setCountries(data.data);
 // };
 const initialFetch = async () => {
+  // conversionDetails
+
+  if (conversionDetails.conversion_type === "forward") {
+    conversionDetails.amount = changeDetails.forwardAmount;
+    // conversionDetails.amount = forwardAmount.value;
+  }
+  if (conversionDetails.conversion_type === "reverse") {
+    conversionDetails.amount = changeDetails.reverseAmount;
+    // conversionDetails.amount = reverseAmount.value;
+  }
+
+  conversionDetails.sender_currency = selectedSenderCountry.value.currency_code;
+  if (
+    selectedRecipientCountry.value.code === "NG" &&
+    selectedRecipientCountry.value.currency_code === "NGN"
+  ) {
+    conversionDetails.recipient_country_code = "NGA";
+  } else {
+    conversionDetails.recipient_country_code =
+      selectedRecipientCountry.value.code;
+  }
+  // console.log(conversionDetails,'cd');
   if (
     !!conversionDetails.amount &&
-    !!conversionDetails.recipient_currency &&
+    !!conversionDetails.recipient_country_code &&
     !!conversionDetails.sender_currency
   ) {
-    let allowAction = false;
-    //  console.log(conversionDetails,'cDDDDD!!!HEy hiii!');
-    const recipient_country = countries?.value?.find((c) => {
-      if (c.name === conversionDetails.recipient_country) {
-        allowAction = true;
-        return c;
-      }
-    });
-
-    const recipient_country_code = recipient_country?.code;
-    // console.log(recipient_country_code, "RCCC");
-    conversionDetails.recipient_country_code = recipient_country_code;
-    // conversionDetails.recipient_country =
-    //   recipientCurrencyDetails.value.recipient_country;
-
-    // conversionDetails.recipient_currency =
-    //   recipientCurrencyDetails.value.recipient_currency;
-
-    // conversionDetails.sender_currency =
-    //   senderCurrencyDetails.value.sender_currency;
-
-    // conversionDetails.sender_country =
-    //   senderCurrencyDetails.value.sender_country;
+    let allowAction = true;
 
     for (const item in conversionDetails) {
       if (!conversionDetails[item]) {
@@ -353,52 +717,80 @@ const initialFetch = async () => {
       }
     }
 
+    // console.log(allowAction, "alloAct");
     if (allowAction) {
-      console.log(conversionDetails,'convD')
+      // console.log(conversionDetails, "convD");
       UtilsService.getConversionRates(conversionDetails).then((response) => {
         const result = response.data;
 
-        console.log(result, "res");
-        // const converted_amount = result.converted_amount;
-        // // console.log(converted_amount,'conved amout')
-        // const cash = converted_amount.cash;
-        // const bank = converted_amount.bank;
-        // const mobile = converted_amount.mobile;
+        // console.log(result, "res");
+        const converted_amount = result.converted_amount;
+        console.log(converted_amount, "conved amout");
+        Amount.value = converted_amount;
+        const cash = converted_amount.cash;
+        const bank = converted_amount.bank;
+        const mobile = converted_amount.mobile;
         // // console.log(cash,'cash');
 
-        // useAppStore().setPaymentSummary(converted_amount);
+        useAppStore().setPaymentSummary(Amount.value);
 
-        // const details = {
-        //   cash,
-        //   mobile,
-        //   bank,
-        //   recipient_currency: result.recipient_currency,
-        //   conversion_rate: result.conversion_rate,
-        // };
+        const details = {
+          cash,
+          mobile,
+          bank,
+          recipient_currency: result.recipient_currency,
+          conversion_rate: result.conversion_rate,
+        };
 
-        // useAppStore().setConversionData({
-        //   amount: conversionDetails.amount,
-        // });
+        useAppStore().setConversionData({
+          amount: conversionDetails.amount,
+        });
 
-        // useAppStore().setRemittanceDetails(details);
+        useAppStore().setRemittanceDetails(details);
 
-        // cashValue.value = String(cash?.converted);
-        // bankValue.value = String(bank?.converted);
-        // mobileValue.value = String(mobile?.converted);
+        // if (conversionDetails.conversion_type === "forward") {
+        cashValue.value = `${cash?.converted}`;
+        bankValue.value = `${bank?.converted}`;
+        mobileValue.value = `${mobile?.converted}`;
+        // }
 
-        // bestValue.value = { ...result.best_value };
+        bestValue.value = { ...result.best_value };
 
-        // assignConvertedAmount();
+        if (conversionDetails.conversion_type === "forward") {
+          const details = Object.entries({ ...result.best_value })[0];
+          // console.log(details , 'details')
+          const [key, value] = details;
+          // console.log(value,'val froward');
+          const { converted } = value;
+
+          console.log(converted, "converted forward");
+
+          // reverseAmount.value = converted;
+          changeDetails.reverseAmount = formatStringToMoney(converted);
+          // assignConvertedAmount(forwardAmount);
+        } else if (conversionDetails.conversion_type === "reverse") {
+          // assignConvertedAmount(reverseAmount);
+          const details = Object.entries({ ...result.best_value })[0];
+          // console.log(details , 'details')
+          const [key, value] = details;
+          // console.log(value,'val rev');
+          const { converted } = value;
+
+          console.log(converted, "converted rev");
+
+          // forwardAmount.value  = `${converted}`;
+          changeDetails.forwardAmount = formatStringToMoney(converted);
+        }
       });
     }
   }
 };
 onMounted(async () => {
-  conversionDetails.amount = forwardAmount.value;
-  await initialFetch();
-  // UtilsService.getRate().then((res) => {
-  //   console.log(res,'ressponse')
-  // })
+  //conversionDetails.amount = forwardAmount.value;
+  // await initialFetch();
+  // // UtilsService.getRate().then((res) => {
+  // //   console.log(res,'ressponse')
+  // // })
 });
 
 onBeforeMount(async () => {
@@ -414,7 +806,7 @@ watchDebounced(
   async () => {
     initialFetch();
   },
-  { debounce: 500, maxWait: 800 }
+  { debounce: 500, maxWait: 1000 }
 );
 
 definePageMeta({
@@ -528,9 +920,71 @@ input[type="radio"]:focus label.btn {
   }
 }
 
-#userInput {
+#userInput,
+#userInput2 {
   @apply border-secondary;
   border-style: solid !important;
   border-width: 1.45px !important;
+}
+
+.loader {
+  border: 5px solid #fff;
+  border-bottom-color: #212121;
+  border-radius: 50%;
+  // /* display: inline-block; */
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+.custom-scroll {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: hsl(220deg, 6%, 91%);
+    border: none;
+    width: 36px;
+    height: 36px;
+  }
+  &::-webkit-scrollbar-track {
+    @apply bg-ash-2;
+    // display: none;
+    border-radius: 1000px;
+    border: none;
+    // background-color: transparent;
+    height: 6px;
+  }
+
+  // &::-webkit-scrollbar-track-piece {
+  //   display: none;
+  //   border-radius: 1000px;
+  //   // background-color: rgb(52, 42, 51);
+  //   border: none;
+  //   // background-color: transparent;
+  //   height: 6px;
+  // }
+  /*
+  Little bonus: on non-Firefox browsers,
+  the thumb will light up on hover!
+*/
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(0, 4%, 65%);
+  }
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

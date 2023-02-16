@@ -7,14 +7,16 @@ export default defineNuxtRouteMiddleware((item) => {
   // console.log(item , 'item in  checkRoute');
   const route = useRoute();
 
-  if (item.name === "recipient") {
-    const progged = JSON.parse(localStorage.getItem("progged"));
-    // console.log(progged,'progged');
-    localStorage.removeItem("progged");
-    if (progged !== true) {
-      return navigateTo("/send-money");
-    }
-  }
+  // if (item.name === "recipient") {
+  //   const progged = JSON.parse(localStorage.getItem("progged"));
+  //   // console.log(progged,'progged');
+  //   localStorage.removeItem("progged");
+  //   if (progged !== true) {
+  //     return navigateTo("/send-money");
+  //   }
+  // }
+
+
   if (item.name === "transactions-transactionId") {
     const progged = JSON.parse(localStorage.getItem("progged"));
     // console.log(progged,'progged');
@@ -33,15 +35,15 @@ export default defineNuxtRouteMiddleware((item) => {
     }
   }
 
-  if (item.name === "upload") {
-    const progged = JSON.parse(localStorage.getItem("progged"));
-    // console.log(progged,'progged');
-    localStorage.removeItem("progged");
+  // if (item.name === "upload") {
+  //   const progged = JSON.parse(localStorage.getItem("progged"));
+  //   // console.log(progged,'progged');
+  //   localStorage.removeItem("progged");
 
-    if (progged !== true) {
-      return navigateTo("/send-money");
-    }
-  }
+  //   if (progged !== true) {
+  //     return navigateTo("/send-money");
+  //   }
+  // }
 
   if (item.name === "transaction-status") {
     const progged = JSON.parse(localStorage.getItem("progged"));
@@ -58,15 +60,15 @@ export default defineNuxtRouteMiddleware((item) => {
     }
   }
 
-  if (item.name === "payment-summary") {
-    const progged = JSON.parse(localStorage.getItem("progged"));
-    // console.log(progged,'progged');
-    localStorage.removeItem("progged");
+  // if (item.name === "payment-summary") {
+  //   const progged = JSON.parse(localStorage.getItem("progged"));
+  //   // console.log(progged,'progged');
+  //   localStorage.removeItem("progged");
     
-    if (progged !== true) {
-      return navigateTo("/send-money");
-    }
-  }
+  //   if (progged !== true) {
+  //     return navigateTo("/send-money");
+  //   }
+  // }
 
   // if (!authenticated) {
   //   clearUserDetails();

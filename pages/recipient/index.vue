@@ -92,18 +92,20 @@
             type="text"
             v-model="recipientForm.address"
             name="address"
+            @click="handleCityClick"
+            @input="handleCityClick"
             id="address"
-            hidden
-            placeholder="Recipient Address"
+            v-show="showWithMap === false ? true : false"
+            placeholder="Type and Select City from Google Dropdown List"
           />
           <GMapAutocomplete
             @place_changed="setPlace"
             type="text"
             v-model="recipientForm.address"
             name="address2"
+            v-show="showWithMap === true ? true : false"
             id="address2"
             @input="handleCityInput"
-            @click="handleCityInputClick"
             ref="addressRef"
             placeholder="Type and Select City from Google Dropdown List"
             :options="{
@@ -260,8 +262,8 @@
           :type="'submit'"
           :text="'CONTINUE'"
           class="uppercase !text-secondary font-semibold text-xl"
-          :disabled="isLoading === true"
-          :class="{ 'opacity-60': isLoading === true }"
+                :disabled="isLoading === true"
+      :class="{'opacity-75 cursor-not-allowed' : isLoading === true}"
         />
       </VeeForm>
 
@@ -290,7 +292,7 @@ const addressRef = ref(null);
 const isOpen = ref(false);
 const focusedPhone = ref(false);
 const itemSelected = ref(null);
-
+const showWithMap = ref(true);
 const formerRecipients = ref([]);
 
 const reasonForRemittance = ref("");
@@ -353,32 +355,29 @@ const handleSelectRecipient = (recipient) => {
   //     return r;
   //   }
   // });
-  // console.log(recipient, "recipient selected");
+  //console.log(recipient, "recipient selected");
 
   recipientForm.first_name = recipient.first_name;
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
   recipientForm.phone = recipient.phone_number;
+  showWithMap.value = false;
 };
 
 const handleCityInput = async (e) => {
-  // console.log(e,'cityInput');
+  //console.log(e, "cityInput");
   isLoadingCity.value = true;
   setTimeout(() => {
-    isLoadingCity.value = !true;
-    // if (recipientForm.address === "") {
-    //   // ref(cityRef).value.$el.value.clear();
-    //   ref(addressRef).value.$el.value = "";
-    // }
+    isLoadingCity.value = false;
+    const value = e.target.value;
+    recipientForm.address = value;
   }, 500);
-  const value = e.target.value;
+};
+const handleCityClick = async (e) => {
+  //console.log(e, "cityInputClick");
+  showWithMap.value = false;
+}
 
-  recipientForm.address = value;
-};
-const handleCityInputClick = async (e) => {
-  // console.log(e, "clci");
-  // ref(cityRef).value.$el.value
-};
 
 const setPlace = (e) => {
   const address = e.formatted_address;
@@ -417,31 +416,43 @@ const handleSubmit = async (values) => {
       }
     });
 
-    const reason_id = reasonSel.id || null;
+    const reason_id = reasonSel.id;
 
-    if (reason_id !== null) {
+   // console.log(reason_id,'reason');
+
+    if (!!reason_id) {
       UtilsService.createRecipient(recipientCreationData)
         .then((response) => {
           const result = response.data;
           // console.log(result, "recipient creation result");
-          const paymentSummary = {
+          const recipientData = {
             result: {
               ...result,
               address: recipientCreationData.address,
             },
             reasonId: reason_id,
           };
-
+          useAppStore().setCurrentRecipientData(recipientData)
           localStorage.setItem("progged", JSON.stringify(true));
 
           // TODO Add this to pinia store;
-          localStorage.setItem("payS", JSON.stringify(paymentSummary));
+          // const initialPayS = JSON.parse(localStorage.getItem('payS'))
+          // if(!!initialPayS){
+          //   localStorage.removeItem('payS');
+          // }
+
+          // localStorage.setItem("payS", JSON.stringify(paymentSummary));
+
+          isLoading.value = false;
 
           navigateTo("/payment-summary");
         })
         .catch((err) => {
+
           isLoading.value = false;
+
           console.log(err, "err");
+
         });
     }
   } catch (err) {

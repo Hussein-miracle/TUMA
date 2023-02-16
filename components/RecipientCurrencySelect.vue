@@ -124,7 +124,7 @@ const countries = computed(() => appStore.getCountriesFromStore);
 
 const index = getRandomIndex(15);
 const getDefault = () => {
-  const defaultCountry = countries?.value?.find((i) => i.code === "NG");
+  const defaultCountry = countries?.value?.find((i) => i.currency_code === "NGN");
   // useAppStore().setRecipientCurrencyDetails(defaultCountry);
   return defaultCountry;
 };

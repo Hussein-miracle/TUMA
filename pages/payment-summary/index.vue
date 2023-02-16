@@ -44,7 +44,8 @@
         <div class="flex justify-between items-center">
           <p>Exchange rate</p>
           <div class="flex items-center gap-x-1">
-            {{  recipientCurrencyDetails.recipient_currency}} <span>{{remittanceDetail.conversion_rate}}</span>
+            {{ recipientCurrencyDetails.recipient_currency }}
+            <span>{{ remittanceDetail.conversion_rate }}</span>
           </div>
         </div>
 
@@ -66,8 +67,8 @@
       >
         <p>Inc.Charges</p>
         <div class="font-bold text-lg text-black flex gap-x-1">
-          <span>{{ senderCurrencyDetails.sender_currency_symbol }}</span>
-          <span>{{ summary.final_amount }}</span>
+          <span>{{ senderCurrencyDetails.sender_currency }}</span>
+          <span v-money>{{ summary.final_amount }}</span>
         </div>
       </div>
     </div>
@@ -76,6 +77,8 @@
       :type="'button'"
       :text="'Confirm'"
       class="uppercase !text-secondary font-semibold text-xl mt-12"
+      :disabled="isLoading === true"
+      :class="{'opacity-75 cursor-not-allowed' : isLoading === true}"
       @click="handleCreateTransaction"
     />
   </div>
@@ -94,13 +97,16 @@ const {
   senderCurrencyDetails,
   remittanceDetail,
   recipientCurrencyDetails,
+  currentRecipientData
 } = storeToRefs(appStore);
-// console.log(paymentSummary, "summaryData");
-// console.log(remittanceMethod, "rem met");
 
-const summary = paymentSummary.value[remittanceMethod.value];
+// console.log(paymentSummary.value, "summaryData");
+// console.log(remittanceMethod.value, "rem met value");
+// console.log(senderCurrencyDetails.value, "SDSD");
 
-// console.log(summary, "summary deails");
+const summary = ref(paymentSummary.value[remittanceMethod.value]);
+
+// console.log(summary.value, "summary deails");
 
 const isLoading = ref(false);
 
@@ -109,19 +115,19 @@ definePageMeta({
   middleware: ["auth", "checkroute"],
 });
 
+// const data = JSON.parse(localStorage.getItem("payS"));
+
 const summaryDetails = reactive({
   first_name: "",
   phone_number: "",
   last_name: "",
-  // address: "",
+  address: "",
 });
 
 const fetchRes = () => {
-  const data = JSON.parse(localStorage.getItem("payS"));
-  // console.log(data, "from store Pays");
-  const result = data.result;
+  const result = currentRecipientData.value.result;
+  // console.log(result, "from store Pays");
 
-  //console.log(result, "res");
   for (const item in result) {
     if (item in summaryDetails) {
       summaryDetails[item] = result[item];
@@ -131,15 +137,11 @@ const fetchRes = () => {
 
 const handleCreateTransaction = async () => {
   isLoading.value = true;
-  const { recipientCurrencyDetails, senderCurrencyDetails, conversionData } =
+  const { recipientCurrencyDetails, senderCurrencyDetails, conversionData,  currentRecipientData } =
     useAppStore();
-  // console.log(conversionData, "convData");
-  const data = JSON.parse(localStorage.getItem("payS"));
-  //console.log(data, "from store Pays");
-  const response = data?.result;
-  const reason_id = data?.reasonId;
 
-  localStorage.removeItem("payS");
+  const response = currentRecipientData?.result;
+  const reason_id =  currentRecipientData?.reasonId;
 
   if (reason_id !== null) {
     const transactionData = {
@@ -152,20 +154,21 @@ const handleCreateTransaction = async () => {
 
     UtilsService.createTransaction(transactionData)
       .then((result) => {
-        
         // console.log(result, "trans creation data");
         const data = result.data;
-        const upload_required  = data?.upload_required;
+        const upload_required = data?.upload_required;
         useAppStore().setUploadRequired(upload_required);
         useAppStore().setTransactionRef(data.reference);
 
         isLoading.value = false;
 
-        // if(upload_required){
-        //   navigateTo("/add-card");
-        // }else{
+        // console.log(data, "transa data");
+
+        if(upload_required){
+          navigateTo("/add-card");
+        }else{
           navigateTo('/select-card');
-        // }
+        }
       })
       .catch((err) => {
         isLoading.value = false;

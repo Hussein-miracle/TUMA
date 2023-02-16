@@ -1,13 +1,14 @@
 import { defineStore } from "pinia";
+import { useLocalStorage } from "@vueuse/core";
 import { useAppStore } from "../app";
 import TokenService from "@/services/token.service.js";
 import AuthService from "@/services/auth.service";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: null,
+    user: useLocalStorage('user',null),
     token: null,
-    tempUser: null,
+    tempUser:useLocalStorage('tempUser',null),
   }),
   getters: {
     // TODO: Plan to refactor
@@ -124,7 +125,12 @@ export const useUserStore = defineStore("user", {
       state.tempUser = null;
     },
   },
-  persist: true,
+  persist:true
+  ,
+  persistence: {
+		enable: true,
+		mode: "localStorage"
+	}
 });
 
 export const initLogout = async () => {

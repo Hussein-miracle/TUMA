@@ -65,3 +65,7 @@ export const getRandomIndex = (max) => {
 
 
 
+export const formatStringToMoney = (string) => {
+  const main = parseFloat(string.replace(/,/g, ""));
+  return main;
+};

@@ -182,7 +182,7 @@ import UtilsService from "@/services/utils.service";
 const authstore = useUserStore();
 const { user } = storeToRefs(authstore);
 
-console.log(user, "user hiss");
+// console.log(user, "user hiss");
 
 const fetching = ref(false);
 const submitting = ref(false);

@@ -29,7 +29,7 @@ const { getCountriesFromStore } = useAppStore();
 
 const  countries = storeToRefs(getCountriesFromStore);
 
-console.log(countries,'cg');
+// console.log(countries,'cg');
 
 const showSelect = ref(false);
 
@@ -41,7 +41,7 @@ const closeSelect = () => {
 
 
 const toggleSelect = () => {
-  console.log('toggle Select',showSelect.value);
+  // console.log('toggle Select',showSelect.value);
   showSelect.value = !showSelect.value;
 }
 

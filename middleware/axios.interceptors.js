@@ -52,7 +52,7 @@ const setupInterceptor = () => {
       // console.log(originalConfig, "cg");
 
       if (originalConfig?.url !== "/login" && status === 401) {
-        createToast('Please Log In again.', {
+        createToast('Session Expired,Please log in again.', {
           showIcon: true,
           type: "warning",
           transition: "bounce",
@@ -69,7 +69,7 @@ const setupInterceptor = () => {
       // if()
       if (err.code === "ERR_NETWORK") {
         // openNotification('Check Network Connection',TOAST_TYPES.error)
-        createToast("Check Your Network Connection And Try Again.", {
+        createToast("Check Your Network Connection,Refresh And Try Again.", {
           showIcon: true,
           type: "warning",
         });

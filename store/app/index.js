@@ -1,32 +1,17 @@
 import { defineStore } from "pinia";
+import { useLocalStorage } from "@vueuse/core";
 import TokenService from "@/services/token.service.js";
 import AuthService from "@/services/auth.service";
 import UtilsService from "@/services/utils.service";
-// code
-// :
-// "NG"
-// currency_code
-// :
-// "NGN"
-// currency_symbol
-// :
-// "₦"
-// flag
-// :
-// "https://nyc3.digitaloceanspaces.com/dagdag/flags/ng.svg"
-// name
-// :
-// "Nigeria"
+
 export const useAppStore = defineStore("app", {
   state: () => ({
-    showTodoList: false,
-    // tabState:
     upload_required: false,
     userImage: null,
     defaultDetails: null,
 
-    remittanceMethod: "",
-    remittanceDetail: {
+    remittanceMethod: useLocalStorage("remittanceMethod", ""),
+    remittanceDetail: useLocalStorage("remittanceDetail", {
       cash: {
         converted: "",
       },
@@ -37,23 +22,23 @@ export const useAppStore = defineStore("app", {
         converted: "",
       },
       recipient_currency: "",
-    },
+    }),
     user: null,
-    countries: [],
+    countries: useLocalStorage("countries", []),
     transaction: {
       applicantEmail: "",
       applicantPhone: "",
     },
-    senderCurrencyDetails: {
+    senderCurrencyDetails: useLocalStorage("senderCurrencyDetails", {
       sender_currency: "",
       sender_country: "",
       sender_currency_symbol: "",
-    },
-    recipientCurrencyDetails: {
+    }),
+    recipientCurrencyDetails: useLocalStorage("recipientCurrencyDetails", {
       recipient_currency: "",
       recipient_country: "",
       recipient_currency_symbol: "",
-    },
+    }),
     reason: "",
     reasons: [],
     conversionData: {
@@ -63,34 +48,39 @@ export const useAppStore = defineStore("app", {
       country: "",
       country_code: "",
     },
-    transaction_ref: "",
+    transaction_ref: useLocalStorage("transaction_ref", ""),
 
-    paymentSummary: {
+    paymentSummary: useLocalStorage("paymentSummary", {
       cash: {
-        initial_amount: 0,
-        commission: 0,
-        final_amount: 0,
-        converted: 0,
+        initial_amount: "",
+        commission: "",
+        final_amount: "",
+        converted: "",
       },
       bank: {
-        initial_amount: 0,
-        commission: 0,
-        final_amount: 0,
-        converted: 0,
+        initial_amount: "",
+        commission: "",
+        final_amount: "",
+        converted: "",
       },
       mobile: {
-        initial_amount: 0,
-        commission: 0,
-        final_amount: 0,
-        converted: 0,
+        initial_amount: "",
+        commission: "",
+        final_amount: "",
+        converted: "",
       },
-    },
+    }),
 
     currentTransaction: {
       first_name: "",
       last_name: "",
       address: "",
+      reason: "",
     },
+    currentRecipientData: useLocalStorage("currentRecipientData",{
+      result:null,
+      reasonId:null,
+    }),
   }),
   getters: {
     showTodo: (state) => {
@@ -113,7 +103,7 @@ export const useAppStore = defineStore("app", {
     },
     getCountriesFromStore: (state) => {
       // console.log(state,'logging state to check for countries');
-      return state.countries;
+      return [...state.countries];
     },
     getSenderCurrencyDetails: (state) => {
       // console.log(state,'logging state to check for countries');
@@ -150,11 +140,12 @@ export const useAppStore = defineStore("app", {
     setImage(value) {
       useAppStore().userImage = value;
     },
+    setCurrentRecipientData(v){
+      useAppStore().currentRecipientData = v;
+    },
     setPaymentSummary: (value) => {
       const oldSummary = useAppStore().paymentSummary;
-      const newSummary = { ...oldSummary, ...value };
-      // console.log(newSummary ,'new summary to updat')
-      useAppStore().paymentSummary = newSummary;
+      useAppStore().paymentSummary = { ...oldSummary, ...value };
     },
     setRestriction(value) {
       const country = value;
@@ -180,7 +171,8 @@ export const useAppStore = defineStore("app", {
       useAppStore().remittanceMethod = value;
     },
     setCountries: async (value) => {
-      useAppStore().countries = value;
+      const old = useAppStore().countries;
+      useAppStore().countries = [...value];
     },
     fetchCountries: async () => {
       const response = await UtilsService.getCountries();
@@ -202,7 +194,8 @@ export const useAppStore = defineStore("app", {
     },
 
     setSenderCurrencyDetails: (value) => {
-      useAppStore().senderCurrencyDetails = { ...value };
+      const stale = useAppStore().senderCurrencyDetails;
+      useAppStore().senderCurrencyDetails = { ...stale, ...value };
     },
     setReasons: (value) => {
       useAppStore().reasons = value;
@@ -211,8 +204,8 @@ export const useAppStore = defineStore("app", {
       useAppStore().upload_required = value;
     },
     setDefault: (daf) => {
-      const old = {...useAppStore().defaultDetails};
-      useAppStore().defaultDetails = {...old,...daf};
+      const old = { ...useAppStore().defaultDetails };
+      useAppStore().defaultDetails = { ...old, ...daf };
     },
     fetchConversion: async (form) => {
       const response = await UtilsService.getConversionRates(form);
@@ -227,21 +220,19 @@ export const useAppStore = defineStore("app", {
 
       return Promise.resolve(data);
     },
-    fetchDefault: async (clientId = '') => {
+    fetchDefault: async (clientId = "") => {
       let data;
-      if(clientId){
+      if (clientId) {
         data = await UtilsService.getRate(clientId);
-        console.log(data,'with Cid')
-      }else{
+        console.log(data, "with Cid");
+      } else {
         data = await UtilsService.getRate();
-        console.log(data,'without Cid')
+        console.log(data, "without Cid");
       }
 
-
       // const defKey = data.currency;
-      
-      // const details =
 
+      // const details =
     },
     setAppUser: (values) => {
       const olduser = useAppStore().getUser;
@@ -268,4 +259,8 @@ export const useAppStore = defineStore("app", {
     },
   },
   persist: true,
+  persistence: {
+    enable: true,
+    mode: "localStorage",
+  },
 });

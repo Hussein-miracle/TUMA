@@ -178,6 +178,10 @@ onBeforeMount(async () => {
   await appStore.fetchDefault();
 });
 
+onMounted(() => {
+  useAppStore().setSenderCurrencyDetails(selectedCountry)
+})
+
 // watch(
 //   selectedCountry,
 //   () => {
@@ -202,6 +206,7 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="scss" scoped>
+
 .loader {
   border: 5px solid #fff;
   border-bottom-color: #212121;
