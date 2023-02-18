@@ -223,7 +223,7 @@ const fetchCards = async () => {
   UtilsService.getCards()
     .then((response) => {
       const data = response;
-      console.log(data, " data for get cards");
+     // console.log(data, " data for get cards");
       cards.value = data;
       fetching.value = false;
     })

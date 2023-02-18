@@ -49,7 +49,9 @@
             >
               <div
                 class="text-whitelike mx-auto flex gap-x-1 items-center"
-                v-if="selectedSenderCountry && selectedSenderCountry?.name"
+                v-if="
+                  selectedSenderCountry && selectedSenderCountry?.currency_code
+                "
               >
                 <img
                   v-if="selectedSenderCountry && !!selectedSenderCountry.flag"
@@ -109,7 +111,7 @@
                           :src="selectedSenderCountry?.flag"
                           class="object-contain w-4 h-4"
                         />
-                        <span v-if="selectedSenderCountry?.name">{{
+                        <span v-if="selectedSenderCountry?.currency_code">{{
                           selectedSenderCountry?.currency_code
                         }}</span>
                         <span v-else> Select Sender Currency</span>
@@ -117,16 +119,16 @@
                       <div
                         class="mt-2 overflow-y-scroll custom-scroll px-2 w-full h-4/5"
                       >
-                        <template v-if="countries.length > 0">
+                        <template v-if="defaultCurrencies.length > 0">
                           <div
                             class="options flex gap-x-2 items-center cursor-pointer hover:bg-ash-1 px-2 py-1 rounded-sm"
                             @click="handleSelectSenderCountry(country)"
-                            v-for="country in countries"
+                            v-for="country in defaultCurrencies"
                             :class="{
                               '!bg-ash-1':
                                 country &&
-                                selectedSenderCountry?.sender_country ===
-                                  country?.name,
+                                selectedSenderCountry?.currency_code ===
+                                  country?.currency_code,
                             }"
                             :key="country.name"
                           >
@@ -469,13 +471,22 @@ const router = useRouter();
 const store = useAppStore();
 const authstore = useUserStore();
 
+let touched =  useState('touched', () => !true);
+
 const {
   getSenderCurrencyDetails: senderCurrencyDetails,
   getRecipientCurrencyDetails: recipientCurrencyDetails,
+  defaultSendingDetails,
 } = storeToRefs(store);
 
+// console.log(defaultSendingDetails, "DSD");
+
+// const sender_currencies =
 const countries = computed(() => store.getCountriesFromStore);
 
+const defaultCurrencies = computed(() => store.defaultAvailableCurrencies);
+
+// console.log(defaultCurrencies, "Default currs");
 const { user } = storeToRefs(authstore);
 // console.log(user,'authRefs');
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
@@ -495,6 +506,7 @@ const handleForward = (conversionDetails) => {
   conversionDetails.amount = changeDetails.forwardAmount;
   // conversionDetails.amount = forwardAmount;
   // console.log('forward!!!',conversionDetails)
+  touched = true;
 };
 
 const handleBackward = (conversionDetails) => {
@@ -504,24 +516,29 @@ const handleBackward = (conversionDetails) => {
   conversionDetails.amount = changeDetails.reverseAmount;
   // conversionDetails.amount = reverseAmount.value;
   // console.log('backward!!!',conversionDetails)
+  touched = true;
 };
 
 // SENDER
 const isSenderOpen = ref(false);
 
 const getDefaultSender = () => {
-  const defaultCountry = countries?.value?.find(
-    (item) => item.currency_code === "GBP"
+  const defaultCountry = defaultCurrencies?.value?.find(
+    (item) => item.default === true
   );
   // console.log(defaultCountry,'Dc');
+
+  const sender_country = countries.value?.find((c) => c.currency_code === defaultCountry.currency_code);
+// console.log(sender_country,'sc');
   const sample = {
     sender_currency: defaultCountry.currency_code,
-    sender_currency_symbol: defaultCountry.currency_symbol,
-    sender_country: defaultCountry.name,
+    sender_currency_symbol: defaultCountry.symbol,
+    sender_country,
   };
 
   useAppStore().setSenderCurrencyDetails(sample);
-  return defaultCountry;
+
+  return sender_country;
 };
 
 const selectedSenderCountry = ref(getDefaultSender());
@@ -554,21 +571,40 @@ const handleContinueSender = async () => {
   }
 };
 
-const handleSelectSenderCountry = (country) => {
-  selectedSenderCountryDetails.sender_currency = country.currency_code;
-  selectedSenderCountryDetails.sender_country = country.name;
-  selectedSenderCountryDetails.sender_currency_symbol = country.currency_symbol;
-  selectedSenderCountry.value = country;
+const handleSelectSenderCountry = (curr) => {
+  //console.log(curr,'curr');
+  const sender_country = countries.value?.find((c) => c.currency_code === curr.currency_code);
+
+  const sample = {
+    sender_currency: curr.currency_code,
+    sender_currency_symbol: curr.symbol,
+    sender_country:sender_country?.name ?? '  ',
+  };
+
+  selectedSenderCountryDetails.sender_currency = curr.currency_code;
+  selectedSenderCountryDetails.sender_country = sender_country?.name ?? ' ';
+  selectedSenderCountryDetails.sender_currency_symbol = curr.symbol;
+  // selectedSenderCountryDetails.currency_symbol = curr.symbol;
+
+ const value = {
+  currency_symbol:curr.symbol,
+  flag:curr.flag,
+  currency_code:curr.currency_code,
+
+ }
+
+  selectedSenderCountry.value = value;
+
   handleContinueSender();
 };
 
 // RECIPIENT START
 const isRecipientOpen = ref(false);
-const getDefaultRecipient = () => {
+const getDefaultRecipient = (code = "") => {
   const defaultCountry = countries?.value?.find(
     (item) => item.currency_code === "NGN"
   );
-  //console.log(defaultCountry,'dc');
+  // console.log(defaultCountry,'dc');
 
   const initialSample = {
     recipient_currency: defaultCountry.currency_code,
@@ -657,8 +693,8 @@ const isLoadingCountries = ref(false);
 const handleContinue = () => {
   if (conversionDetails.amount !== "" && remittanceMethod.value !== "") {
     useAppStore().setRemittanceMethod(remittanceMethod.value);
-        useAppStore().setPaymentSummary(Amount.value);
-    console.log(Amount.value,'cDDDDD!!!HEy Amount.value...')
+    useAppStore().setPaymentSummary(Amount.value);
+    //console.log(Amount.value,'cDDDDD!!!HEy Amount.value...')
     // console.log(conversionDetails,'cDDDDD!!!HEy')
     const country = countries.value.find(
       (country) => country.code === conversionDetails.recipient_country_code
@@ -718,14 +754,14 @@ const initialFetch = async () => {
     }
 
     // console.log(allowAction, "alloAct");
-    if (allowAction) {
+    if (allowAction && touched) {
       // console.log(conversionDetails, "convD");
       UtilsService.getConversionRates(conversionDetails).then((response) => {
         const result = response.data;
 
         // console.log(result, "res");
         const converted_amount = result.converted_amount;
-        console.log(converted_amount, "conved amout");
+        // console.log(converted_amount, "conved amout");
         Amount.value = converted_amount;
         const cash = converted_amount.cash;
         const bank = converted_amount.bank;
@@ -763,7 +799,7 @@ const initialFetch = async () => {
           // console.log(value,'val froward');
           const { converted } = value;
 
-          console.log(converted, "converted forward");
+          // console.log(converted, "converted forward");
 
           // reverseAmount.value = converted;
           changeDetails.reverseAmount = formatStringToMoney(converted);
@@ -776,7 +812,7 @@ const initialFetch = async () => {
           // console.log(value,'val rev');
           const { converted } = value;
 
-          console.log(converted, "converted rev");
+          //console.log(converted, "converted rev");
 
           // forwardAmount.value  = `${converted}`;
           changeDetails.forwardAmount = formatStringToMoney(converted);
@@ -785,16 +821,11 @@ const initialFetch = async () => {
     }
   }
 };
-onMounted(async () => {
-  //conversionDetails.amount = forwardAmount.value;
-  // await initialFetch();
-  // // UtilsService.getRate().then((res) => {
-  // //   console.log(res,'ressponse')
-  // // })
-});
+onMounted(async () => {});
 
 onBeforeMount(async () => {
-  useAppStore().fetchCountries();
+  
+  // await handleDefaultSender();
 });
 
 // onBeforeUnmount(() => {
@@ -806,8 +837,12 @@ watchDebounced(
   async () => {
     initialFetch();
   },
-  { debounce: 500, maxWait: 1000 }
+  { debounce: 4500, maxWait: 9000 }
 );
+
+// watch(changeDetails,() => {
+
+// })
 
 definePageMeta({
   layout: "default",

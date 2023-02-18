@@ -34,12 +34,12 @@ import data from "@/data/onboarding";
 import { assets } from "@/utils/index";
 
 const { logout } = useUserStore();
-const {setCountries} = useAppStore();
+const { setCountries } = useAppStore();
 const index = ref(1);
 const [details1, details2, details3] = data;
 
 const setIndexVal = (val) => {
-  index.value = val; 
+  index.value = val;
 };
 
 const modifyIndex = () => {
@@ -51,18 +51,14 @@ const modifyIndex = () => {
 };
 
 useHead({
-
   title: "Onboarding",
 
-
   link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
-
 });
-
-
 
 definePageMeta({
   layout: false,
+  // middleware: "initialmount",
 });
 
 let interval;
@@ -75,7 +71,7 @@ let interval;
 onMounted(() => {
   interval = setInterval(() => {
     // if(!hovered.value){
-      modifyIndex();
+    modifyIndex();
     // }
   }, 5500);
 });
@@ -83,7 +79,6 @@ onMounted(() => {
 // onBeforeMount(() => {
 //   fetchCountries();
 // })
-
 
 onBeforeUnmount(() => {
   clearInterval(interval);

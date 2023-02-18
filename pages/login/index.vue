@@ -105,10 +105,12 @@ import { createToast } from "mosha-vue-toastify";
 // import the styling for the toast
 import "mosha-vue-toastify/dist/style.css";
 import { useUserStore } from "@/store/auth/index";
+import { useAppStore } from "@/store/app/index";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 
 const { login } = useUserStore();
+const { fetchDefault } = useAppStore();
 const { show, toggleShow } = useToggle();
 
 const isLoading = ref(false);
@@ -143,12 +145,20 @@ const handleSubmit = async (values) => {
     login(loginForm)
       .then((result) => {
         // console.log(result,'res');
-        isLoading.value = !true;
+        return useAppStore().fetchCountries();
+      })
+      .then((result) => {
+        // console.log(result,'res');
+        return useAppStore().fetchDefault();
+      })
+      .then((currs) => {
+        // console.log(currs,'currs');
+        isLoading.value = false;
         navigateTo("/send-money");
       })
       .catch((err) => {
-       // console.log(err,'err login err')
-        isLoading.value = !true;
+        // console.log(err,'err login err')
+        isLoading.value = false;
 
         const errResponse = err?.response;
         if (errResponse.status === 400) {

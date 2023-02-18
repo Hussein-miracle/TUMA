@@ -6,9 +6,9 @@ import AuthService from "@/services/auth.service";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
-    user: useLocalStorage('user',null),
+    user: useLocalStorage('user',{}),
     token: null,
-    tempUser:useLocalStorage('tempUser',null),
+    tempUser: null,
   }),
   getters: {
     // TODO: Plan to refactor
@@ -52,6 +52,7 @@ export const useUserStore = defineStore("user", {
       const oldDet = useUserStore().user;
       // console.log(oldDet,'oldD')
       useUserStore().user = { ...oldDet, ...user };
+      // console.log(useUserStore().user , 'user');
     },
     createAccount: (form) => {
       return AuthService.signUp(form).then(
@@ -125,12 +126,11 @@ export const useUserStore = defineStore("user", {
       state.tempUser = null;
     },
   },
-  persist:true
-  ,
+  persist: true,
   persistence: {
-		enable: true,
-		mode: "localStorage"
-	}
+    enable: true,
+    mode: "localStorage",
+  },
 });
 
 export const initLogout = async () => {

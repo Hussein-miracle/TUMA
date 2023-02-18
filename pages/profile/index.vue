@@ -172,9 +172,10 @@ definePageMeta({
 });
 
 const authstore = useUserStore();
+// const {user}  = useUserStore();
 const {user} = storeToRefs(authstore);
 
-// console.log(user,'user');
+//console.log(user,'user in profile');
 
 const logout = () => {
   authstore.logout();

@@ -8,9 +8,15 @@ export const useAppStore = defineStore("app", {
   state: () => ({
     upload_required: false,
     userImage: null,
-    defaultDetails: null,
-
-    remittanceMethod: useLocalStorage("remittanceMethod", ""),
+    defaultDetails: useLocalStorage(" defaultDetails", {}),
+    defaultSendingDetails: useLocalStorage("defaultSendingDetails", {}),
+    defaultSet: {
+      currency_code: "",
+      default: '',
+      flag: "",
+      symbol: "",
+    },
+    remittanceMethod: useLocalStorage("remittanceMethod", "''"),
     remittanceDetail: useLocalStorage("remittanceDetail", {
       cash: {
         converted: "",
@@ -77,10 +83,15 @@ export const useAppStore = defineStore("app", {
       address: "",
       reason: "",
     },
-    currentRecipientData: useLocalStorage("currentRecipientData",{
-      result:null,
-      reasonId:null,
+    currentRecipientData: useLocalStorage("currentRecipientData", {
+      result: null,
+      reasonId: null,
     }),
+
+    defaultAvailableCurrencies: useLocalStorage(
+      "defaultAvailableCurrencies",
+      []
+    ),
   }),
   getters: {
     showTodo: (state) => {
@@ -140,7 +151,7 @@ export const useAppStore = defineStore("app", {
     setImage(value) {
       useAppStore().userImage = value;
     },
-    setCurrentRecipientData(v){
+    setCurrentRecipientData(v) {
       useAppStore().currentRecipientData = v;
     },
     setPaymentSummary: (value) => {
@@ -174,19 +185,6 @@ export const useAppStore = defineStore("app", {
       const old = useAppStore().countries;
       useAppStore().countries = [...value];
     },
-    fetchCountries: async () => {
-      const response = await UtilsService.getCountries();
-      const data = response.data;
-      // console.log(data,'data after country fetch');
-      useAppStore().setCountries(data);
-    },
-    fetchReasons: async () => {
-      const response = await UtilsService.fetchSendMoneyReasons();
-
-      const data = response.data;
-      // console.log(data,'data after reasons fetch');
-      useAppStore().setReasons(data);
-    },
 
     setRecipientCurrencyDetails: (value) => {
       // console.log(value, "setting res");
@@ -204,8 +202,49 @@ export const useAppStore = defineStore("app", {
       useAppStore().upload_required = value;
     },
     setDefault: (daf) => {
-      const old = { ...useAppStore().defaultDetails };
+      const old = useAppStore().defaultSet;
+      // console.log(old, "old defaults");
+      // console.log(daf, "new sending defaults");
       useAppStore().defaultDetails = { ...old, ...daf };
+    },
+    setDefaultDetails: (daf) => {
+      const old = useAppStore().defaultSendingDetails;
+     // console.log(old, "old default");
+      // useAppStore().defaultSendingDetails = [...daf];
+    },
+    setAppUser: (values) => {
+      const olduser = useAppStore().getUser;
+      const userUpdates = { ...olduser, ...values };
+
+      useAppStore().user = userUpdates;
+    },
+
+    setRemittanceDetails: (data) => {
+      useAppStore().remittanceDetail = data;
+    },
+
+    setDefaultAvailableCurrencies: (val) => {
+      useAppStore().defaultAvailableCurrencies = val;
+    },
+    setConversionData: (data) => {
+      useAppStore().conversionData = data;
+    },
+    setTransactionData: (data) => {
+      useAppStore().transaction = data;
+    },
+    setCurrentTransaction: (data) => {
+      useAppStore().currentTransaction = data;
+    },
+    setTransactionRef: (data) => {
+      // console.log(data, 'data for trans  ref')
+      useAppStore().transaction_ref = data;
+    },
+    fetchReasons: async () => {
+      const response = await UtilsService.fetchSendMoneyReasons();
+
+      const data = response.data;
+      // console.log(data,'data after reasons fetch');
+      useAppStore().setReasons(data);
     },
     fetchConversion: async (form) => {
       const response = await UtilsService.getConversionRates(form);
@@ -220,47 +259,66 @@ export const useAppStore = defineStore("app", {
 
       return Promise.resolve(data);
     },
-    fetchDefault: async (clientId = "") => {
-      let data;
-      if (clientId) {
-        data = await UtilsService.getRate(clientId);
-        console.log(data, "with Cid");
-      } else {
-        data = await UtilsService.getRate();
-        console.log(data, "without Cid");
+    fetchDefault: async (
+      clientId = import.meta.env.VITE_APP_TUMA_CLIENT_ID
+    ) => {
+      try {
+        const response = await UtilsService.getRate(clientId);
+        const data = response.data;
+        // console.log(data,'default data ');
+        const { default: def, currency } = data;
+        // console.log(def, "default");
+
+        // changeDetails.forwardAmount = def.amount_to_send;
+
+        const currencyKeys = Object.keys(currency);
+
+        const currencies = currencyKeys.map((curr) => {
+          currency[curr].currency_code = curr;
+
+          if (curr === def.currency) {
+            currency[curr].default = true;
+          } else {
+            currency[curr].default = false;
+          }
+
+          return currency[curr];
+        });
+
+        const defaultSet = currencies.find((c) => c.default === true);
+        console.log(defaultSet, "defaultSet");
+        useAppStore().setDefault(defaultSet);
+        useAppStore().setDefaultAvailableCurrencies(currencies);
+        // console.log(data, "with Cid");
+        // console.log(currencies, "currencies");
+
+        return Promise.resolve(currencies);
+      } catch (err) {
+        console.log(err, "fetching defaults");
+        const { fetchDefault } = useAppStore();
+        if (err) {
+          fetchDefault();
+        }
+        return Promise.reject(err);
       }
 
       // const defKey = data.currency;
 
       // const details =
     },
-    setAppUser: (values) => {
-      const olduser = useAppStore().getUser;
-      const userUpdates = { ...olduser, ...values };
+    fetchCountries: async () => {
+      const response = await UtilsService.getCountries();
+      const data = response.data;
+      // console.log(data,'data after country fetch');
+      useAppStore().setCountries(data);
 
-      useAppStore().user = userUpdates;
-    },
 
-    setRemittanceDetails: (data) => {
-      useAppStore().remittanceDetail = { ...data };
-    },
-    setConversionData: (data) => {
-      useAppStore().conversionData = { ...data };
-    },
-    setTransactionData: (data) => {
-      useAppStore().transaction = { ...data };
-    },
-    setCurrentTransaction: (data) => {
-      useAppStore().currentTransaction = { ...data };
-    },
-    setTransactionRef: (data) => {
-      // console.log(data, 'data for trans  ref')
-      useAppStore().transaction_ref = data;
+      return Promise.resolve(data);
     },
   },
-  persist: true,
-  persistence: {
-    enable: true,
-    mode: "localStorage",
+  // persist: true,
+  persist: {
+    // enable: true,
+    storage: localStorage,
   },
 });
