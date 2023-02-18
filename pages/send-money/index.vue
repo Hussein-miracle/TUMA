@@ -10,7 +10,10 @@
     <div
       class="card bg-white w-[80vw] sm:w-[28rem] sm:h-72 mx-auto mt-6 px-4 rounded-sm py-2 relative"
     >
-        <div class="spinner bg-secondary absolute right-1 top-1" v-if="loading"></div>
+      <div
+        class="spinner bg-secondary absolute right-1 top-1"
+        v-if="loading"
+      ></div>
       <div class="top h-1/2 px-8">
         <h6 class="text-ash-1 font-semibold">Enter Amount</h6>
 
@@ -35,7 +38,8 @@
                 !selectedSenderCountry.currency_symbol
               "
               @focus="handleForward(conversionDetails)"
-               @change="handleFetchForward"
+              @change="handleFetchForward"
+              @keyup="keyUpForward"
             />
           </div>
 
@@ -180,6 +184,7 @@
               "
               @focus="handleBackward(conversionDetails)"
               @change="handleFetchBackward"
+              @keyup="keyUpBackward"
             />
           </div>
 
@@ -525,12 +530,21 @@ const handleBackward = (conversionDetails) => {
   touched = true;
 };
 
-const handleFetchBackward = async  () => {
+const handleFetchBackward = async () => {
   await initialFetch();
-}
-const handleFetchForward = async  () => {
+};
+const handleFetchForward = async () => {
   await initialFetch();
-}
+};
+
+const keyUpForward = async () => {
+  // console.log("up sender");
+  await handleFetchForward();
+};
+const keyUpBackward = async () => {
+  await handleFetchBackward();
+  // console.log('up recipient')
+};
 
 // SENDER
 const isSenderOpen = ref(false);
@@ -612,7 +626,7 @@ const handleSelectSenderCountry = async (curr) => {
   selectedSenderCountry.value = value;
 
   handleContinueSender();
-      await initialFetch();
+  await initialFetch();
 };
 
 // RECIPIENT START
@@ -640,8 +654,6 @@ const selectedRecipientCountryDetails = reactive({
   recipient_currency_symbol: "",
   recipient_country: "",
 });
-
-
 
 function closeRecipientModal() {
   isRecipientOpen.value = false;
@@ -675,7 +687,7 @@ const handleSelectRecipientCountry = async (country) => {
 
   handleContinueRecipient();
 
-      await initialFetch();
+  await initialFetch();
 };
 
 // RECIPIENT END
@@ -852,7 +864,7 @@ const initialFetch = async () => {
 };
 onMounted(async () => {
   // if(!touched){
-    await initialFetch();
+  await initialFetch();
   // }
 });
 
