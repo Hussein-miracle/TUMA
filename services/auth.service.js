@@ -51,26 +51,21 @@ class AuthService {
   }
 
   async changePassword(details) {
-    // try {
     const res = await axiosInstance.post("/auth/password/change", details);
-    // console.log(res , 'res');
-
-    // const response = await axiosInstance.post("/signup",details);
-
 
     const data = res.data;
     return data;
   }
 
   async forgotPassword(details) {
-    // try {
     const res = await axiosInstance.post("/auth/password/forgot", details);
+
     const data = res.data;
+
     return data;
   }
 
   async deleteAccount(details){
-    //console.log(details,'details');
     const res = await axiosInstance.post(`/auth/delete`, details);
     const data = res.data;
     return data;

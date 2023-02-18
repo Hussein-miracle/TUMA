@@ -25,7 +25,14 @@
         <div class="flex justify-between items-center">
           <p>They will receive</p>
           <div class="flex items-center gap-x-1">
-            <span>
+            <span v-if="conversion_type === 'reverse'">
+              {{
+                recipientCurrencyDetails.recipient_currency_symbol ||
+                recipientCurrencyDetails.recipient_currency
+              }}
+              {{ summary.converted_forward }}
+            </span>
+            <span v-if="conversion_type === 'forward'">
               {{
                 recipientCurrencyDetails.recipient_currency_symbol ||
                 recipientCurrencyDetails.recipient_currency
@@ -68,7 +75,8 @@
         <p>Inc.Charges</p>
         <div class="font-bold text-lg text-black flex gap-x-1">
           <span>{{ senderCurrencyDetails.sender_currency }}</span>
-          <span v-money>{{ summary.final_amount }}</span>
+          <span v-money  v-if="conversion_type === 'reverse'">{{ summary.converted}}</span>
+          <span v-money  v-if="conversion_type === 'forward'">{{ summary.final_amount}}</span>
         </div>
       </div>
     </div>
@@ -100,9 +108,12 @@ const {
   currentRecipientData
 } = storeToRefs(appStore);
 
+
+const {conversion_type} = paymentSummary.value;
 // console.log(paymentSummary.value, "summaryData");
 // console.log(remittanceMethod.value, "rem met value");
 // console.log(senderCurrencyDetails.value, "SDSD");
+// console.log(recipientCurrencyDetails.value, "RDRD");
 
 const summary = ref(paymentSummary.value[remittanceMethod.value]);
 

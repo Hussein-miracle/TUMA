@@ -546,7 +546,7 @@ const getDefaultSender = () => {
   const sample = {
     sender_currency: defaultCountry.currency_code,
     sender_currency_symbol: defaultCountry.symbol,
-    sender_country,
+    sender_country: sender_country?.name,
   };
 
   useAppStore().setSenderCurrencyDetails(sample);
@@ -662,7 +662,6 @@ const handleContinueRecipient = async () => {
   }
 };
 
-
 const handleSelectRecipientCountry = async (country) => {
   // console.log(country,'country');
   selectedRecipientCountryDetails.recipient_currency = country.currency_code;
@@ -716,16 +715,22 @@ const handleContinue = () => {
     useAppStore().setPaymentSummary(Amount.value);
     //console.log(Amount.value,'cDDDDD!!!HEy Amount.value...')
     // console.log(conversionDetails,'cDDDDD!!!HEy')
-    const country = countries.value.find(
-      (country) => country.code === conversionDetails.recipient_country_code
-    );
-    // console.log(recipient_country , 'RCCCC')
-    const data = {
-      recipient_currency: country.currency_code,
-      recipient_country: country.name,
-    };
-    useAppStore().setRecipientCurrencyDetails(data);
-    useAppStore().setRestriction(data.recipient_country);
+    if (conversionDetails.conversion_type === "forward") {
+      const country = countries?.value.find(
+        (country) => country?.code === conversionDetails?.recipient_country_code
+      );
+      // console.log(country , 'RCCCC')
+
+      const data = {
+        recipient_currency: country.currency_code,
+        recipient_currency_symbol: country.currency_symbol,
+        recipient_country: country.name,
+      };
+
+      useAppStore().setRecipientCurrencyDetails(data);
+
+      useAppStore().setRestriction(data.recipient_country);
+    }
 
     // localStorage.setItem("progged", JSON.stringify(true));
     navigateTo("/recipient");
@@ -783,16 +788,14 @@ const initialFetch = async () => {
           loading.value = false;
           const result = response.data;
 
-        //  console.log(result, "res");
+          //  console.log(result, "res");
           const converted_amount = result.converted_amount;
-         // console.log(converted_amount, "conved amout");
+          console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
           const mobile = converted_amount.mobile;
           // // console.log(cash,'cash');
-
-          useAppStore().setPaymentSummary(Amount.value);
 
           const details = {
             cash,
@@ -808,16 +811,24 @@ const initialFetch = async () => {
 
           useAppStore().setRemittanceDetails(details);
 
+          const newConved = { ...converted_amount };
+
           if (conversionDetails.conversion_type === "forward") {
             cashValue.value = `${cash?.converted}`;
             bankValue.value = `${bank?.converted}`;
             mobileValue.value = `${mobile?.converted}`;
+            newConved.conversion_type = 'forward';
+
+            useAppStore().setPaymentSummary(newConved);
           }
 
           if (conversionDetails.conversion_type === "reverse") {
             cashValue.value = `${cash?.converted_forward}`;
             bankValue.value = `${bank?.converted_forward}`;
             mobileValue.value = `${mobile?.converted_forward}`;
+
+            newConved.conversion_type = 'reverse';
+            useAppStore().setPaymentSummary(newConved);
           }
 
           bestValue.value = { ...result.best_value };

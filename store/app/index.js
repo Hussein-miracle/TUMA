@@ -190,13 +190,14 @@ export const useAppStore = defineStore("app", {
     },
 
     setRecipientCurrencyDetails: (value) => {
-      // console.log(value, "setting res");
+      console.log(value, "RecipientCurrencyDetails");
       useAppStore().recipientCurrencyDetails = { ...value };
     },
 
     setSenderCurrencyDetails: (value) => {
-      const stale = useAppStore().senderCurrencyDetails;
-      useAppStore().senderCurrencyDetails = { ...stale, ...value };
+      const sta = {...useAppStore().senderCurrencyDetails,...value};
+      console.log(sta,'new SenderCurrencyDetails');
+      useAppStore().senderCurrencyDetails = { ...sta };
     },
     setReasons: (value) => {
       useAppStore().reasons = value;
