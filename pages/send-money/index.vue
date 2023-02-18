@@ -343,11 +343,9 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-        
-          <span
-            class="unit self-end"
-            >{{ selectedRecipientCountry.currency_symbol }}</span
-          >
+          <span class="unit self-end">{{
+            selectedRecipientCountry.currency_symbol
+          }}</span>
           <span class="amount" v-if="cashValue">{{ cashValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -382,13 +380,9 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-
-
-          <span
-            class="unit self-end"
-          
-            >{{ selectedRecipientCountry.currency_symbol }}</span
-          >
+          <span class="unit self-end">{{
+            selectedRecipientCountry.currency_symbol
+          }}</span>
           <span class="amount" v-if="bankValue">{{ bankValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -425,10 +419,9 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
-          <span
-            class="unit self-end"
-            >{{ selectedRecipientCountry.currency_symbol }}</span
-          >
+          <span class="unit self-end">{{
+            selectedRecipientCountry.currency_symbol
+          }}</span>
           <!-- <span
             class="unit self-end"
    
@@ -788,9 +781,9 @@ const initialFetch = async () => {
           loading.value = false;
           const result = response.data;
 
-          // console.log(result, "res");
+        //  console.log(result, "res");
           const converted_amount = result.converted_amount;
-          // console.log(converted_amount, "conved amout");
+         // console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
@@ -813,11 +806,17 @@ const initialFetch = async () => {
 
           useAppStore().setRemittanceDetails(details);
 
-          // if (conversionDetails.conversion_type === "forward") {
-          cashValue.value = `${cash?.converted}`;
-          bankValue.value = `${bank?.converted}`;
-          mobileValue.value = `${mobile?.converted}`;
-          // }
+          if (conversionDetails.conversion_type === "forward") {
+            cashValue.value = `${cash?.converted}`;
+            bankValue.value = `${bank?.converted}`;
+            mobileValue.value = `${mobile?.converted}`;
+          }
+
+          if (conversionDetails.conversion_type === "reverse") {
+            cashValue.value = `${cash?.converted_forward}`;
+            bankValue.value = `${bank?.converted_forward}`;
+            mobileValue.value = `${mobile?.converted_forward}`;
+          }
 
           bestValue.value = { ...result.best_value };
 
