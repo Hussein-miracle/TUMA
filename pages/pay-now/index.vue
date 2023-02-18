@@ -7,13 +7,13 @@
       :class="{ 'flex items-center justify-center': isLoading === true }"
     >
       <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
-      <div id="st-notification-frame" v-if="isLoading === false"></div>
 
       <div class="spinner" v-if="isLoading === true">
         <div class="cube1"></div>
         <div class="cube2"></div>
       </div>
 
+      <div id="st-notification-frame" v-if="isLoading === false"></div>
       <form id="st-form" :action="`${location}`" v-if="isLoading === false">
         <div id="st-security-code" class="st-security-code"></div>
         <button
@@ -58,6 +58,7 @@ const getTrustToken = async () => {
   isLoading.value = true;
    const reference = useAppStore().getTransactionRef;
   const cuid = useAppStore().cuid;
+
   const data = {
     transaction_ref: reference,
     cuid,

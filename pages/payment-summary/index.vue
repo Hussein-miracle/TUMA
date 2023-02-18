@@ -76,7 +76,7 @@
         <div class="font-bold text-lg text-black flex gap-x-1">
           <span>{{ senderCurrencyDetails.sender_currency }}</span>
           <span v-money  v-if="conversion_type === 'reverse'">{{ summary.converted}}</span>
-          <span v-money  v-if="conversion_type === 'forward'">{{ summary.final_amount}}</span>
+          <span v-money  v-if="conversion_type === 'forward'">{{ summary.initial_amount}}</span>
         </div>
       </div>
     </div>
