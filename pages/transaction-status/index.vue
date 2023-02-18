@@ -20,7 +20,7 @@
     </div>
     <div
       class="transaction-success"
-      v-if="showSuccess === false && isLoading === false"
+      v-if="status === 'cancelled'"
     >
       <h2 class="text-red-800 text-3xl my-2 text-center">
         Transaction Not Successful
@@ -117,23 +117,34 @@
 
     <div
       class="transaction-success"
-      v-if="showSuccess === true && isLoading === false"
+      v-else-if="isLoading === false && status !== 'cancelled'"
     >
       <h2 class="text-secondary text-3xl my-2 text-center">
-        Transaction Successful
+        {{ msg }}
       </h2>
 
+
+      
+
+    <div v-if="status === 'pending' " class='mx-auto max-w-lg'>
+      Transaction Pending,You check transaction logs for more details
+    </div>
+
+
       <div
-        class="my-10 flex items-center justify-center relative w-72 h-72 mx-auto"
+        class="my-6 flex items-center justify-center relative w-72 h-72 mx-auto"
       >
         <div
           class="relative w-full h-full flex items-center justify-center my-4"
         >
-          <icons-transaction-success class="absolute sm:scale-150" />
-          <icons-transact-check-first class="absolute sm:scale-125" />
-          <icons-transact-check-second class="absolute sm:scale-110" />
-          <icons-transact-check-third class="absolute sm:scale-105" />
-          <icons-check-mark class="absolute sm:scale-105" />
+          
+           <icons-transaction-success class="absolute !sm:scale-150" />
+           <icons-transact-check-first class="absolute !sm:scale-125" />
+          <icons-transact-check-second class="absolute !sm:scale-110" />
+          <icons-transact-check-third class="absolute !sm:scale-105" />
+          <icons-check-mark />
+
+          
         </div>
       </div>
 
@@ -175,6 +186,9 @@ const showCancel = ref(false);
 const showPending = ref(false);
 const isLoading = ref(false);
 
+const msg = ref("");
+const status = ref('cancelled');
+
 const handleRetry = () => {
   navigateTo("/send-money");
 };
@@ -195,6 +209,8 @@ const fetchTrustPaymentDetail = async () => {
   UtilsService.getTransaction(reference)
     .then((response) => {
       console.log(response, "r");
+      msg.value = response.message;
+      // status.value = response.status;
       isLoading.value = false;
     })
     .catch((err) => {
