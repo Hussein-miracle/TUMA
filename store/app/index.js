@@ -286,7 +286,7 @@ export const useAppStore = defineStore("app", {
         });
 
         const defaultSet = currencies.find((c) => c.default === true);
-        console.log(defaultSet, "defaultSet");
+        // console.log(defaultSet, "defaultSet");
         useAppStore().setDefault(defaultSet);
         useAppStore().setDefaultAvailableCurrencies(currencies);
         // console.log(data, "with Cid");
@@ -294,7 +294,7 @@ export const useAppStore = defineStore("app", {
 
         return Promise.resolve(currencies);
       } catch (err) {
-        console.log(err, "fetching defaults");
+        // console.log(err, "fetching defaults");
         const { fetchDefault } = useAppStore();
         if (err) {
           fetchDefault();

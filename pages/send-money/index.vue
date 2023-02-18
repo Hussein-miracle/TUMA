@@ -754,7 +754,7 @@ const initialFetch = async () => {
     }
 
     // console.log(allowAction, "alloAct");
-    if (allowAction && touched) {
+    if (allowAction) {
       // console.log(conversionDetails, "convD");
       UtilsService.getConversionRates(conversionDetails).then((response) => {
         const result = response.data;
@@ -832,17 +832,18 @@ onBeforeMount(async () => {
 //   amountInput.removeEventListener("blur", handleTypeBlur);
 // });
 
-watchDebounced(
-  conversionDetails,
+// watchDebounced(
+//   conversionDetails,
+//   async () => {
+//     initialFetch();
+//   },
+//   { debounce: 4500, maxWait: 9000 }
+// );
+
+watch(  conversionDetails,
   async () => {
     initialFetch();
-  },
-  { debounce: 4500, maxWait: 9000 }
-);
-
-// watch(changeDetails,() => {
-
-// })
+  })
 
 definePageMeta({
   layout: "default",
