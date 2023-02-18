@@ -16,6 +16,7 @@ export const useAppStore = defineStore("app", {
       flag: "",
       symbol: "",
     },
+    defaultAmount:0,
     remittanceMethod: useLocalStorage("remittanceMethod", "''"),
     remittanceDetail: useLocalStorage("remittanceDetail", {
       cash: {
@@ -269,7 +270,7 @@ export const useAppStore = defineStore("app", {
         const { default: def, currency } = data;
         // console.log(def, "default");
 
-        // changeDetails.forwardAmount = def.amount_to_send;
+        useAppStore().defaultAmount = def.amount_to_send;
 
         const currencyKeys = Object.keys(currency);
 

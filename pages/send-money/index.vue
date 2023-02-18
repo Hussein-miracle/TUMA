@@ -8,8 +8,9 @@
     </h3>
 
     <div
-      class="card bg-white w-[80vw] sm:w-[28rem] sm:h-72 mx-auto mt-6 px-4 rounded-sm py-2"
+      class="card bg-white w-[80vw] sm:w-[28rem] sm:h-72 mx-auto mt-6 px-4 rounded-sm py-2 relative"
     >
+        <div class="spinner bg-secondary absolute right-1 top-1" v-if="loading"></div>
       <div class="top h-1/2 px-8">
         <h6 class="text-ash-1 font-semibold">Enter Amount</h6>
 
@@ -34,6 +35,7 @@
                 !selectedSenderCountry.currency_symbol
               "
               @focus="handleForward(conversionDetails)"
+               @change="handleFetchForward"
             />
           </div>
 
@@ -177,6 +179,7 @@
                 !selectedSenderCountry.currency_symbol
               "
               @focus="handleBackward(conversionDetails)"
+              @change="handleFetchBackward"
             />
           </div>
 
@@ -471,12 +474,14 @@ const router = useRouter();
 const store = useAppStore();
 const authstore = useUserStore();
 
-let touched =  useState('touched', () => !true);
+const loading = ref(false);
+let touched = useState("touched", () => !true);
 
 const {
   getSenderCurrencyDetails: senderCurrencyDetails,
   getRecipientCurrencyDetails: recipientCurrencyDetails,
   defaultSendingDetails,
+  defaultAmount,
 } = storeToRefs(store);
 
 // console.log(defaultSendingDetails, "DSD");
@@ -491,11 +496,12 @@ const { user } = storeToRefs(authstore);
 // console.log(user,'authRefs');
 // console.log(senderCurrencyDetails.value,'sssssss!!!');
 // console.log( recipientCurrencyDetails.value,'rrrrrr!!!');
+// console.log( defaultAmount.value,'rrdefaultAmount!!!');
 
 // CONVERSION UTILS
 const changeDetails = reactive({
   reverseAmount: "0.00",
-  forwardAmount: "0.00",
+  forwardAmount: defaultAmount.value || "0.00",
 });
 const Amount = ref(null);
 
@@ -519,6 +525,13 @@ const handleBackward = (conversionDetails) => {
   touched = true;
 };
 
+const handleFetchBackward = async  () => {
+  await initialFetch();
+}
+const handleFetchForward = async  () => {
+  await initialFetch();
+}
+
 // SENDER
 const isSenderOpen = ref(false);
 
@@ -528,8 +541,10 @@ const getDefaultSender = () => {
   );
   // console.log(defaultCountry,'Dc');
 
-  const sender_country = countries.value?.find((c) => c.currency_code === defaultCountry.currency_code);
-// console.log(sender_country,'sc');
+  const sender_country = countries.value?.find(
+    (c) => c.currency_code === defaultCountry.currency_code
+  );
+  // console.log(sender_country,'sc');
   const sample = {
     sender_currency: defaultCountry.currency_code,
     sender_currency_symbol: defaultCountry.symbol,
@@ -571,31 +586,33 @@ const handleContinueSender = async () => {
   }
 };
 
-const handleSelectSenderCountry = (curr) => {
+const handleSelectSenderCountry = async (curr) => {
   //console.log(curr,'curr');
-  const sender_country = countries.value?.find((c) => c.currency_code === curr.currency_code);
+  const sender_country = countries.value?.find(
+    (c) => c.currency_code === curr.currency_code
+  );
 
   const sample = {
     sender_currency: curr.currency_code,
     sender_currency_symbol: curr.symbol,
-    sender_country:sender_country?.name ?? '  ',
+    sender_country: sender_country?.name ?? "  ",
   };
 
   selectedSenderCountryDetails.sender_currency = curr.currency_code;
-  selectedSenderCountryDetails.sender_country = sender_country?.name ?? ' ';
+  selectedSenderCountryDetails.sender_country = sender_country?.name ?? " ";
   selectedSenderCountryDetails.sender_currency_symbol = curr.symbol;
   // selectedSenderCountryDetails.currency_symbol = curr.symbol;
 
- const value = {
-  currency_symbol:curr.symbol,
-  flag:curr.flag,
-  currency_code:curr.currency_code,
-
- }
+  const value = {
+    currency_symbol: curr.symbol,
+    flag: curr.flag,
+    currency_code: curr.currency_code,
+  };
 
   selectedSenderCountry.value = value;
 
   handleContinueSender();
+      await initialFetch();
 };
 
 // RECIPIENT START
@@ -624,9 +641,12 @@ const selectedRecipientCountryDetails = reactive({
   recipient_country: "",
 });
 
+
+
 function closeRecipientModal() {
   isRecipientOpen.value = false;
 }
+
 function openRecipientModal() {
   isRecipientOpen.value = true;
 }
@@ -645,7 +665,7 @@ const handleContinueRecipient = async () => {
     closeRecipientModal();
   }
 };
-const handleSelectRecipientCountry = (country) => {
+const handleSelectRecipientCountry = async (country) => {
   // console.log(country,'country');
   selectedRecipientCountryDetails.recipient_currency = country.currency_code;
   selectedRecipientCountryDetails.recipient_country = country.name;
@@ -654,6 +674,8 @@ const handleSelectRecipientCountry = (country) => {
   selectedRecipientCountry.value = country;
 
   handleContinueRecipient();
+
+      await initialFetch();
 };
 
 // RECIPIENT END
@@ -730,6 +752,7 @@ const initialFetch = async () => {
   }
 
   conversionDetails.sender_currency = selectedSenderCountry.value.currency_code;
+
   if (
     selectedRecipientCountry.value.code === "NG" &&
     selectedRecipientCountry.value.currency_code === "NGN"
@@ -753,78 +776,87 @@ const initialFetch = async () => {
       }
     }
 
-    // console.log(allowAction, "alloAct");
+    // console.log(allowAction, "allloading oAct");
     if (allowAction) {
       // console.log(conversionDetails, "convD");
-      UtilsService.getConversionRates(conversionDetails).then((response) => {
-        const result = response.data;
+      loading.value = true;
+      UtilsService.getConversionRates(conversionDetails)
+        .then((response) => {
+          loading.value = false;
+          const result = response.data;
 
-        // console.log(result, "res");
-        const converted_amount = result.converted_amount;
-        // console.log(converted_amount, "conved amout");
-        Amount.value = converted_amount;
-        const cash = converted_amount.cash;
-        const bank = converted_amount.bank;
-        const mobile = converted_amount.mobile;
-        // // console.log(cash,'cash');
+          // console.log(result, "res");
+          const converted_amount = result.converted_amount;
+          // console.log(converted_amount, "conved amout");
+          Amount.value = converted_amount;
+          const cash = converted_amount.cash;
+          const bank = converted_amount.bank;
+          const mobile = converted_amount.mobile;
+          // // console.log(cash,'cash');
 
-        useAppStore().setPaymentSummary(Amount.value);
+          useAppStore().setPaymentSummary(Amount.value);
 
-        const details = {
-          cash,
-          mobile,
-          bank,
-          recipient_currency: result.recipient_currency,
-          conversion_rate: result.conversion_rate,
-        };
+          const details = {
+            cash,
+            mobile,
+            bank,
+            recipient_currency: result.recipient_currency,
+            conversion_rate: result.conversion_rate,
+          };
 
-        useAppStore().setConversionData({
-          amount: conversionDetails.amount,
+          useAppStore().setConversionData({
+            amount: conversionDetails.amount,
+          });
+
+          useAppStore().setRemittanceDetails(details);
+
+          // if (conversionDetails.conversion_type === "forward") {
+          cashValue.value = `${cash?.converted}`;
+          bankValue.value = `${bank?.converted}`;
+          mobileValue.value = `${mobile?.converted}`;
+          // }
+
+          bestValue.value = { ...result.best_value };
+
+          if (conversionDetails.conversion_type === "forward") {
+            const details = Object.entries({ ...result.best_value })[0];
+            // console.log(details , 'details')
+            const [key, value] = details;
+            // console.log(value,'val froward');
+            const { converted } = value;
+
+            // console.log(converted, "converted forward");
+
+            // reverseAmount.value = converted;
+            changeDetails.reverseAmount = formatStringToMoney(converted);
+            // assignConvertedAmount(forwardAmount);
+          } else if (conversionDetails.conversion_type === "reverse") {
+            // assignConvertedAmount(reverseAmount);
+            const details = Object.entries({ ...result.best_value })[0];
+            // console.log(details , 'details')
+            const [key, value] = details;
+            // console.log(value,'val rev');
+            const { converted } = value;
+
+            //console.log(converted, "converted rev");
+
+            // forwardAmount.value  = `${converted}`;
+            changeDetails.forwardAmount = formatStringToMoney(converted);
+          }
+        })
+        .catch((err) => {
+          loading.value = false;
         });
-
-        useAppStore().setRemittanceDetails(details);
-
-        // if (conversionDetails.conversion_type === "forward") {
-        cashValue.value = `${cash?.converted}`;
-        bankValue.value = `${bank?.converted}`;
-        mobileValue.value = `${mobile?.converted}`;
-        // }
-
-        bestValue.value = { ...result.best_value };
-
-        if (conversionDetails.conversion_type === "forward") {
-          const details = Object.entries({ ...result.best_value })[0];
-          // console.log(details , 'details')
-          const [key, value] = details;
-          // console.log(value,'val froward');
-          const { converted } = value;
-
-          // console.log(converted, "converted forward");
-
-          // reverseAmount.value = converted;
-          changeDetails.reverseAmount = formatStringToMoney(converted);
-          // assignConvertedAmount(forwardAmount);
-        } else if (conversionDetails.conversion_type === "reverse") {
-          // assignConvertedAmount(reverseAmount);
-          const details = Object.entries({ ...result.best_value })[0];
-          // console.log(details , 'details')
-          const [key, value] = details;
-          // console.log(value,'val rev');
-          const { converted } = value;
-
-          //console.log(converted, "converted rev");
-
-          // forwardAmount.value  = `${converted}`;
-          changeDetails.forwardAmount = formatStringToMoney(converted);
-        }
-      });
     }
   }
 };
-onMounted(async () => {});
+onMounted(async () => {
+  // if(!touched){
+    await initialFetch();
+  // }
+});
 
 onBeforeMount(async () => {
-  
   // await handleDefaultSender();
 });
 
@@ -840,10 +872,9 @@ onBeforeMount(async () => {
 //   { debounce: 4500, maxWait: 9000 }
 // );
 
-watch(  conversionDetails,
-  async () => {
-    initialFetch();
-  })
+watch(conversionDetails, async () => {
+  initialFetch();
+});
 
 definePageMeta({
   layout: "default",
@@ -1012,6 +1043,39 @@ input[type="radio"]:focus label.btn {
 */
   &::-webkit-scrollbar-thumb:hover {
     background-color: hsl(0, 4%, 65%);
+  }
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  margin: 15px auto;
+  // background-color: #333;
+
+  border-radius: 100%;
+  -webkit-animation: sk-scaleout 1s infinite ease-in-out;
+  animation: sk-scaleout 1s infinite ease-in-out;
+}
+
+@-webkit-keyframes sk-scaleout {
+  0% {
+    -webkit-transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes sk-scaleout {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    opacity: 0;
   }
 }
 
