@@ -157,17 +157,18 @@ const handleCreateTransaction = async () => {
         // console.log(result, "trans creation data");
         const data = result.data;
         const upload_required = data?.upload_required;
+        const has_a_card = data?.has_a_card;
         useAppStore().setUploadRequired(upload_required);
         useAppStore().setTransactionRef(data.reference);
+
 
         isLoading.value = false;
 
         // console.log(data, "transa data");
-
-        if(upload_required){
-          navigateTo("/add-card");
-        }else{
+        if(has_a_card){
           navigateTo('/select-card');
+        }else{
+          navigateTo("/add-card");
         }
       })
       .catch((err) => {

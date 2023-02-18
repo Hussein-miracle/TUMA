@@ -11,9 +11,9 @@
           >{{user.fname}} {{user.sname}}</span
         >
 
-        <span class="profile__details--content__email"
+        <!-- <span class="profile__details--content__email"
           >{{user.email}}</span
-        >
+        > -->
       </div>
 
       <div
@@ -163,6 +163,7 @@ const {show:showDelete,setShowFalse:closeDelete,setShowTrue:openDelete} = useTog
 const {show:showConfirmDelete,setShowFalse:closeConfirmDelete,setShowTrue:openConfirmDelete} = useToggle();
 
 
+
 useHead({
   title: "Profile",
 });
@@ -178,15 +179,17 @@ const {user} = storeToRefs(authstore);
 //console.log(user,'user in profile');
 
 const logout = () => {
-  authstore.logout();
+  const {logout:log} = useUserStore();
+  log();
 }
 
 const handleDeleteAccount = async () => {
-  openDelete()
+  openDelete();
 }
 
 
 // const key = 'sbx:IxVDi0FRSgbqL2HRMruyEoZ3';
+
 
 
 

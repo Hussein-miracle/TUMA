@@ -1,12 +1,16 @@
 <template>
   <div class="select-card">
-    <h2 class="text-center text-secondary text-xl sm:text-3xl font-bold">Select Card</h2>
+    <h2 class="text-center text-secondary text-xl sm:text-3xl font-bold">
+      Select Card
+    </h2>
 
     <div
       class="select-card__card-container max-w-full mx-auto w-[98%] sm:w-[90%] flex flex-col items-center"
     >
       <div class="card-wrapper relative sm:h-[20rem] w-full">
-        <div class="z-[500] h-full card card-front bg-secondary flex flex-col gap-y-6">
+        <div
+          class="z-[500] h-full card card-front bg-secondary flex flex-col gap-y-6"
+        >
           <div
             class="logo uppercase text-whitelike self-end text-lg sm:text-3xl font-semibold text-skeleton-lg"
           >
@@ -29,7 +33,9 @@
           <p
             class="p text-whitelike flex justify-between items-center text-xl font-bold"
           >
-            <span class="text-skeleton">{{ selectedCard.masked_card.substring(0, 4) }}</span>
+            <span class="text-skeleton">{{
+              selectedCard.masked_card.substring(0, 4)
+            }}</span>
             <span>••••</span>
             <span>••••</span>
             <span class="text-skeleton">{{
@@ -48,7 +54,6 @@
               <p class="font-bold text-lg text-skeleton">
                 {{ selectedCard.name_on_card }}
               </p>
-        
             </div>
             <div class="flex flex-col items-end">
               <small class="font-extralight text-xs">EXPIRES</small>
@@ -127,7 +132,10 @@
         >
           <div class="check-box flex items-center justify-center">
             <span class="w-8 h-8 rounded-sm"></span>
-            <icons-check v-if="selectedCard.cuid === card.cuid"  class="cursor-pointer "/>
+            <icons-check
+              v-if="selectedCard.cuid === card.cuid"
+              class="cursor-pointer"
+            />
             <div
               class="box w-3 sm:w-5 h-3 sm:h-5 rounded-sm bg-ash-3 cursor-pointer"
               v-else
@@ -135,7 +143,7 @@
           </div>
 
           <div class="card-type-logo">
-            {{card.payment_type_description}}
+            {{ card.payment_type_description }}
           </div>
 
           <p class="font-normal text-secondary ml-2">
@@ -146,12 +154,16 @@
       </div>
 
       <div class="flex gap-x-2 items-center ml-8 my-1">
-           <icons-check v-if="accepted === true" @click="accepted = false" class="cursor-pointer" />
-            <div
-              class="box sm:w-5 w-3  h-3 sm:h-5 rounded-sm bg-ash-3 cursor-pointer"
-              @click="accepted = true"
-              v-else
-            ></div>
+        <icons-check
+          v-if="accepted === true"
+          @click="accepted = false"
+          class="cursor-pointer"
+        />
+        <div
+          class="box sm:w-5 w-3 h-3 sm:h-5 rounded-sm bg-ash-3 cursor-pointer"
+          @click="accepted = true"
+          v-else
+        ></div>
         <p class="text-xs sm:text-md">
           I have read and agree to the Terms & Conditions and Privacy Policy
         </p>
@@ -161,11 +173,27 @@
         :text="'Pay now'"
         class="text-secondary font-bold"
         type="button"
+        @click="handlePay"
         :class="{
           'opacity-75 cursor-not-allowed':
             submitting === true || fetching === true || accepted === false,
         }"
-        :disabled="submitting === true || fetching === true || accepted === false"
+        :disabled="
+          submitting === true || fetching === true || accepted === false
+        "
+      />
+      <button-primary
+        :text="'Add New Card'"
+        class="!bg-secondary !text-primary font-bold"
+        type="button"
+        @click="navigateTo('/add-card')"
+        :class="{
+          'opacity-75 cursor-not-allowed':
+            submitting === true || fetching === true ,
+        }"
+        :disabled="
+          submitting === true || fetching === true
+        "
       />
     </div>
 
@@ -186,14 +214,14 @@ const { user } = storeToRefs(authstore);
 
 const fetching = ref(false);
 const submitting = ref(false);
-const accepted = ref(false)
+const accepted = ref(false);
 
 const cards = ref([]);
 
 const selectedCard = reactive({
   cuid: "",
   masked_card: "",
-  name_on_card:"",
+  name_on_card: "",
   payment_type_description: "",
   expiry_date: "",
 });
@@ -201,13 +229,17 @@ const selectedCard = reactive({
 const checkSelect = () => {
   for (const item in selectedCard) {
     if (selectedCard[item] === "") {
-      submitting.value = true;
+      submitting.value = !true;
     }
   }
 };
 
 const handlePay = async () => {
   submitting.value = true;
+  if(!!selectedCard.cuid){
+    useAppStore().setCuid(selectedCard.cuid);
+    navigateTo('/pay-now');
+  }
 };
 const handleSelectCard = (card) => {
   selectedCard.cuid = card.cuid;
@@ -223,7 +255,7 @@ const fetchCards = async () => {
   UtilsService.getCards()
     .then((response) => {
       const data = response;
-     // console.log(data, " data for get cards");
+      // console.log(data, " data for get cards");
       cards.value = data;
       fetching.value = false;
     })
@@ -284,7 +316,6 @@ onBeforeMount(async () => {
   }
 }
 
-
 .text-skeleton-lg:empty {
   width: 8rem;
   height: 2rem;
@@ -301,9 +332,9 @@ onBeforeMount(async () => {
   background-position: 0 0;
   animation: shine 1s infinite;
 
-  @media screen and (max-width:640px){
-      width: 4rem;
-  height: 1.25rem;
+  @media screen and (max-width: 640px) {
+    width: 4rem;
+    height: 1.25rem;
   }
 }
 
@@ -322,9 +353,9 @@ onBeforeMount(async () => {
   background-size: 50px 500px;
   background-position: 0 0;
   animation: shine 1s infinite;
-  @media screen and (max-width:640px){
-      width: 2rem;
-  height: 12px;
+  @media screen and (max-width: 640px) {
+    width: 2rem;
+    height: 12px;
   }
 }
 

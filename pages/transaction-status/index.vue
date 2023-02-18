@@ -1,24 +1,22 @@
 <template>
   <div class="transaction-detail">
-    <div class="t my-4 gap-y-2 flex flex-col items-center justify-center" v-if="isLoading === true">
-      <h2 class="text-skeleton text-secondary text-3xl my-2 text-center !w-28"></h2>
+    <div
+      class="t my-4 gap-y-2 flex flex-col items-center justify-center"
+      v-if="isLoading === true"
+    >
+      <h2
+        class="text-skeleton text-secondary text-3xl my-2 text-center !w-28"
+      ></h2>
 
-      
-      <p class="text-center mt-2 font-semibold max-w-md mx-auto text-skeleton !w-[60vw]">
-      </p>
+      <p
+        class="text-center mt-2 font-semibold max-w-md mx-auto text-skeleton !w-[60vw]"
+      ></p>
 
-
-      <div class="flex    items-center justify-center  my-2 sm:my-4">
-      <div class="loader">
-
+      <div class="flex items-center justify-center my-2 sm:my-4">
+        <div class="loader"></div>
       </div>
-      </div>
 
-      <button class="text-skeleton !w-20 !h-12">
-
-      </button>
-
-
+      <button class="text-skeleton !w-20 !h-12"></button>
     </div>
     <div
       class="transaction-success"
@@ -117,7 +115,6 @@
       />
     </div>
 
-
     <div
       class="transaction-success"
       v-if="showSuccess === true && isLoading === false"
@@ -140,62 +137,70 @@
         </div>
       </div>
 
-      <p class="text-center mt-2 font-semibold max-w-md mx-auto" v-show="upload_required">
+      <p
+        class="text-center mt-2 font-semibold max-w-md mx-auto"
+        v-show="upload_required"
+      >
         One more step,click the button below to upload your details.
       </p>
 
       <button-primary
-      v-if="upload_required"
+        v-if="upload_required"
         :type="'button'"
         :text="'Upload'"
         class="uppercase !text-secondary font-semibold text-xl my-1"
         @click="handleUpload"
       />
       <button-primary
-      v-else
+        v-else
         :type="'button'"
-        :text="'Check Transactions'"
+        :text="'View Transactions'"
         class="uppercase !text-secondary font-semibold text-xl my-1"
         @click="handleHome"
       />
-
     </div>
   </div>
 </template>
 
 <script setup>
-import {storeToRefs} from 'pinia';
-import {useAppStore} from '@/store/app/index';
+import { storeToRefs } from "pinia";
+import { useAppStore } from "@/store/app/index";
+import UtilsService from "@/services/utils.service";
 
 const route = useRoute();
 const appStore = useAppStore();
-const {upload_required} = storeToRefs(appStore);
-const showSuccess = ref(false);
+const { upload_required } = storeToRefs(appStore);
+const showSuccess = ref(!false);
+const showCancel = ref(false);
+const showPending = ref(false);
 const isLoading = ref(false);
 
 const handleRetry = () => {
   navigateTo("/send-money");
 };
 
-
 const handleHome = () => {
-  navigateTo('/transactions');
-}
+  navigateTo("/transactions");
+};
 
 const handleUpload = async () => {
-
   localStorage.setItem("progged", JSON.stringify(true));
 
   navigateTo("/upload");
 };
 
 const fetchTrustPaymentDetail = async () => {
-  isLoading.value = !false;
-  setTimeout(() => {
-    isLoading.value = false;
-    showSuccess.value = true;
-  },5300);
-
+  isLoading.value = true;
+  const reference = useAppStore().getTransactionRef;
+  UtilsService.getTransaction(reference)
+    .then((response) => {
+      console.log(response, "r");
+      isLoading.value = false;
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      console.log(err, "err");
+    });
 };
 onMounted(() => {
   fetchTrustPaymentDetail();
@@ -244,7 +249,7 @@ onMounted(() => {
   animation: rotation 2s linear infinite;
 }
 .loader::after {
-  content: '';  
+  content: "";
   box-sizing: border-box;
   position: absolute;
   left: 0;
@@ -255,12 +260,12 @@ onMounted(() => {
   border: 3px dotted #fec02f;
   border-style: solid solid dotted;
   width: 5vw;
-  height:5vw;
+  height: 5vw;
   border-radius: 50%;
   animation: rotationBack 1s linear infinite;
   transform-origin: center center;
 }
-    
+
 @keyframes rotation {
   0% {
     transform: rotate(0deg);
@@ -268,7 +273,7 @@ onMounted(() => {
   100% {
     transform: rotate(360deg);
   }
-} 
+}
 @keyframes rotationBack {
   0% {
     transform: rotate(0deg);
@@ -276,7 +281,7 @@ onMounted(() => {
   100% {
     transform: rotate(-360deg);
   }
-} 
+}
 
 @keyframes shine {
   to {

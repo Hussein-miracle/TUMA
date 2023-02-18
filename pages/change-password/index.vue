@@ -12,11 +12,11 @@
     >
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
-          v-model.lazy="changePasswordForm.previous_password"
+          v-model.lazy="changePasswordForm.old_password"
           :type="show === true ? 'text' : 'password'"
           placeholder="Previous Password"
-          id="previous_password"
-          name="previous_password"
+          id="old_password"
+          name="old_password"
         />
 
         <label for="password" class="mb-2 text-ash-1">Previous Password</label>
@@ -30,19 +30,19 @@
 
         <VeeErrorMsg
           class="text-red-600 py-1 px-1 my-1 text-xs max-w-md rounded-md bg-red-300 capitalize"
-          name="previous_password"
+          name="old_password"
         />
       </div>
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
-          v-model.lazy="changePasswordForm.new_password"
+          v-model.lazy="changePasswordForm.password"
           :type="see === true ? 'text' : 'password'"
           placeholder="New Password"
-          id="new_password"
-          name="new_password"
+          id="password"
+          name="password"
         />
 
-        <label for="new_password" class="mb-2 text-ash-1">New Password</label>
+        <label for="password" class="mb-2 text-ash-1">New Password</label>
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
           @click="toggleSee"
@@ -53,19 +53,21 @@
 
         <VeeErrorMsg
           class="text-red-600 py-1 px-1 my-1 text-xs max-w-md rounded-md bg-red-300 capitalize"
-          name="new_password"
+          name="password"
         />
       </div>
       <div class="item flex flex-col-reverse my-2 w-full relative">
         <VeeField
-          v-model.lazy="changePasswordForm.confirm_password"
+          v-model.lazy="changePasswordForm.password_confirmation"
           :type="see === true ? 'text' : 'password'"
           placeholder="Confirm Password"
-          id="confirm_password"
-          name="confirm_password"
+          id="password_confirmation"
+          name="password_confirmation"
         />
 
-        <label for="confirm_password" class="mb-2 text-ash-1">Confirm Password</label>
+        <label for="password_confirmation" class="mb-2 text-ash-1"
+          >Confirm Password</label
+        >
         <div
           class="absolute flex flex-col items-center justify-center bottom-[5%] right-1 cursor-pointer"
           @click="toggleSee"
@@ -76,7 +78,7 @@
 
         <VeeErrorMsg
           class="text-red-600 py-1 px-1 my-1 text-xs max-w-md rounded-md bg-red-300 capitalize"
-          name="confirm_password"
+          name="password_confirmation"
         />
       </div>
 
@@ -85,10 +87,9 @@
         :text="'change password'"
         :disable="isLoading === true"
         class="rounded-3xl px-1 py-0.5 sm:py-1 sm:px-2 text-white"
-        :class="{'opacity-70 cursor-not-allowed': isLoading === true }"
+        :class="{ 'opacity-70 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
-    
   </div>
 </template>
 
@@ -99,28 +100,25 @@ import { createToast } from "mosha-vue-toastify";
 import "mosha-vue-toastify/dist/style.css";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
-import AuthService from '@/services/auth.service';
-
+import AuthService from "@/services/auth.service";
 
 useHead({
-  title:'Change Password'
-})
+  title: "Change Password",
+});
 
 const { show, toggleShow } = useToggle();
-const { show:see, toggleShow:toggleSee } = useToggle();
-
+const { show: see, toggleShow: toggleSee } = useToggle();
 
 const isLoading = ref(false);
 
-
 const changePasswordForm = reactive({
-  previous_password: "",
-  new_password: "",
-  comfirm_password: "",
+  old_password: "",
+  password: "",
+  password_confirmation: "",
 });
 
 const changePasswordSchema = yup.object().shape({
-  previous_password: yup
+  old_password: yup
     .string()
     .required("")
     .test(
@@ -130,10 +128,10 @@ const changePasswordSchema = yup.object().shape({
         return validatePassword(value);
       }
     ),
-  confirm_password: yup
+  password_confirmation: yup
     .string()
     .required("")
-    .oneOf([yup.ref("new_password"), null], "Passwords must match")
+    .oneOf([yup.ref("password"), null], "Passwords must match")
     .test(
       "isValid",
       "Password must contain at least one lowercase letter,one uppercase letter,one digit and a special character.",
@@ -141,7 +139,7 @@ const changePasswordSchema = yup.object().shape({
         return validatePassword(value);
       }
     ),
-  new_password: yup
+  password: yup
     .string()
     .required("")
     .test(
@@ -156,28 +154,29 @@ const changePasswordSchema = yup.object().shape({
 const handleSubmit = async (values) => {
   isLoading.value = true;
   // console.log(values);
-  AuthService.changePassword(values).then((response) => {
-    isLoading.value = false;
-      //       createToast(`${msg}`, {
-      // showIcon: true,
-      //     type: "warning",
-      //     transition: "bounce",
-      //     // position:'top-center'
-      //   });
-    navigateTo('/login');
-  }).catch((err) => {
-    isLoading.value = false;
-    const msg = err?.response?.data?.message;
-        createToast(`${msg}`, {
-      showIcon: true,
-          type: "warning",
-          transition: "bounce",
-          // position:'top-center'
-        });
-    console.log(err,'err');
-  })
+  AuthService.changePassword(values)
+    .then((response) => {
+      isLoading.value = false;
+      createToast(`Password changed successfully`, {
+        showIcon: true,
+        type: "success",
+        transition: "bounce",
+        // position:'top-center'
+      });
+      navigateTo("/login");
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      const msg = err?.response?.data?.message;
+      createToast(`${msg}`, {
+        showIcon: true,
+        type: "warning",
+        transition: "bounce",
+        // position:'top-center'
+      });
+      // console.log(err,'err');
+    });
 };
-
 </script>
 
 <style lang="scss" scoped>

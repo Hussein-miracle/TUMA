@@ -661,6 +661,8 @@ const handleContinueRecipient = async () => {
     closeRecipientModal();
   }
 };
+
+
 const handleSelectRecipientCountry = async (country) => {
   // console.log(country,'country');
   selectedRecipientCountryDetails.recipient_currency = country.currency_code;
@@ -866,17 +868,17 @@ onBeforeMount(async () => {
 //   amountInput.removeEventListener("blur", handleTypeBlur);
 // });
 
-// watchDebounced(
-//   conversionDetails,
-//   async () => {
-//     initialFetch();
-//   },
-//   { debounce: 4500, maxWait: 9000 }
-// );
+watchDebounced(
+  conversionDetails,
+  async () => {
+    initialFetch();
+  },
+  { debounce: 500, maxWait: 900 }
+);
 
-watch(conversionDetails, async () => {
-  await initialFetch();
-});
+// watch(conversionDetails, async () => {
+//   await initialFetch();
+// });
 
 definePageMeta({
   layout: "default",

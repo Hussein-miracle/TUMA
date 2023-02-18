@@ -93,6 +93,8 @@ export const useAppStore = defineStore("app", {
       "defaultAvailableCurrencies",
       []
     ),
+
+    cuid:'',
   }),
   getters: {
     showTodo: (state) => {
@@ -219,7 +221,10 @@ export const useAppStore = defineStore("app", {
 
       useAppStore().user = userUpdates;
     },
-
+    setCuid:(cVal) => {
+      // console.log(cVal,'cVal')
+      useAppStore().cuid = cVal;
+    },
     setRemittanceDetails: (data) => {
       useAppStore().remittanceDetail = data;
     },

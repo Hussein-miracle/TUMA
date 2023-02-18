@@ -68,6 +68,13 @@ class AuthService {
     const data = res.data;
     return data;
   }
+
+  async deleteAccount(details){
+    //console.log(details,'details');
+    const res = await axiosInstance.post(`/auth/delete`, details);
+    const data = res.data;
+    return data;
+  }
 }
 
 const authService = new AuthService();

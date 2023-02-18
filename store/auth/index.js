@@ -9,6 +9,7 @@ export const useUserStore = defineStore("user", {
     user: useLocalStorage('user',{}),
     token: null,
     tempUser: null,
+    oldPassword:'',
   }),
   getters: {
     // TODO: Plan to refactor
@@ -97,6 +98,8 @@ export const useUserStore = defineStore("user", {
       // if(expired){
       //   TokenService.setExpiration(expirationDate);
       // }
+    },setOldPassword:(p) => {
+      useUserStore().oldPassword = p;
     },
     setTemp: (details) => {
       const state = useUserStore();

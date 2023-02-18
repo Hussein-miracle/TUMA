@@ -6,124 +6,15 @@
       class="add-card__input flex flex-col items-center w-full"
       :class="{ 'flex items-center justify-center': isLoading === true }"
     >
-    <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
-    <div id="st-notification-frame" v-if="isLoading === false"></div>
-      <!-- <VeeForm
-        class="flex flex-col gap-y-3 items-center mt-6 w-[90%] add-card__form sm:w-[70%] md:w-[50%] self-center"
-        @submit="handleSubmit"
-
-        
-      >
-        <div class="item flex flex-col-reverse my-2 w-full relative">
-          <div class="absolute card_logo top-3/4 right-1 -translate-y-1/2">
-            🛡️🛡️🛡️
-          </div>
-
-          <VeeField
-            type="text"
-            v-model="cardDetails.card_number"
-            name="card_number"
-            id="card_number"
-            ref="card_number"
-            placeholder="Card Number"
-          />
-
-          <label for="card_number" class="mb-2 text-ash-1">Card Number</label>
-
-          <VeeErrorMsg
-            class="text-red-600 text-xs py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="card_number"
-          />
-        </div>
-        <div class="item flex flex-col-reverse my-2 w-full">
-          <VeeField
-            type="text"
-            v-model="cardDetails.card_name"
-            name="card_name"
-            id="card_name"
-            ref="card_name"
-            placeholder="Name on Card"
-          />
-
-          <label for="card_number" class="mb-2 text-ash-1">Name on Card</label>
-
-          <VeeErrorMsg
-            class="text-red-600 text-xs py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-            name="card_name"
-          />
-        </div>
-
-        <div class="flex w-full justify-between items-center">
-          <div class="item flex flex-col-reverse my-2 w-[60%]">
-            <VeeField
-              type="text"
-              v-model="cardDetails.card_expiry_date"
-              name="card_expiry_date"
-              id="card_expiry_date"
-              placeholder="MM/YY"
-            />
-
-            <label for="card_number" class="mb-2 text-ash-1">Expiry date</label>
-
-            <VeeErrorMsg
-              class="text-red-600 text-xs py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-              name="card_expiry_date"
-            />
-          </div>
-          <div class="item flex flex-col-reverse my-2 w-[35%]">
-            <VeeField
-              type="text"
-              v-model="cardDetails.cvv"
-              name="cvv"
-              min="3"
-              max="3"
-              id="cvv"
-              placeholder="CVV"
-            />
-
-            <label for="card_number" class="mb-2 text-ash-1">CVV</label>
-
-            <VeeErrorMsg
-              class="text-red-600 text-xs py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-              name="cvv"
-            />
-          </div>
-        </div>
-
-        <div class="flex gap-x-2 items-center justify-start mr-auto">
-          <icons-check-rounded
-            class="cursor-pointer"
-            v-if="cardDetails.save_card === true"
-            @click="cardDetails.save_card = !cardDetails.save_card"
-          />
-          <span
-            v-else
-            class="circle w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
-            @click="cardDetails.save_card = !cardDetails.save_card"
-          ></span>
-          <p class="text-secondary font-light">
-            Save card detail for next time
-          </p>
-        </div>
-
-        <button-primary
-          :type="'submit'"
-          :text="'Proceed'"
-          class="text-secondary font-semibold"
-          :disabled="isLoading === true"
-        />
-      </VeeForm> -->
+      <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
+      <div id="st-notification-frame" v-if="isLoading === false"></div>
 
       <div class="spinner" v-if="isLoading === true">
         <div class="cube1"></div>
         <div class="cube2"></div>
       </div>
 
-
-
       <form id="st-form" :action="`${location}`" v-if="isLoading === false">
-        <div id="st-card-number" class="st-card-number"></div>
-        <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
         <button
           type="submit"
@@ -138,14 +29,12 @@
 </template>
 
 <script setup>
-
+const location = ref(`${window.location.origin}/transaction-status`);
 
 // console.log(location.value , 'location to redirect to');/
 
-
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
-const location = ref(`${window.location.origin}/transaction-status`);
 
 const isLoading = ref(false);
 
@@ -167,13 +56,14 @@ definePageMeta({
 
 const getTrustToken = async () => {
   isLoading.value = true;
-  const reference = useAppStore().getTransactionRef;
+   const reference = useAppStore().getTransactionRef;
+  const cuid = useAppStore().cuid;
   const data = {
     transaction_ref: reference,
+    cuid,
   };
   // console.log(data, 'for you too')
   const response = await UtilsService.postToTrustPayment(data);
-
 
   const jwtToken = response.data["jwt-token"];
   const st = response.data.st;
@@ -189,7 +79,8 @@ const getTrustToken = async () => {
 const initTrustPayment = async (token) => {
   const st = SecureTrading({
     jwt: token,
-    formId:'st-form',
+    formId: "st-form",
+    fieldsToSubmit: ["securitycode"],
   });
   return st.Components();
 };
@@ -258,7 +149,9 @@ onBeforeMount(async () => {
   }
 }
 
-#st-security-code-input,#expiration-date__input,#st-card-number-input {
+#st-security-code-input,
+#expiration-date__input,
+#st-card-number-input {
   border: none;
   border-bottom-width: 1.5px;
   border-bottom-style: solid;

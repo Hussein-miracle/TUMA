@@ -106,7 +106,7 @@ const  currentTransact = useAppStore();
 // console.log(currentTransaction, "tC");
 const {currentTransaction:transactionData} = storeToRefs(currentTransact);
 
-console.log(transactionData ,'TDDD');
+// console.log(transactionData ,'TDDD');
 
 const route = useRoute();
 const isLoading = ref(false);
