@@ -343,15 +343,10 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
+        
           <span
             class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'forward'"
             >{{ selectedRecipientCountry.currency_symbol }}</span
-          >
-          <span
-            class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'reverse'"
-            >{{ selectedSenderCountry.currency_symbol }}</span
           >
           <span class="amount" v-if="cashValue">{{ cashValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -387,15 +382,12 @@
         </div>
 
         <div class="rate font-bold flex gap-x-1">
+
+
           <span
             class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'forward'"
+          
             >{{ selectedRecipientCountry.currency_symbol }}</span
-          >
-          <span
-            class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'reverse'"
-            >{{ selectedSenderCountry.currency_symbol }}</span
           >
           <span class="amount" v-if="bankValue">{{ bankValue }}</span>
           <span class="amount" v-else>0.00</span>
@@ -435,14 +427,13 @@
         <div class="rate font-bold flex gap-x-1">
           <span
             class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'forward'"
             >{{ selectedRecipientCountry.currency_symbol }}</span
           >
-          <span
+          <!-- <span
             class="unit self-end"
-            v-show="conversionDetails.conversion_type === 'reverse'"
+   
             >{{ selectedSenderCountry.currency_symbol }}</span
-          >
+          > -->
           <span class="amount" v-if="mobileValue">{{ mobileValue }}</span>
           <span class="amount" v-else>0.00</span>
         </div>
@@ -885,7 +876,7 @@ onBeforeMount(async () => {
 // );
 
 watch(conversionDetails, async () => {
-  initialFetch();
+  await initialFetch();
 });
 
 definePageMeta({
