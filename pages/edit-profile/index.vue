@@ -276,8 +276,16 @@ onBeforeMount(async () => {
 onUnmounted(() => {
   // address.removeEventListener("blur", onAddressBlur);
 });
+
+
 useHead({
   title: "Edit Account",
+});
+
+
+definePageMeta({
+  layout: "default",
+  middleware:['auth']
 });
 </script>
 

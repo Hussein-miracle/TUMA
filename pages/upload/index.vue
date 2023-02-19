@@ -17,7 +17,7 @@ import UtilsService from "@/services/utils.service";
 
 definePageMeta({
   title: "Upload Details",
-  layout: false,
+  layout: "default",
   middleware: ["auth", "checkroute"],
 });
 

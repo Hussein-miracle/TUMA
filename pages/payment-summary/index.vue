@@ -122,10 +122,9 @@ const summary = ref(paymentSummary.value[remittanceMethod.value]);
 const isLoading = ref(false);
 
 definePageMeta({
-  // layout: false,
-  middleware: ["auth", "checkroute"],
+  layout: "default",
+  middleware:['auth']
 });
-
 // const data = JSON.parse(localStorage.getItem("payS"));
 
 const summaryDetails = reactive({

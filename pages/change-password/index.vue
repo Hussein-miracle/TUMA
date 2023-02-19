@@ -106,6 +106,11 @@ useHead({
   title: "Change Password",
 });
 
+definePageMeta({
+  layout: "default",
+  middleware:['auth']
+});
+
 const { show, toggleShow } = useToggle();
 const { show: see, toggleShow: toggleSee } = useToggle();
 

@@ -170,8 +170,8 @@ useHead({
 
 definePageMeta({
   layout: "default",
+  middleware:['auth']
 });
-
 const authstore = useUserStore();
 // const {user}  = useUserStore();
 const {user} = storeToRefs(authstore);

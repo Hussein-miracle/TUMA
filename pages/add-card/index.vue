@@ -229,6 +229,12 @@ onBeforeMount(async () => {
 //     }
 //   }
 // });
+
+
+definePageMeta({
+  layout: "default",
+  middleware:['auth']
+});
 </script>
 
 <style lang="scss" scoped>

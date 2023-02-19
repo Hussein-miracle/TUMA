@@ -268,7 +268,8 @@ useHead({
   title: "Select Card",
 });
 definePageMeta({
-  // layout: false,
+  layout: "default",
+  middleware:['auth']
 });
 onMounted(() => {
   checkSelect();

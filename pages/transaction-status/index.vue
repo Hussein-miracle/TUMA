@@ -232,6 +232,14 @@ onMounted(() => {
 
     window.history.replaceState(null, "", `${origin}/transaction-detail`);
   }
+
+
+});
+
+
+definePageMeta({
+  layout: "default",
+  middleware:['auth']
 });
 </script>
 
