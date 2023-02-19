@@ -790,7 +790,7 @@ const initialFetch = async () => {
 
           //  console.log(result, "res");
           const converted_amount = result.converted_amount;
-          console.log(converted_amount, "conved amout");
+          // console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
@@ -805,10 +805,7 @@ const initialFetch = async () => {
             conversion_rate: result.conversion_rate,
           };
 
-          useAppStore().setConversionData({
-            amount: conversionDetails.amount,
-          });
-
+          bestValue.value = { ...result.best_value };
           useAppStore().setRemittanceDetails(details);
 
           const newConved = { ...converted_amount };
@@ -817,8 +814,10 @@ const initialFetch = async () => {
             cashValue.value = `${cash?.converted}`;
             bankValue.value = `${bank?.converted}`;
             mobileValue.value = `${mobile?.converted}`;
-            newConved.conversion_type = 'forward';
-
+            newConved.conversion_type = "forward";
+            useAppStore().setConversionData({
+              amount: conversionDetails.amount,
+            });
             useAppStore().setPaymentSummary(newConved);
           }
 
@@ -827,11 +826,18 @@ const initialFetch = async () => {
             bankValue.value = `${bank?.converted_forward}`;
             mobileValue.value = `${mobile?.converted_forward}`;
 
-            newConved.conversion_type = 'reverse';
+            newConved.conversion_type = "reverse";
+            // console.log(result.best_value, "rBv ah");
+            const bvKey = Object.keys(result.best_value)[0];
+            const bvData = result.best_value[bvKey];
+            // console.log(bvData,'bvData')
+            const money = formatStringToMoney(bvData.converted_reverse);
+            // console.log(money,'moenyy')
+            useAppStore().setConversionData({
+              amount: money,
+            });
             useAppStore().setPaymentSummary(newConved);
           }
-
-          bestValue.value = { ...result.best_value };
 
           if (conversionDetails.conversion_type === "forward") {
             const details = Object.entries({ ...result.best_value })[0];

@@ -15,7 +15,7 @@
       }"
     >
       <span v-if="status === 'pending'"> pending-approval </span>
-      <span v-if="status === 'awaiting'"> awaiting-pickup </span>
+      <span v-else-if="status === 'awaiting'"> awaiting-pickup </span>
       <span v-else>
         {{ status }}
       </span>

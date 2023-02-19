@@ -154,6 +154,16 @@ const handleCreateTransaction = async () => {
   const response = currentRecipientData?.result;
   const reason_id =  currentRecipientData?.reasonId;
 
+      const transactionData = {
+      from_currency: senderCurrencyDetails.sender_currency,
+      amount: conversionData.amount,
+      to_currency: recipientCurrencyDetails.recipient_currency,
+      to_user: response.ruid,
+      reason_id: +reason_id,
+    };
+
+    // console.log(transactionData,'trans Data')
+
   if (reason_id !== null) {
     const transactionData = {
       from_currency: senderCurrencyDetails.sender_currency,
