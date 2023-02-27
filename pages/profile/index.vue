@@ -50,7 +50,7 @@
         
       >
         <!-- @click="navigateTo('/upload')" -->
-        <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center">
+        <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center" @click="handleUpload">
           <div
             class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
           >
@@ -182,7 +182,11 @@ const logout = () => {
   const {logout:log} = useUserStore();
   log();
 }
+const handleUpload = async () => {
+  localStorage.setItem("progged", JSON.stringify(true));
 
+  navigateTo("/upload");
+};
 const handleDeleteAccount = async () => {
   openDelete();
 }

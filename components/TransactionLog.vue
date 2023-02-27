@@ -17,7 +17,7 @@
 
 
 
-    <div class="details flex flex-col items-center sm:w-[30%]  h-full self-end">
+    <div class="details flex flex-col items-start sm:w-[30%]  h-full self-end">
       <div class="text-secondary flex gap-x-1 sm:gap-x-2">
         <span v-money>{{amount}}</span>
         <span>{{from_currency}}</span>
