@@ -125,12 +125,13 @@
         class="card-numbers w-full sm:w-[80%] mx-auto flex flex-col gap-y-1 items-center mt-4 sm:mt-0"
       >
         <div
-          class="card-numbers__item flex gap-x-1 sm:gap-x-2 bg-whitelike max-h-12 text-center h-8 sm:h-12 w-[85%] sm:w-full items-center cursor-pointer my-1 rounded-md"
+          class="card-numbers__item flex justify-between  bg-whitelike max-h-12 text-center h-8 sm:h-12 w-[85%] sm:w-full items-center cursor-pointer my-1 rounded-md"
           v-for="card in cards"
           :key="card.cuid"
           @click="handleSelectCard(card)"
         >
-          <div class="check-box flex items-center justify-center">
+<div class='flex gap-x-1 items-center sm:gap-x-2'>
+            <div class="check-box flex items-center justify-center">
             <span class="w-8 h-8 rounded-sm"></span>
             <icons-check
               v-if="selectedCard.cuid === card.cuid"
@@ -150,7 +151,17 @@
             {{ card.masked_card.substring(0, 4) }} **** ****
             {{ card.masked_card.substring(card.masked_card.length - 4) }}
           </p>
+</div>
+          
+        <button class='bg-black text-white  hover:bg-red-600  duration-450 hover:text-black  flex items-center justify-center border-none outline-none focus:outline-none focus:border-none px-1.5 py-1 rounded-md justify-self-end  mr-2 sm:mr-6'>
+         <span> delete card</span>
+        </button>
         </div>
+
+
+
+
+
       </div>
 
       <div class="flex gap-x-2 items-center ml-8 my-1">
@@ -234,6 +245,9 @@ const checkSelect = () => {
   }
 };
 
+const deleteCard = async () => {
+  
+}
 const handlePay = async () => {
   submitting.value = true;
   if(!!selectedCard.cuid){

@@ -72,9 +72,13 @@
                     </label>
                   </div>
 
-                  <div class="rate font-bold flex">
-                    <span class="unit self-end">{{remittanceDetail.recipient_currency }}</span>
-                    <span class="amount">{{remittanceDetail.cash.converted || '0.00'}}</span>
+                  <div class="rate font-bold flex gap-x-1">
+                    <span class="unit self-end">{{
+                      recipientCurrencyDetails.recipient_currency
+                    }}</span>
+                    <span class="amount">{{
+                      remittanceDetail.cash.converted
+                    }}</span>
                   </div>
                 </div>
                 <div
@@ -106,9 +110,13 @@
                     </label>
                   </div>
 
-                  <div class="rate font-bold flex">
-                    <span class="unit self-end">{{remittanceDetail.recipient_currency}}</span>
-                    <span class="amount">{{remittanceDetail.bank.converted || '0.00'}}</span>
+                  <div class="rate font-bold flex  gap-x-1">
+                    <span class="unit self-end">{{
+                      recipientCurrencyDetails.recipient_currency
+                    }}</span>
+                    <span class="amount">{{
+                      remittanceDetail.bank.converted
+                    }}</span>
                   </div>
                 </div>
                 <div
@@ -141,9 +149,13 @@
                     </label>
                   </div>
 
-                  <div class="rate font-bold flex">
-                    <span class="unit self-end">{{remittanceDetail.recipient_currency }}</span>
-                    <span class="amount">{{remittanceDetail.mobile.converted || '0.00'}}</span>
+                  <div class="rate font-bold flex  gap-x-1">
+                    <span class="unit self-end">{{
+                      recipientCurrencyDetails.recipient_currency
+                    }}</span>
+                    <span class="amount">{{
+                      remittanceDetail.mobile.converted
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -166,7 +178,7 @@
 </template>
 
 <script setup>
-import {storeToRefs} from 'pinia';
+import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import {
   TransitionRoot,
@@ -177,10 +189,11 @@ import {
 } from "@headlessui/vue";
 
 const props = defineProps(["opened", "closeModal"]);
-const store =  useAppStore();
-const {remittanceDetail} = storeToRefs(store);
+const store = useAppStore();
+const { remittanceDetail, recipientCurrencyDetails } = storeToRefs(store);
 
-
+console.log(remittanceDetail.value, "remDet");
+console.log(recipientCurrencyDetails.value, "reciDet");
 const remittanceMethod = ref("");
 // const remittanceDetails = reactive({
 //   cash: '',

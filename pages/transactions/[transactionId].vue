@@ -60,7 +60,7 @@
           <h2 class="text-secondary mb-2 font-bold">Time of transaction</h2>
           <p class="text-secondary text-skeleton" v-if="isLoading === true"></p>
           <p class="text-secondary" v-else>
-            {{ new Date(transaction.created_at).toTimeString() }}
+            {{ transaction.trans_date }}
           </p>
         </div>
 
@@ -118,7 +118,7 @@ const transaction = reactive({
   transaction_provider: "",
   from_currency: "",
   reference: "",
-  created_at: "",
+trans_date: "",
   message: "",
   status: "",
   to_currency: "",

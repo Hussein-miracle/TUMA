@@ -9,7 +9,7 @@
     <p class="mx-6 sm:mx-auto text-ash-1">
       Enter <span class="font-bold"> OTP </span> sent to
 
-     your mail  <span class="font-light text-md text-secondary">{{ user.email }} </span>
+     your phone number  <span class="font-light text-md text-secondary">+{{ user.phone }} </span>
     </p>
 
     <VeeForm class="flex flex-col self-center my-4" @submit="handleSubmit">
@@ -82,7 +82,7 @@
           :showIcon="false"
           :type="'submit'"
           :disabled="verifying"
-          :class="{ 'opacity-80': verifying === true }"
+          :class="{ 'opacity-80 cursor-not-allowed': verifying === true }"
         />
 
         <p class="font-bold mt-4 text-secondary cursor-pointer">

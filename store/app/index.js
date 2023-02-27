@@ -12,11 +12,11 @@ export const useAppStore = defineStore("app", {
     defaultSendingDetails: useLocalStorage("defaultSendingDetails", {}),
     defaultSet: {
       currency_code: "",
-      default: '',
+      default: "",
       flag: "",
       symbol: "",
     },
-    defaultAmount:0,
+    defaultAmount: 0,
     remittanceMethod: useLocalStorage("remittanceMethod", "''"),
     remittanceDetail: useLocalStorage("remittanceDetail", {
       cash: {
@@ -94,7 +94,16 @@ export const useAppStore = defineStore("app", {
       []
     ),
 
-    cuid:'',
+    cuid: "",
+    defaultRecipientCountry: useLocalStorage("defaultRecipientCountry", "NGA"),
+    bankDetails:{
+      bank_account_name:'',
+      bank_name:'',
+      bank_account_number:'',
+    },
+    mobileMoney:{
+      mobile_money_number:'',
+    },
   }),
   getters: {
     showTodo: (state) => {
@@ -193,10 +202,14 @@ export const useAppStore = defineStore("app", {
       console.log(value, "RecipientCurrencyDetails");
       useAppStore().recipientCurrencyDetails = { ...value };
     },
+    setDefaultRecipientCountry: (value) => {
+      console.log(value, "DefaultRecipientCountry");
+      useAppStore().defaultRecipientCountry = value;
+    },
 
     setSenderCurrencyDetails: (value) => {
-      const sta = {...useAppStore().senderCurrencyDetails,...value};
-      console.log(sta,'new SenderCurrencyDetails');
+      const sta = { ...useAppStore().senderCurrencyDetails, ...value };
+      console.log(sta, "new SenderCurrencyDetails");
       useAppStore().senderCurrencyDetails = { ...sta };
     },
     setReasons: (value) => {
@@ -213,7 +226,7 @@ export const useAppStore = defineStore("app", {
     },
     setDefaultDetails: (daf) => {
       const old = useAppStore().defaultSendingDetails;
-     // console.log(old, "old default");
+      // console.log(old, "old default");
       // useAppStore().defaultSendingDetails = [...daf];
     },
     setAppUser: (values) => {
@@ -222,7 +235,7 @@ export const useAppStore = defineStore("app", {
 
       useAppStore().user = userUpdates;
     },
-    setCuid:(cVal) => {
+    setCuid: (cVal) => {
       // console.log(cVal,'cVal')
       useAppStore().cuid = cVal;
     },
@@ -245,6 +258,14 @@ export const useAppStore = defineStore("app", {
     setTransactionRef: (data) => {
       // console.log(data, 'data for trans  ref')
       useAppStore().transaction_ref = data;
+    },
+    setBankDetails: (data) => {
+      // console.log(data, 'data for trans  ref')
+      useAppStore().bankDetails = data;
+    },
+    setMobileMoney: (data) => {
+      // console.log(data, 'data for trans  ref')
+      useAppStore().mobileMoney = data;
     },
     fetchReasons: async () => {
       const response = await UtilsService.fetchSendMoneyReasons();
@@ -274,8 +295,9 @@ export const useAppStore = defineStore("app", {
         const data = response.data;
         // console.log(data,'default data ');
         const { default: def, currency } = data;
-        // console.log(def, "default");
-
+        console.log(def, "default");
+        const recipient_country = def.recepient_country;
+        useAppStore().defaultRecipientCountry = recipient_country;
         useAppStore().defaultAmount = def.amount_to_send;
 
         const currencyKeys = Object.keys(currency);
@@ -318,7 +340,6 @@ export const useAppStore = defineStore("app", {
       const data = response.data;
       // console.log(data,'data after country fetch');
       useAppStore().setCountries(data);
-
 
       return Promise.resolve(data);
     },

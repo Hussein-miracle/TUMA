@@ -75,8 +75,12 @@
         <p>Inc.Charges</p>
         <div class="font-bold text-lg text-black flex gap-x-1">
           <span>{{ senderCurrencyDetails.sender_currency }}</span>
-          <span v-money  v-if="conversion_type === 'reverse'">{{ summary.converted}}</span>
-          <span v-money  v-if="conversion_type === 'forward'">{{ summary.initial_amount}}</span>
+          <span v-money v-if="conversion_type === 'reverse'">{{
+            summary.converted
+          }}</span>
+          <span v-money v-if="conversion_type === 'forward'">{{
+            summary.initial_amount
+          }}</span>
         </div>
       </div>
     </div>
@@ -86,7 +90,7 @@
       :text="'Confirm'"
       class="uppercase !text-secondary font-semibold text-xl mt-12"
       :disabled="isLoading === true"
-      :class="{'opacity-75 cursor-not-allowed' : isLoading === true}"
+      :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
       @click="handleCreateTransaction"
     />
   </div>
@@ -105,13 +109,14 @@ const {
   senderCurrencyDetails,
   remittanceDetail,
   recipientCurrencyDetails,
-  currentRecipientData
+  currentRecipientData,
+  bankDetails,
+  mobileMoney,
 } = storeToRefs(appStore);
 
-
-const {conversion_type} = paymentSummary.value;
+const { conversion_type } = paymentSummary.value;
 // console.log(paymentSummary.value, "summaryData");
-// console.log(remittanceMethod.value, "rem met value");
+console.log(remittanceMethod.value, "rem met value");
 // console.log(senderCurrencyDetails.value, "SDSD");
 // console.log(recipientCurrencyDetails.value, "RDRD");
 
@@ -123,7 +128,7 @@ const isLoading = ref(false);
 
 definePageMeta({
   layout: "default",
-  middleware:['auth']
+  middleware: ["auth"],
 });
 // const data = JSON.parse(localStorage.getItem("payS"));
 
@@ -146,48 +151,72 @@ const fetchRes = () => {
 };
 
 const handleCreateTransaction = async () => {
+  const {
+    recipientCurrencyDetails,
+    senderCurrencyDetails,
+    conversionData,
+    currentRecipientData,
+    // remittanceMethod,
+    bankDetails,
+    mobileMoney,
+  } = useAppStore();
+  console.log(recipientCurrencyDetails,'recDetttt!!')
+  let transactionData;
   isLoading.value = true;
-  const { recipientCurrencyDetails, senderCurrencyDetails, conversionData,  currentRecipientData } =
-    useAppStore();
 
   const response = currentRecipientData?.result;
-  const reason_id =  currentRecipientData?.reasonId;
-
-      const transactionData = {
+  const reason_id = currentRecipientData?.reasonId;
+  if (remittanceMethod.value.toLowerCase() === "bank") {
+    transactionData = {
       from_currency: senderCurrencyDetails.sender_currency,
       amount: conversionData.amount,
-      to_currency: recipientCurrencyDetails.recipient_currency,
+      to_country_code: recipientCurrencyDetails.recipient_country_code,
       to_user: response.ruid,
       reason_id: +reason_id,
+      trans_method: remittanceMethod.value,
+      bank_account_name: bankDetails.bank_account_name,
+      bank_name: bankDetails.bank_name,
+      bank_account_number: bankDetails.bank_account_number,
     };
+  } 
+  // else if (remittanceMethod.value.toLowerCase() === "mobile") {
+  //   transactionData = {
+  //     from_currency: senderCurrencyDetails.sender_currency,
+  //     amount: conversionData.amount,
+  //     to_country_code: recipientCurrencyDetails.recipient_country_code,
+  //     to_user: response.ruid,
+  //     reason_id: +reason_id,
+  //     trans_method: remittanceMethod.value,
+  //     mobile_money_number: mobileMoney.mobile_money_number,
+  //   };
+  // } else {
+  //   transactionData = {
+  //     from_currency: senderCurrencyDetails.sender_currency,
+  //     amount: conversionData.amount,
+  //    to_country_code: recipientCurrencyDetails.recipient_country_code,
+  //     to_user: response.ruid,
+  //     reason_id: +reason_id,
+  //     trans_method: remittanceMethod.value,
+  //   };
+  // }
+  console.log(transactionData, "trans Data");
 
-    // console.log(transactionData,'trans Data')
-
-  if (reason_id !== null) {
-    const transactionData = {
-      from_currency: senderCurrencyDetails.sender_currency,
-      amount: conversionData.amount,
-      to_currency: recipientCurrencyDetails.recipient_currency,
-      to_user: response.ruid,
-      reason_id: +reason_id,
-    };
-
+  if (!!reason_id) {
     UtilsService.createTransaction(transactionData)
       .then((result) => {
-        // console.log(result, "trans creation data");
+        console.log(result, "trans creation data");
         const data = result.data;
         const upload_required = data?.upload_required;
         const has_a_card = data?.has_a_card;
         useAppStore().setUploadRequired(upload_required);
         useAppStore().setTransactionRef(data.reference);
 
-
         isLoading.value = false;
 
-        // console.log(data, "transa data");
-        if(has_a_card){
-          navigateTo('/select-card');
-        }else{
+        console.log(data, "transa data");
+        if (has_a_card) {
+          navigateTo("/select-card");
+        } else {
           navigateTo("/add-card");
         }
       })

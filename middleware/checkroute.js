@@ -17,14 +17,14 @@ export default defineNuxtRouteMiddleware((item) => {
   // }
 
 
-  if (item.name === "transactions-transactionId") {
-    const progged = JSON.parse(localStorage.getItem("progged"));
-    // console.log(progged,'progged');
-    localStorage.removeItem("progged");
-    if (progged !== true) {
-      return navigateTo("/transactions");
-    }
-  }
+  // if (item.name === "transactions-transactionId") {
+  //   const progged = JSON.parse(localStorage.getItem("progged"));
+  //   // console.log(progged,'progged');
+  //   localStorage.removeItem("progged");
+  //   if (progged !== true) {
+  //     return navigateTo("/transactions");
+  //   }
+  // }
 
   if (item.name === "add-card") {
     const progged = JSON.parse(localStorage.getItem("progged"));

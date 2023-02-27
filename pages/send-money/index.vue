@@ -471,6 +471,7 @@ const {
   getRecipientCurrencyDetails: recipientCurrencyDetails,
   defaultSendingDetails,
   defaultAmount,
+  defaultRecipientCountry
 } = storeToRefs(store);
 
 // console.log(defaultSendingDetails, "DSD");
@@ -615,9 +616,11 @@ const handleSelectSenderCountry = async (curr) => {
 
 // RECIPIENT START
 const isRecipientOpen = ref(false);
-const getDefaultRecipient = (code = "") => {
+const getDefaultRecipient = () => {
+  const code = defaultRecipientCountry.value;
+  console.log(code,'code givevn')
   const defaultCountry = countries?.value?.find(
-    (item) => item.currency_code === "NGN"
+    (item) => item.code === code
   );
   // console.log(defaultCountry,'dc');
 
@@ -625,6 +628,7 @@ const getDefaultRecipient = (code = "") => {
     recipient_currency: defaultCountry.currency_code,
     recipient_currency_symbol: defaultCountry.currency_symbol,
     recipient_country: defaultCountry.name,
+    recipient_country_code: defaultCountry.code,
   };
 
   useAppStore().setRecipientCurrencyDetails(initialSample);
@@ -637,6 +641,7 @@ const selectedRecipientCountryDetails = reactive({
   recipient_currency: "",
   recipient_currency_symbol: "",
   recipient_country: "",
+  recipient_country_code:''
 });
 
 function closeRecipientModal() {
@@ -668,6 +673,8 @@ const handleSelectRecipientCountry = async (country) => {
   selectedRecipientCountryDetails.recipient_country = country.name;
   selectedRecipientCountryDetails.recipient_currency_symbol =
     country.currency_symbol;
+  selectedRecipientCountryDetails.recipient_country_code =
+    country.code;
   selectedRecipientCountry.value = country;
 
   handleContinueRecipient();
@@ -725,6 +732,7 @@ const handleContinue = () => {
         recipient_currency: country.currency_code,
         recipient_currency_symbol: country.currency_symbol,
         recipient_country: country.name,
+        recipient_country_code: country.code,
       };
 
       useAppStore().setRecipientCurrencyDetails(data);
@@ -756,15 +764,15 @@ const initialFetch = async () => {
 
   conversionDetails.sender_currency = selectedSenderCountry.value.currency_code;
 
-  if (
-    selectedRecipientCountry.value.code === "NG" &&
-    selectedRecipientCountry.value.currency_code === "NGN"
-  ) {
-    conversionDetails.recipient_country_code = "NGA";
-  } else {
+  // if (
+  //   selectedRecipientCountry.value.code === "NG" &&
+  //   selectedRecipientCountry.value.currency_code === "NGN"
+  // ) {
+  //   conversionDetails.recipient_country_code = "NGA";
+  // } else {
     conversionDetails.recipient_country_code =
       selectedRecipientCountry.value.code;
-  }
+  // }
   // console.log(conversionDetails,'cd');
   if (
     !!conversionDetails.amount &&

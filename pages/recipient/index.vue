@@ -103,7 +103,7 @@
             type="text"
             v-model="recipientForm.address"
             name="address2"
-            v-show="showWithMap === true ? true : false"
+            v-if="showWithMap === true ? true : false"
             id="address2"
             @input="handleCityInput"
             ref="addressRef"
@@ -144,7 +144,9 @@
             id="phone2"
             defaultCountry="US"
             mode="international"
-            :placeholder="'Recipient Phone Number e.g +1 234 567633'"
+            :inputOptions="{
+              placeholder: 'Recipient Phone Number e.g +1 234 567633',
+            }"
             class="pl-10 w-full"
             @focus="focusedPhone = true"
             @blur="focusedPhone = false"
@@ -202,6 +204,110 @@
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
             name="phone"
           />
+        </div>
+
+        <div
+          class="item flex flex-col-reverse my-1 w-full"
+          v-if="remittanceMethod.toLowerCase() === 'mobile'"
+        >
+          <VeeField
+            type="text"
+            v-model="recipientForm.mobile_money_number"
+            name="mobile_money_number"
+            id="mobile_money_number"
+            hidden
+            placeholder="Recipient Mobile Money Number"
+          />
+
+          <vue-tel-input
+            type="text"
+            v-model="recipientForm.mobile_money_number"
+            name="phone2"
+            id="phone2"
+            defaultCountry="US"
+            mode="international"
+            :inputOptions="{
+              placeholder: 'Recipient Mobile Money Number e.g +1 234 567633',
+            }"
+            class="pl-10 w-full"
+            @focus="focusedMobile = true"
+            @blur="focusedMobile = false"
+          ></vue-tel-input>
+
+          <label
+            for="mobile_money_number"
+            class="mb-2 text-ash-1"
+            :class="{
+              '!text-primary': focusedMobile === true,
+              '!text-ash-1': focusedMobile === false,
+            }"
+            >Recipient Mobile Money Number</label
+          >
+
+          <VeeErrorMsg
+            class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+            name="mobile_money_number"
+          />
+        </div>
+
+        <div
+          v-if="remittanceMethod.toLowerCase() === 'bank'"
+          class="w-full flex flex-col"
+        >
+          <div class="item flex flex-col-reverse my-1 w-full">
+            <VeeField
+              type="text"
+              v-model="recipientForm.bank_account_number"
+              name="bank_account_number"
+              id="bank_account_number"
+              placeholder="Recipient Account Number"
+            />
+
+            <label for="bank_account_number" class="mb-2 text-ash-1"
+              >Recipient Account Number</label
+            >
+
+            <VeeErrorMsg
+              class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+              name="account_number"
+            />
+          </div>
+          <div class="item flex flex-col-reverse my-1 w-full">
+            <VeeField
+              type="text"
+              v-model="recipientForm.bank_account_name"
+              name="bank_account_name"
+              id="bank_account_name"
+              placeholder="Recipient Account Name"
+            />
+
+            <label for="bank_account_name" class="mb-2 text-ash-1"
+              >Recipient Account Name</label
+            >
+
+            <VeeErrorMsg
+              class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+              name="bank_account_name"
+            />
+          </div>
+          <div class="item flex flex-col-reverse my-1 w-full">
+            <VeeField
+              type="text"
+              v-model="recipientForm.bank_name"
+              name="bank_name"
+              id="bank_name"
+              placeholder="Recipient Bank Name"
+            />
+
+            <label for="bank_name" class="mb-2 text-ash-1"
+              >Recipient Bank Name</label
+            >
+
+            <VeeErrorMsg
+              class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+              name="bank_name"
+            />
+          </div>
         </div>
 
         <VeeErrorMsg
@@ -262,8 +368,8 @@
           :type="'submit'"
           :text="'CONTINUE'"
           class="uppercase !text-secondary font-semibold text-xl"
-                :disabled="isLoading === true"
-      :class="{'opacity-75 cursor-not-allowed' : isLoading === true}"
+          :disabled="isLoading === true"
+          :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
         />
       </VeeForm>
 
@@ -291,6 +397,7 @@ const fetching = ref(false);
 const addressRef = ref(null);
 const isOpen = ref(false);
 const focusedPhone = ref(false);
+const focusedMobile = ref(false);
 const itemSelected = ref(null);
 const showWithMap = ref(true);
 const formerRecipients = ref([]);
@@ -302,6 +409,9 @@ const store = useAppStore();
 const { getRestriction: restrict } = storeToRefs(store);
 
 // console.log(restrict,'restrict');
+    // bank_account_name:'',
+    // bank_name:'',
+    // bank_account_number:'',
 
 definePageMeta({
   layout: "default",
@@ -346,8 +456,48 @@ const recipientForm = reactive({
   address: "",
   phone: "",
   reason: "",
+  mobile_money_number: "",
+  bank_account_number: "",
+  bank_account_name: "",
+  bank_name: "",
 });
 
+const saveAccountDetails = () => {
+  const accountDetails = {
+    bank_account_name: recipientForm.bank_account_name,
+    bank_account_number: recipientForm.bank_account_number,
+    bank_name: recipientForm.bank_name,
+  };
+
+  useAppStore().setBankDetails(accountDetails);
+
+  // const keys = Object.keys(accountDetails);
+  // console.log(keys, "keys");
+
+  // for (const item of keys) {
+  //   console.log(item, "it");
+  //   if (!accountDetails[item]) {
+  //     console.log("none", item, accountDetails[item]);
+  //   }
+  // }
+};
+const  saveMobileDetails = () => {
+  const accountDetails = {
+  mobile_money_number: recipientForm.mobile_money_number,
+  };
+
+  useAppStore().setMobileMoney(accountDetails);
+
+  // const keys = Object.keys(accountDetails);
+  // console.log(keys, "keys");
+
+  // for (const item of keys) {
+  //   console.log(item, "it");
+  //   if (!accountDetails[item]) {
+  //     console.log("none", item, accountDetails[item]);
+  //   }
+  // }
+};
 const handleSelectRecipient = (recipient) => {
   itemSelected.value = recipient;
   // const reasonSel = reasons.value.find((r) => {
@@ -355,13 +505,13 @@ const handleSelectRecipient = (recipient) => {
   //     return r;
   //   }
   // });
-  //console.log(recipient, "recipient selected");
+  // console.log(recipient, "recipient selected");
 
   recipientForm.first_name = recipient.first_name;
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
   recipientForm.phone = recipient.phone_number;
-  showWithMap.value = false;
+  // showWithMap.value = false;
 };
 
 const handleCityInput = async (e) => {
@@ -374,10 +524,9 @@ const handleCityInput = async (e) => {
   }, 500);
 };
 const handleCityClick = async (e) => {
-  //console.log(e, "cityInputClick");
-  showWithMap.value = false;
-}
-
+  console.log(e, "cityInputClick");
+  // showWithMap.value = false;
+};
 
 const setPlace = (e) => {
   const address = e.formatted_address;
@@ -391,14 +540,24 @@ const recipientSchema = yup.object().shape({
   phone: yup.string().required("Phone is required!"),
   address: yup.string().required("City is Required"),
   reason: yup.string().required("Reason for payment is required"),
+  mobile_money_number: remittanceMethod.value.toLowerCase() === 'mobile' &&  yup.string().required('Mobile money number required.') ,
+  bank_account_number:  remittanceMethod.value.toLowerCase() === 'bank' &&  yup.string().required('Bank account number required.') ,
+  bank_account_name:  remittanceMethod.value.toLowerCase() === 'bank' && yup.string().required('Account name required.'),
+  bank_name:   remittanceMethod.value.toLowerCase() === 'bank' &&  yup.string().required('Bank name required.'),
 });
 
 let address;
 
 const handleSubmit = async (values) => {
-  // console.log(values, "v");
+  console.log(values, "v");
 
   isLoading.value = true;
+  if(remittanceMethod.value.toLowerCase() === 'bank'){
+    saveAccountDetails();
+  }
+  if(remittanceMethod.value.toLowerCase() === 'mobile'){
+    saveMobileDetails();
+  }
 
   try {
     const recipientCreationData = {
@@ -418,7 +577,7 @@ const handleSubmit = async (values) => {
 
     const reason_id = reasonSel.id;
 
-   // console.log(reason_id,'reason');
+    // console.log(reason_id,'reason');
 
     if (!!reason_id) {
       UtilsService.createRecipient(recipientCreationData)
@@ -432,27 +591,20 @@ const handleSubmit = async (values) => {
             },
             reasonId: reason_id,
           };
-          useAppStore().setCurrentRecipientData(recipientData)
+          useAppStore().setCurrentRecipientData(recipientData);
           localStorage.setItem("progged", JSON.stringify(true));
-
           // TODO Add this to pinia store;
           // const initialPayS = JSON.parse(localStorage.getItem('payS'))
           // if(!!initialPayS){
           //   localStorage.removeItem('payS');
           // }
-
           // localStorage.setItem("payS", JSON.stringify(paymentSummary));
-
           isLoading.value = false;
-
           navigateTo("/payment-summary");
         })
         .catch((err) => {
-
           isLoading.value = false;
-
           console.log(err, "err");
-
         });
     }
   } catch (err) {
