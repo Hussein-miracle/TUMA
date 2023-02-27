@@ -25,6 +25,7 @@
         :status="transaction.status"
         :amount="+transaction.amount"
         :from_currency="transaction.from_currency"
+        :to_currency="transaction.to_currency"
         :first_name="transaction.to_user.first_name"
         :last_name="transaction.to_user.last_name"
         :address="transaction.to_user.address"

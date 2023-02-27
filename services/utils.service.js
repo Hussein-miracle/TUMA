@@ -122,6 +122,15 @@ class UtilsService{
   }
 
 
+  async deleteCard(cuid){
+    const response =  await axiosInstance.delete(`/card/${cuid}`);
+  
+    const data = response.data.data;
+  
+    return data;
+  }
+
+
 
 
 }

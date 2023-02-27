@@ -187,7 +187,7 @@ const showPending = ref(false);
 const isLoading = ref(false);
 
 const msg = ref("");
-const status = ref('cancelled');
+const status = ref('');
 
 const handleRetry = () => {
   navigateTo("/send-money");
@@ -210,7 +210,7 @@ const fetchTrustPaymentDetail = async () => {
     .then((response) => {
       console.log(response, "r");
       msg.value = response.message;
-      // status.value = response.status;
+      status.value = response.status;
       isLoading.value = false;
     })
     .catch((err) => {

@@ -10,9 +10,11 @@
       >
         <div class="left flex items-center gap-x-4">
           <div
-            class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center"
+            class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center uppercase"
           >
-            <icons-dummy-bank-logo />
+            <!-- <icons-dummy-bank-logo /> -->
+                        {{ transaction.transaction_provider }}
+
           </div>
 
           <div class="details flex flex-col">
@@ -23,13 +25,24 @@
           </div>
         </div>
 
-        <div
+
+        <div class='right flex flex-col items-start'>
+                  <div
           class="right text-secondary text-skeleton"
           v-if="isLoading === true"
         ></div>
         <div class="right text-secondary text-skeleton" v-else>
           <span v-money>{{ transaction.amount }}</span>
           {{ transaction.from_currency }}
+        </div>
+        <div
+          class="right text-secondary text-skeleton"
+          v-if="isLoading === true"
+        ></div>
+        <div class="right text-secondary text-skeleton" v-else>
+          <span v-money>{{ transaction.converted_amount }}</span>
+          {{ transaction.to_currency }}
+        </div>
         </div>
       </div>
 
@@ -102,9 +115,9 @@ definePageMeta({
   layout: "default",
   middleware: ["auth", "checkroute"],
 });
-const  currentTransact = useAppStore();
+const currentTransact = useAppStore();
 // console.log(currentTransaction, "tC");
-const {currentTransaction:transactionData} = storeToRefs(currentTransact);
+const { currentTransaction: transactionData } = storeToRefs(currentTransact);
 
 // console.log(transactionData ,'TDDD');
 
@@ -118,10 +131,11 @@ const transaction = reactive({
   transaction_provider: "",
   from_currency: "",
   reference: "",
-trans_date: "",
+  trans_date: "",
   message: "",
   status: "",
   to_currency: "",
+  converted_amount: "",
 });
 
 // console.log(reference,'reffffff')
@@ -136,7 +150,7 @@ const repeatForm = reactive({
 
 const handleRepeatTransaction = async () => {
   // console.log(repeatForm, "refForm");
-  const needs =  transactionData.value;
+  const needs = transactionData.value;
 
   //console.log(needs ,'needs');
 
@@ -146,9 +160,9 @@ const handleRepeatTransaction = async () => {
     address: "",
     phone_number: "",
   };
-  for(const item in needs){
-    if(item in result){
-      result[item] = needs[item]
+  for (const item in needs) {
+    if (item in result) {
+      result[item] = needs[item];
     }
   }
   isLoading.value = true;
@@ -156,14 +170,13 @@ const handleRepeatTransaction = async () => {
   const paymentSummary = {
     result: {
       ...repeatForm,
-      ...result
+      ...result,
     },
     reasonId: repeatForm.reason_id,
   };
 
   if (!!paymentSummary.reasonId) {
     // UtilsService.getConversionRates(conversionDetails).then((response) => {
-
     //       const result = response.data;
     //       // console.log(result, "res");
     //       const converted_amount = result.converted_amount;
@@ -173,7 +186,6 @@ const handleRepeatTransaction = async () => {
     //       const mobile = converted_amount.mobile;
     //       // console.log(cash,'cash');
     //       useAppStore().setPaymentSummary(converted_amount);
-
     //       const details = {
     //         cash,
     //         mobile,
@@ -181,36 +193,27 @@ const handleRepeatTransaction = async () => {
     //         recipient_currency: result.recipient_currency,
     //         conversion_rate: result.conversion_rate,
     //       };
-
     //       useAppStore().setConversionData({
     //         amount:conversionDetails.amount,
     //       })
-
     //       useAppStore().setRemittanceDetails(details);
-
     //       cashValue.value = String(cash?.converted);
     //       bankValue.value = String(bank?.converted);
     //       mobileValue.value = String(mobile?.converted);
-
     //       bestValue.value = { ...result.best_value };
-
     //       assignConvertedAmount();
-        
     //   }
-
-
   }
-    //console.log(paymentSummary,'ps');
+  //console.log(paymentSummary,'ps');
 
-    localStorage.setItem("progged", JSON.stringify(true));
+  localStorage.setItem("progged", JSON.stringify(true));
 
-    // TODO Add this to pinia store;
-    localStorage.setItem("payS", JSON.stringify(paymentSummary));
+  // TODO Add this to pinia store;
+  localStorage.setItem("payS", JSON.stringify(paymentSummary));
 
-    isLoading.value = false;
+  isLoading.value = false;
 
-    navigateTo("/payment-summary");
-  
+  navigateTo("/payment-summary");
 };
 
 const fetchTransaction = async () => {

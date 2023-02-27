@@ -17,10 +17,15 @@
 
 
 
-    <div class="details flex flex-col items-start sm:w-[30%]  h-full self-end">
+    <div class="details flex flex-col items-center sm:w-[30%]  h-full self-end">
       <div class="text-secondary flex gap-x-1 sm:gap-x-2">
         <span v-money>{{amount}}</span>
         <span>{{from_currency}}</span>
+      
+      </div>
+      <div class="text-secondary flex gap-x-1 sm:gap-x-2">
+        <!-- <span v-money>{{amount}}</span> -->
+        <span>{{to_currency}}</span>
       
       </div>
       <transaction-status :status='status' />
@@ -29,7 +34,7 @@
 </template>
 
 <script setup>
-const props = defineProps(['status','amount','from_currency','first_name','last_name','address'])
+const props = defineProps(['status','amount','from_currency','first_name','last_name','address','to_currency'])
 </script>
 
 <style lang='scss' scoped>
