@@ -23,11 +23,6 @@
         <span>{{from_currency}}</span>
       
       </div>
-      <div class="text-secondary flex gap-x-1 sm:gap-x-2">
-        <!-- <span v-money>{{amount}}</span> -->
-        <span>{{to_currency}}</span>
-      
-      </div>
       <transaction-status :status='status' />
     </div>
   </div>

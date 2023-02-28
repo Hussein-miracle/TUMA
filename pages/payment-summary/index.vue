@@ -156,18 +156,18 @@ const handleCreateTransaction = async () => {
     senderCurrencyDetails,
     conversionData,
     currentRecipientData,
-    // remittanceMethod,
     bankDetails,
     mobileMoney,
   } = useAppStore();
-  console.log(recipientCurrencyDetails,'recDetttt!!')
-  let transactionData;
+  const transactionData = ref(null);
   isLoading.value = true;
+  // console.log(recipientCurrencyDetails, "recDetttt!!");
 
   const response = currentRecipientData?.result;
   const reason_id = currentRecipientData?.reasonId;
+  // console.log(response, "recDetttt!!");
   if (remittanceMethod.value.toLowerCase() === "bank") {
-    transactionData = {
+    transactionData.value = {
       from_currency: senderCurrencyDetails.sender_currency,
       amount: conversionData.amount,
       to_country_code: recipientCurrencyDetails.recipient_country_code,
@@ -178,31 +178,30 @@ const handleCreateTransaction = async () => {
       bank_name: bankDetails.bank_name,
       bank_account_number: bankDetails.bank_account_number,
     };
-  } 
-  // else if (remittanceMethod.value.toLowerCase() === "mobile") {
-  //   transactionData = {
-  //     from_currency: senderCurrencyDetails.sender_currency,
-  //     amount: conversionData.amount,
-  //     to_country_code: recipientCurrencyDetails.recipient_country_code,
-  //     to_user: response.ruid,
-  //     reason_id: +reason_id,
-  //     trans_method: remittanceMethod.value,
-  //     mobile_money_number: mobileMoney.mobile_money_number,
-  //   };
-  // } else {
-  //   transactionData = {
-  //     from_currency: senderCurrencyDetails.sender_currency,
-  //     amount: conversionData.amount,
-  //    to_country_code: recipientCurrencyDetails.recipient_country_code,
-  //     to_user: response.ruid,
-  //     reason_id: +reason_id,
-  //     trans_method: remittanceMethod.value,
-  //   };
-  // }
-  console.log(transactionData, "trans Data");
+  } else if (remittanceMethod.value.toLowerCase() === "mobile") {
+    transactionData.value = {
+      from_currency: senderCurrencyDetails.sender_currency,
+      amount: conversionData.amount,
+      to_country_code: recipientCurrencyDetails.recipient_country_code,
+      to_user: response.ruid,
+      reason_id: +reason_id,
+      trans_method: remittanceMethod.value,
+      mobile_money_number: mobileMoney.mobile_money_number,
+    };
+  } else {
+    transactionData.value = {
+      from_currency: senderCurrencyDetails.sender_currency,
+      amount: conversionData.amount,
+      to_country_code: recipientCurrencyDetails.recipient_country_code,
+      to_user: response.ruid,
+      reason_id: +reason_id,
+      trans_method: remittanceMethod.value,
+    };
+  }
+  // console.log(transactionData, "trans Data");
 
   if (!!reason_id) {
-    UtilsService.createTransaction(transactionData)
+    UtilsService.createTransaction(transactionData.value)
       .then((result) => {
         console.log(result, "trans creation data");
         const data = result.data;

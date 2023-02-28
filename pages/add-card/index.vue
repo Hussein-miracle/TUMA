@@ -119,8 +119,6 @@
         <div class="cube2"></div>
       </div>
 
-
-
       <form id="st-form" :action="`${location}`" v-if="isLoading === false">
         <div id="st-card-number" class="st-card-number"></div>
         <div id="st-expiration-date" class="st-expiration-date"></div>
@@ -139,27 +137,23 @@
 
 <script setup>
 
-
-// console.log(location.value , 'location to redirect to');/
-
-
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 const location = ref(`${window.location.origin}/transaction-status`);
 
 const isLoading = ref(false);
 
-const cardDetails = reactive({
-  card_number: "",
-  card_name: "",
-  cvv: "",
-  card_expiry_date: "",
-  save_card: false,
-});
+// const cardDetails = reactive({
+//   card_number: "",
+//   card_name: "",
+//   cvv: "",
+//   card_expiry_date: "",
+//   save_card: false,
+// });
 
-const det = reactive({
-  token: "",
-});
+// const det = reactive({
+//   token: "",
+// });
 
 definePageMeta({
   layout: false,
@@ -167,16 +161,20 @@ definePageMeta({
 
 const getTrustToken = async () => {
   isLoading.value = true;
+
   const reference = useAppStore().getTransactionRef;
-  const data = {
+
+
+  const details = {
     transaction_ref: reference,
   };
+
   // console.log(data, 'for you too')
-  const response = await UtilsService.postToTrustPayment(data);
+  const response = await UtilsService.postToTrustPayment(details);
 
-
-  const jwtToken = response.data["jwt-token"];
-  const st = response.data.st;
+ const data = response.data;
+  const jwtToken = data["jwt-token"];
+  const st = data.st;
   const res = {
     jwtToken,
     st,
@@ -186,12 +184,22 @@ const getTrustToken = async () => {
   return res;
 };
 
+
+
+
 const initTrustPayment = async (token) => {
+
+
+
   const st = SecureTrading({
     jwt: token,
     formId:'st-form',
   });
   return st.Components();
+
+
+
+
 };
 
 // const handleSubmit = async (values) => {

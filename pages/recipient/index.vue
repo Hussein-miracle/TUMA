@@ -549,7 +549,7 @@ const recipientSchema = yup.object().shape({
 let address;
 
 const handleSubmit = async (values) => {
-  console.log(values, "v");
+  // console.log(values, "v");
 
   isLoading.value = true;
   if(remittanceMethod.value.toLowerCase() === 'bank'){

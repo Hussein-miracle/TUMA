@@ -18,10 +18,7 @@
 
       <button class="text-skeleton !w-20 !h-12"></button>
     </div>
-    <div
-      class="transaction-success"
-      v-if="status === 'cancelled'"
-    >
+    <div class="transaction-success" v-if="status === 'cancelled'">
       <h2 class="text-red-800 text-3xl my-2 text-center">
         Transaction Not Successful
       </h2>
@@ -33,11 +30,10 @@
           class="relative w-full h-full flex items-center justify-center my-4"
         >
           <svg
-            class="absolute sm:scale-125 !fill-red-300"
             xmlns="http://www.w3.org/2000/svg"
             width="205"
-            height="205"
-            viewBox="0 0 205 205"
+            height="244.861"
+            viewBox="0 0 205 244.861"
           >
             <g
               id="checked"
@@ -51,54 +47,35 @@
                 cy="102.5"
                 r="102.5"
                 transform="translate(111.304 293.304)"
-                fill="#fca5a5"
+                fill="#e2360a"
               />
             </g>
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="155"
-            height="155"
-            viewBox="0 0 155 155"
-            class="absolute sm:scale-110"
-          >
+            <circle
+              id="Ellipse_358-2"
+              data-name="Ellipse 358"
+              cx="77.5"
+              cy="77.5"
+              r="77.5"
+              transform="translate(25.861 89.861)"
+              fill="#e20a27"
+            />
             <g
-              id="checked"
-              transform="translate(-110.861 -292.861)"
-              opacity="0.25"
+              id="checked-2"
+              data-name="checked"
+              transform="translate(-85 -267)"
             >
               <circle
-                id="Ellipse_358"
-                data-name="Ellipse 358"
-                cx="77.5"
-                cy="77.5"
-                r="77.5"
-                transform="translate(110.861 292.861)"
-                fill="#f87171"
-              />
-            </g>
-          </svg>
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="129"
-            height="129"
-            viewBox="0 0 129 129"
-            class="absolute sm:scale-105 !stroke-red-400"
-          >
-            <g id="checked" transform="translate(-123 -305)">
-              <circle
-                id="Ellipse_358"
+                id="Ellipse_358-3"
                 data-name="Ellipse 358"
                 cx="64.5"
                 cy="64.5"
                 r="64.5"
-                transform="translate(123 305)"
-                fill="#ef4444 "
+                transform="translate(123 304)"
+                fill="#e20a18"
               />
             </g>
           </svg>
+
           <icons-transaction-error class="absolute sm:scale-150 -800" />
         </div>
       </div>
@@ -123,13 +100,9 @@
         {{ msg }}
       </h2>
 
-
-      
-
-    <div v-if="status === 'pending' " class='mx-auto max-w-lg'>
-      Transaction Pending,You check transaction logs for more details
-    </div>
-
+      <div v-if="status === 'pending'" class="mx-auto max-w-lg">
+        Transaction Pending,You check transaction logs for more details
+      </div>
 
       <div
         class="my-6 flex items-center justify-center relative w-72 h-72 mx-auto"
@@ -137,14 +110,46 @@
         <div
           class="relative w-full h-full flex items-center justify-center my-4"
         >
-          
-           <icons-transaction-success class="absolute !sm:scale-150" />
-           <icons-transact-check-first class="absolute !sm:scale-125" />
-          <icons-transact-check-second class="absolute !sm:scale-110" />
-          <icons-transact-check-third class="absolute !sm:scale-105" />
-          <icons-check-mark />
-
-          
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="205.442"
+            height="208.304"
+            viewBox="0 0 205.442 208.304"
+          >
+            <circle
+              id="Ellipse_358"
+              data-name="Ellipse 358"
+              cx="102.5"
+              cy="102.5"
+              r="102.5"
+              transform="translate(0.442 3.304)"
+              fill="#0ae2c7"
+            />
+            <circle
+              id="Ellipse_358-2"
+              data-name="Ellipse 358"
+              cx="77.5"
+              cy="77.5"
+              r="77.5"
+              transform="translate(0 2.861)"
+              fill="#0ae2c7"
+            />
+            <circle
+              id="Ellipse_358-3"
+              data-name="Ellipse 358"
+              cx="64.5"
+              cy="64.5"
+              r="64.5"
+              transform="translate(12.139 15)"
+              fill="#0ae2c7"
+            />
+            <path
+              id="checked"
+              d="M.462,19.923a1.487,1.487,0,0,1,0-2.154l2.154-2.154a1.487,1.487,0,0,1,2.154,0l.154.154,8.462,9.077a.744.744,0,0,0,1.077,0L35.077,3.462h.154a1.487,1.487,0,0,1,2.154,0l2.154,2.154a1.487,1.487,0,0,1,0,2.154h0L14.923,33.308a1.487,1.487,0,0,1-2.154,0l-12-12.923-.308-.462Z"
+              transform="translate(57.139 -3)"
+              fill="#fff"
+            />
+          </svg>
         </div>
       </div>
 
@@ -187,7 +192,7 @@ const showPending = ref(false);
 const isLoading = ref(false);
 
 const msg = ref("");
-const status = ref('');
+const status = ref("");
 
 const handleRetry = () => {
   navigateTo("/send-money");
@@ -232,14 +237,11 @@ onMounted(() => {
 
     window.history.replaceState(null, "", `${origin}/transaction-detail`);
   }
-
-
 });
-
 
 definePageMeta({
   layout: "default",
-  middleware:['auth']
+  middleware: ["auth"],
 });
 </script>
 
