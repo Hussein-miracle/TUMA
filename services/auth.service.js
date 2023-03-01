@@ -52,7 +52,12 @@ class AuthService {
 
   async changePassword(details) {
     const res = await axiosInstance.post("/auth/password/change", details);
+    const data = res.data;
+    return data;
+  }
 
+  async getProfile() {
+    const res = await axiosInstance.get("/auth/profile");
     const data = res.data;
     return data;
   }

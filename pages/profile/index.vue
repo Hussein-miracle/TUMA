@@ -11,9 +11,12 @@
           >{{user.fname}} {{user.sname}}</span
         >
 
-        <!-- <span class="profile__details--content__email"
-          >{{user.email}}</span
-        > -->
+        <span class="profile__details--content__email"
+          >{{profileDetails.email}}</span
+        >
+        <span class="text-primary uppercase font-bold"
+          >{{profileDetails.verified}}</span
+        >
       </div>
 
       <div
@@ -156,12 +159,15 @@ import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import useToggle from '@/composables_/useToggle';
-// import Delet
+import AuthService from "@/services/auth.service";
 
 
 const {show:showDelete,setShowFalse:closeDelete,setShowTrue:openDelete} = useToggle();
+
 const {show:showConfirmDelete,setShowFalse:closeConfirmDelete,setShowTrue:openConfirmDelete} = useToggle();
 
+
+const isLoading = ref(false);
 
 
 useHead({
@@ -172,12 +178,17 @@ definePageMeta({
   layout: "default",
   middleware:['auth']
 });
+
 const authstore = useUserStore();
 // const {user}  = useUserStore();
 const {user} = storeToRefs(authstore);
 
 //console.log(user,'user in profile');
 
+const profileDetails = reactive({
+  verified:'',
+  email:''
+})
 const logout = () => {
   const {logout:log} = useUserStore();
   log();
@@ -191,11 +202,30 @@ const handleDeleteAccount = async () => {
   openDelete();
 }
 
+const handleGetProfile = async () => {
+  isLoading.value = true;
+  AuthService.getProfile().then((response) => {
+    isLoading.value = false;
+    console.log(response,'response');
+    const data = response.data;
+    console.log(data,'response data');
+    for(const item in data){
+      if(item in profileDetails){
+        profileDetails[item] = data[item];
+      }
+    }
+    isLoading.value = false;
+    console.log(err,'err');
+  }).catch((err) => {
+    console.log(err,'profile err')
+  })
+}
 
-// const key = 'sbx:IxVDi0FRSgbqL2HRMruyEoZ3';
 
 
-
+onMounted( async () => {
+  handleGetProfile();
+})
 
 </script>
 
