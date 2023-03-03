@@ -14,7 +14,10 @@
       </div>
 
       <div id="st-notification-frame" v-if="isLoading === false"></div>
+
       <form id="st-form" :action="`${location}`" v-if="isLoading === false">
+        <div id="st-card-number" class="st-card-number"></div>
+        <div id="st-expiration-date" class="st-expiration-date"></div>
         <div id="st-security-code" class="st-security-code"></div>
         <button
           type="submit"
