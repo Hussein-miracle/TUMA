@@ -110,7 +110,9 @@
         <div
           class="relative w-full h-full flex items-center justify-center my-4"
         >
-          <svg
+        
+        <img src="~/assets/images/checkmark-png.png" alt="checkmark success" />
+          <!-- <svg
             xmlns="http://www.w3.org/2000/svg"
             width="205.442"
             height="208.304"
@@ -146,10 +148,9 @@
             <path
               id="checked"
               d="M.462,19.923a1.487,1.487,0,0,1,0-2.154l2.154-2.154a1.487,1.487,0,0,1,2.154,0l.154.154,8.462,9.077a.744.744,0,0,0,1.077,0L35.077,3.462h.154a1.487,1.487,0,0,1,2.154,0l2.154,2.154a1.487,1.487,0,0,1,0,2.154h0L14.923,33.308a1.487,1.487,0,0,1-2.154,0l-12-12.923-.308-.462Z"
-              transform="translate(57.139 -3)"
               fill="#fff"
             />
-          </svg>
+          </svg> -->
         </div>
       </div>
 
@@ -246,6 +247,25 @@ definePageMeta({
 </script>
 
 <style lang="scss" scoped>
+svg {
+  width: 15rem;
+  height: 15rem;
+  position: relative;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+  // path {
+  //   width: 6rem;
+  //   height: 6rem;
+  //   position: relative;
+  //   z-index: 5;
+
+  //   margin-top: 4rem;
+  //   margin-left: 4rem;
+  // }
+}
+
 .text-skeleton:empty {
   width: 6rem;
   height: 22px;

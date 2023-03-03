@@ -106,6 +106,7 @@
             v-if="showWithMap === true ? true : false"
             id="address2"
             @input="handleCityInput"
+            @click="handleCityClick"
             ref="addressRef"
             placeholder="Type and Select City from Google Dropdown List"
             :options="{
@@ -208,7 +209,7 @@
 
         <div
           class="item flex flex-col-reverse my-1 w-full"
-          v-if="remittanceMethod.toLowerCase() === 'mobile'"
+          v-show="remittanceMethod.toLowerCase() === 'mobile'"
         >
           <VeeField
             type="text"
@@ -251,7 +252,7 @@
         </div>
 
         <div
-          v-if="remittanceMethod.toLowerCase() === 'bank'"
+          v-show="remittanceMethod.toLowerCase() === 'bank'"
           class="w-full flex flex-col"
         >
           <div class="item flex flex-col-reverse my-1 w-full">
@@ -269,7 +270,7 @@
 
             <VeeErrorMsg
               class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-              name="account_number"
+              name="bank_account_number"
             />
           </div>
           <div class="item flex flex-col-reverse my-1 w-full">
@@ -383,7 +384,7 @@
 <script setup>
 import * as yup from "yup";
 import { watchDebounced } from "@vueuse/core";
-import { storeToRefs } from "pinia";
+import { storeToRefs,mapStores } from "pinia";
 import { VueTelInput } from "vue-tel-input";
 import "vue-tel-input/dist/vue-tel-input.css";
 import { useAppStore } from "@/store/app/index";
@@ -409,9 +410,9 @@ const store = useAppStore();
 const { getRestriction: restrict } = storeToRefs(store);
 
 // console.log(restrict,'restrict');
-    // bank_account_name:'',
-    // bank_name:'',
-    // bank_account_number:'',
+// bank_account_name:'',
+// bank_name:'',
+// bank_account_number:'',
 
 definePageMeta({
   layout: "default",
@@ -424,6 +425,8 @@ const {
   reasons,
   countries,
 } = storeToRefs(store);
+
+console.log(remittanceMethod.value, "upda");
 
 const fetchRecipients = async () => {
   fetching.value = true;
@@ -481,9 +484,9 @@ const saveAccountDetails = () => {
   //   }
   // }
 };
-const  saveMobileDetails = () => {
+const saveMobileDetails = () => {
   const accountDetails = {
-  mobile_money_number: recipientForm.mobile_money_number,
+    mobile_money_number: recipientForm.mobile_money_number,
   };
 
   useAppStore().setMobileMoney(accountDetails);
@@ -511,7 +514,7 @@ const handleSelectRecipient = (recipient) => {
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
   recipientForm.phone = recipient.phone_number;
-  // showWithMap.value = false;
+  showWithMap.value = !showWithMap.value;
 };
 
 const handleCityInput = async (e) => {
@@ -533,18 +536,54 @@ const setPlace = (e) => {
   recipientForm.address = address;
 };
 
-const recipientSchema = yup.object().shape({
-  // country: yup.string().required("Country is required!"),
-  first_name: yup.string().required("First name is required!"),
-  last_name: yup.string().required("Last name is required!"),
-  phone: yup.string().required("Phone is required!"),
-  address: yup.string().required("City is Required"),
-  reason: yup.string().required("Reason for payment is required"),
-  mobile_money_number: remittanceMethod.value.toLowerCase() === 'mobile' &&  yup.string().required('Mobile money number required.') ,
-  bank_account_number:  remittanceMethod.value.toLowerCase() === 'bank' &&  yup.string().required('Bank account number required.') ,
-  bank_account_name:  remittanceMethod.value.toLowerCase() === 'bank' && yup.string().required('Account name required.'),
-  bank_name:   remittanceMethod.value.toLowerCase() === 'bank' &&  yup.string().required('Bank name required.'),
-});
+const createRecipientSchema = (method) => {
+  method = method.toLowerCase();
+
+  if (method === "cash") {
+    return yup.object().shape({
+      first_name: yup.string().required("First name is required!"),
+      last_name: yup.string().required("Last name is required!"),
+      phone: yup.string().required("Phone is required!"),
+      address: yup.string().required("City is Required"),
+      reason: yup.string().required("Reason for payment is required"),
+    });
+  }
+
+  if (method === "bank") {
+    return yup.object().shape({
+      first_name: yup.string().required("First name is required!"),
+      last_name: yup.string().required("Last name is required!"),
+      phone: yup.string().required("Phone is required!"),
+      address: yup.string().required("City is Required"),
+      reason: yup.string().required("Reason for payment is required"),
+      bank_account_number: yup
+        .string()
+        .required("Bank account number required."),
+      bank_account_name: yup.string().required("Account name required."),
+      bank_name: yup.string().required("Bank name required."),
+    });
+  }
+
+  if (method === "mobile") {
+    return yup.object().shape({
+      first_name: yup.string().required("First name is required!"),
+      last_name: yup.string().required("Last name is required!"),
+      phone: yup.string().required("Phone is required!"),
+      address: yup.string().required("City is Required"),
+      reason: yup.string().required("Reason for payment is required"),
+      mobile_money_number: yup
+        .string()
+        .required("Mobile money number required."),
+    });
+  }
+};
+
+
+let recipientSchema = createRecipientSchema(remittanceMethod.value.toLowerCase());
+watch(remittanceMethod,() => {
+  // console.log(remittanceMethod,'remWatch')
+  recipientSchema = createRecipientSchema(remittanceMethod.value.toLowerCase());
+})
 
 let address;
 
@@ -552,10 +591,16 @@ const handleSubmit = async (values) => {
   // console.log(values, "v");
 
   isLoading.value = true;
-  if(remittanceMethod.value.toLowerCase() === 'bank'){
+  // if (remittanceMethod.toLowerCase() === "bank") {
+  //   saveAccountDetails();
+  // }
+  // if (remittanceMethod.toLowerCase() === "mobile") {
+  //   saveMobileDetails();
+  // }
+  if (remittanceMethod.value.toLowerCase() === "bank") {
     saveAccountDetails();
   }
-  if(remittanceMethod.value.toLowerCase() === 'mobile'){
+  if (remittanceMethod.value.toLowerCase() === "mobile") {
     saveMobileDetails();
   }
 

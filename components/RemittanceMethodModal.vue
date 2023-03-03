@@ -195,18 +195,10 @@ const { remittanceDetail, recipientCurrencyDetails } = storeToRefs(store);
 console.log(remittanceDetail.value, "remDet");
 console.log(recipientCurrencyDetails.value, "reciDet");
 const remittanceMethod = ref("");
-// const remittanceDetails = reactive({
-//   cash: '',
-//   mobile: '',
-//   bank: '',
-//   recipient_currency: '',
-// });
-
 const updateRemittanceMethod = async () => {
   if (remittanceMethod.value.length) {
     useAppStore().setRemittanceMethod(remittanceMethod.value);
     props.closeModal();
-    // navigateTo('/upload');
   }
 };
 
