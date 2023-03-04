@@ -236,13 +236,52 @@
             <span>Delete Card</span>
           </button>
         </div>
+
+
+        
+      <div class="flex gap-x-2 items-center ml-8 my-1">
+        <icons-check
+          v-if="accepted === true"
+          @click="accepted = false"
+          class="cursor-pointer"
+        />
+        <div
+          class="box sm:w-5 w-3 h-3 sm:h-5 rounded-sm bg-ash-3 cursor-pointer"
+          @click="accepted = true"
+          v-else
+        ></div>
+
+        
+      <button-primary
+        :text="'Pay now'"
+        class="text-secondary font-bold"
+        type="button"
+        @click="handlePay"
+        :class="{
+          'opacity-75 cursor-not-allowed':
+            submitting === true ||
+            fetching === true ||
+            accepted === false ||
+            isDeleting === true,
+        }"
+        :disabled="
+          submitting === true ||
+          fetching === true ||
+          accepted === false ||
+          isDeleting === true
+        "
+      />
+        <p class="text-xs sm:text-md">
+          I have read and agree to the Terms & Conditions and Privacy Policy
+        </p>
+      </div>
       </div>
       <div
         class="card-numbers w-full sm:w-[80%] mx-auto flex flex-col gap-y-1 items-center mt-4 sm:mt-0"
         v-else-if="fetching === false && cards.length <= 0"
       >
 
-      <p class=' text-sm max-w-sm mx-auto sm:text-lg'>You don't have any cards currently,click add card to add a card</p>
+      <p>You don't have any cards currently,click add card to add a card</p>
       </div>
 
 
