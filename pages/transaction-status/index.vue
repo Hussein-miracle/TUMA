@@ -18,7 +18,11 @@
 
       <button class="text-skeleton !w-20 !h-12"></button>
     </div>
-    <div class="transaction-success" v-if="status === 'cancelled'">
+
+    <div
+      class="transaction-success"
+      v-else-if="isLoading === false && status === TRANSACTION_STATUSES.FAILED"
+    >
       <h2 class="text-red-800 text-3xl my-2 text-center">
         Transaction Not Successful
       </h2>
@@ -29,54 +33,10 @@
         <div
           class="relative w-full h-full flex items-center justify-center my-4"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="205"
-            height="244.861"
-            viewBox="0 0 205 244.861"
-          >
-            <g
-              id="checked"
-              transform="translate(-111.304 -293.304)"
-              opacity="0.1"
-            >
-              <circle
-                id="Ellipse_358"
-                data-name="Ellipse 358"
-                cx="102.5"
-                cy="102.5"
-                r="102.5"
-                transform="translate(111.304 293.304)"
-                fill="#e2360a"
-              />
-            </g>
-            <circle
-              id="Ellipse_358-2"
-              data-name="Ellipse 358"
-              cx="77.5"
-              cy="77.5"
-              r="77.5"
-              transform="translate(25.861 89.861)"
-              fill="#e20a27"
-            />
-            <g
-              id="checked-2"
-              data-name="checked"
-              transform="translate(-85 -267)"
-            >
-              <circle
-                id="Ellipse_358-3"
-                data-name="Ellipse 358"
-                cx="64.5"
-                cy="64.5"
-                r="64.5"
-                transform="translate(123 304)"
-                fill="#e20a18"
-              />
-            </g>
-          </svg>
-
-          <icons-transaction-error class="absolute sm:scale-150 -800" />
+          <img
+            src="~/assets/images/failed-logo.png"
+            alt="failed statos"
+          />
         </div>
       </div>
 
@@ -94,13 +54,92 @@
 
     <div
       class="transaction-success"
-      v-else-if="isLoading === false && status !== 'cancelled'"
+      v-else-if="
+        isLoading === false && status === TRANSACTION_STATUSES.CANCELLED
+      "
+    >
+      <h2 class="text-red-800 text-3xl my-2 text-center">
+        Transaction Cancelled
+      </h2>
+
+      <div
+        class="my-10 flex items-center justify-center relative w-72 h-72 mx-auto"
+      >
+        <div
+          class="relative w-full h-full flex items-center justify-center my-4"
+        >
+          <img
+            src="~/assets/images/failed-logo.png"
+            alt="cancelled logo"
+          />
+        </div>
+      </div>
+
+      <p class="text-center mt-2 font-semibold max-w-md mx-auto">
+        One more step,click the button below to try again.
+      </p>
+
+      <button-primary
+        :type="'button'"
+        :text="'Try Again'"
+        class="uppercase !text-white font-semibold text-xl"
+        @click="handleRetry"
+      />
+    </div>
+
+    <div
+      class="transaction-success"
+      v-else-if="isLoading === false && status === TRANSACTION_STATUSES.SUCCESS"
     >
       <h2 class="text-secondary text-3xl my-2 text-center">
         {{ msg }}
       </h2>
 
-      <div v-if="status === 'pending'" class="mx-auto max-w-lg">
+      <div
+        class="my-6 flex items-center justify-center relative w-72 h-72 mx-auto"
+      >
+        <div
+          class="relative w-full h-full flex items-center justify-center my-4"
+        >
+          <img
+            src="~/assets/images/checkmark-png.png"
+            alt="checkmark success"
+          />
+        </div>
+      </div>
+
+      <p
+        class="text-center mt-2 font-semibold max-w-md mx-auto"
+        v-if="upload_required"
+      >
+        One more step,click the button below to upload your details.
+      </p>
+
+      <button-primary
+        v-if="upload_required"
+        :type="'button'"
+        :text="'Upload'"
+        class="uppercase !text-secondary font-semibold text-xl my-1"
+        @click="handleUpload"
+      />
+      <button-primary
+        v-else
+        :type="'button'"
+        :text="'View Transactions'"
+        class="uppercase !text-secondary font-semibold text-xl my-1"
+        @click="handleHome"
+      />
+    </div>
+
+    <div
+      class="transaction-success"
+      v-else-if="isLoading === false && status === TRANSACTION_STATUSES.PENDING"
+    >
+      <h2 class="text-secondary text-3xl my-2 text-center">
+        {{ msg }}
+      </h2>
+
+      <div class="mx-auto max-w-lg">
         Transaction Pending,You check transaction logs for more details
       </div>
 
@@ -110,47 +149,7 @@
         <div
           class="relative w-full h-full flex items-center justify-center my-4"
         >
-        
-        <img src="~/assets/images/checkmark-png.png" alt="checkmark success" />
-          <!-- <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="205.442"
-            height="208.304"
-            viewBox="0 0 205.442 208.304"
-          >
-            <circle
-              id="Ellipse_358"
-              data-name="Ellipse 358"
-              cx="102.5"
-              cy="102.5"
-              r="102.5"
-              transform="translate(0.442 3.304)"
-              fill="#0ae2c7"
-            />
-            <circle
-              id="Ellipse_358-2"
-              data-name="Ellipse 358"
-              cx="77.5"
-              cy="77.5"
-              r="77.5"
-              transform="translate(0 2.861)"
-              fill="#0ae2c7"
-            />
-            <circle
-              id="Ellipse_358-3"
-              data-name="Ellipse 358"
-              cx="64.5"
-              cy="64.5"
-              r="64.5"
-              transform="translate(12.139 15)"
-              fill="#0ae2c7"
-            />
-            <path
-              id="checked"
-              d="M.462,19.923a1.487,1.487,0,0,1,0-2.154l2.154-2.154a1.487,1.487,0,0,1,2.154,0l.154.154,8.462,9.077a.744.744,0,0,0,1.077,0L35.077,3.462h.154a1.487,1.487,0,0,1,2.154,0l2.154,2.154a1.487,1.487,0,0,1,0,2.154h0L14.923,33.308a1.487,1.487,0,0,1-2.154,0l-12-12.923-.308-.462Z"
-              fill="#fff"
-            />
-          </svg> -->
+          <img src="~/assets/images/pending-logo.png" alt="pending icon" />
         </div>
       </div>
 
@@ -183,6 +182,7 @@
 import { storeToRefs } from "pinia";
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
+import { TRANSACTION_STATUSES } from "@/utils/index";
 
 const route = useRoute();
 const appStore = useAppStore();
@@ -212,7 +212,8 @@ const handleUpload = async () => {
 const fetchTrustPaymentDetail = async () => {
   isLoading.value = true;
   const reference = useAppStore().getTransactionRef;
-  UtilsService.getTransaction(reference)
+  // UtilsService.getTransaction(reference)
+  UtilsService.getTransaction("a2b2a0f5-46b2-4a60-a8e3-47691fba6c77")
     .then((response) => {
       console.log(response, "r");
       msg.value = response.message;
@@ -230,9 +231,6 @@ onMounted(() => {
   const query = route.query;
 
   const queryKeys = Object.keys(query);
-
-  // console.log(queryKeys, "qK");
-
   if (queryKeys.length >= 1) {
     const origin = window.location.origin;
 
@@ -251,9 +249,9 @@ svg {
   width: 15rem;
   height: 15rem;
   position: relative;
-   display: flex;
-   justify-content: center;
-   align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   // path {
   //   width: 6rem;

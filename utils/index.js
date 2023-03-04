@@ -54,18 +54,30 @@ export const stringToHtmlEntity = (str) => {
   return str.replace(/[^a-z0-9\s]/gmu, (s) => "&#" + s.codePointAt(0) + ";");
 };
 
-
-
-
 export const getRandomIndex = (max) => {
-  const index = Math.floor(Math.random() * (max));
+  const index = Math.floor(Math.random() * max);
 
   return index;
 };
 
-
-
 export const formatStringToMoney = (string) => {
   const main = parseFloat(string.replace(/,/g, ""));
   return main;
+};
+
+
+
+
+
+export const TRANSACTION_STATUSES = {
+  SUCCESS: "completed",
+  PENDING: "pending",
+
+
+
+
+  CANCELLED: "cancelled",
+  FAILED: "failed",
+
+  
 };

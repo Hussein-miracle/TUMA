@@ -3,79 +3,80 @@
     <h2 class="text-center text-secondary text-xl sm:text-3xl font-bold">
       Select Card
     </h2>
-  <TransitionRoot appear :show="showConfirmDelete" as="template">
-    <Dialog as="div" class="relative z-10">
-      <TransitionChild
-        as="template"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
-        <div class="fixed inset-0 bg-black bg-opacity-25" />
-      </TransitionChild>
-
-      <div class="fixed inset-0 overflow-y-auto">
-        <div
-          class="flex min-h-full items-center justify-center p-4 text-center"
+    <TransitionRoot appear :show="showConfirmDelete" as="template">
+      <Dialog as="div" class="relative z-10">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
         >
-          <TransitionChild
-            as="template"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div
+            class="flex min-h-full items-center justify-center p-4 text-center"
           >
-            <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
             >
-              <DialogTitle
-                as="h3"
-                class="sm:text-lg font-medium leading-6 text-secondary text-center"
+              <DialogPanel
+                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
               >
-                Are you sure,you want to delete this card?
-              </DialogTitle>
-
-              <div class="text-bold text-md">
-                This is a destructive action and you won't be able to use it until you add it again.
-              </div>
-
-              <div
-                class="mt-4 w-full mx-auto flex items-center justify-between"
-              >
-                <button
-                  type="button"
-                  class="inline-flex mx-auto justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-secondary hover:bg-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary focus-visible:ring-offset-2 self-center"
-                  @click="initDeleteCard"
-                  :disabled="isDeleting"
-                  :class="{
-                    'opacity-50 cursor-not-allowed': isDeleting === true,
-                  }"
+                <DialogTitle
+                  as="h3"
+                  class="sm:text-lg font-medium leading-6 text-secondary text-center"
                 >
-                  Yes
-                </button>
-                <button
-                  type="button"
-                  class="inline-flex mx-auto justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-secondary hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary focus-visible:ring-offset-2 self-center"
-                  @click="closeConfirmDelete"
-                  :disabled="isDeleting"
-                  :class="{
-                    'opacity-50 cursor-not-allowed': isDeleting === true,
-                  }"
+                  Are you sure,you want to delete this card?
+                </DialogTitle>
+
+                <div class="text-bold text-md">
+                  This is a destructive action and you won't be able to use it
+                  until you add it again.
+                </div>
+
+                <div
+                  class="mt-4 w-full mx-auto flex items-center justify-between"
                 >
-                  No
-                </button>
-              </div>
-            </DialogPanel>
-          </TransitionChild>
+                  <button
+                    type="button"
+                    class="inline-flex mx-auto justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-secondary hover:bg-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary focus-visible:ring-offset-2 self-center"
+                    @click="initDeleteCard"
+                    :disabled="isDeleting"
+                    :class="{
+                      'opacity-50 cursor-not-allowed': isDeleting === true,
+                    }"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex mx-auto justify-center rounded-md border border-transparent bg-primary px-4 py-2 text-sm font-medium text-secondary hover:bg-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary focus-visible:ring-offset-2 self-center"
+                    @click="closeConfirmDelete"
+                    :disabled="isDeleting"
+                    :class="{
+                      'opacity-50 cursor-not-allowed': isDeleting === true,
+                    }"
+                  >
+                    No
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
         </div>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+      </Dialog>
+    </TransitionRoot>
     <div
       class="select-card__card-container max-w-full mx-auto w-[98%] sm:w-[90%] flex flex-col items-center"
     >
@@ -195,6 +196,7 @@
 
       <div
         class="card-numbers w-full sm:w-[80%] mx-auto flex flex-col gap-y-1 items-center mt-4 sm:mt-0"
+        v-if="fetching === false && cards.length > 0"
       >
         <div
           class="card-numbers__item flex justify-between bg-whitelike max-h-12 text-center h-8 sm:h-12 w-[85%] sm:w-full items-center cursor-pointer my-1 rounded-md"
@@ -235,36 +237,15 @@
           </button>
         </div>
       </div>
+      <div
+        class="card-numbers w-full sm:w-[80%] mx-auto flex flex-col gap-y-1 items-center mt-4 sm:mt-0"
+        v-else-if="fetching === false && cards.length <= 0"
+      >
 
-      <div class="flex gap-x-2 items-center ml-8 my-1">
-        <icons-check
-          v-if="accepted === true"
-          @click="accepted = false"
-          class="cursor-pointer"
-        />
-        <div
-          class="box sm:w-5 w-3 h-3 sm:h-5 rounded-sm bg-ash-3 cursor-pointer"
-          @click="accepted = true"
-          v-else
-        ></div>
-        <p class="text-xs sm:text-md">
-          I have read and agree to the Terms & Conditions and Privacy Policy
-        </p>
+      <p class=' text-sm max-w-sm mx-auto sm:text-lg'>You don't have any cards currently,click add card to add a card</p>
       </div>
 
-      <button-primary
-        :text="'Pay now'"
-        class="text-secondary font-bold"
-        type="button"
-        @click="handlePay"
-        :class="{
-          'opacity-75 cursor-not-allowed':
-            submitting === true || fetching === true || accepted === false || isDeleting === true,
-        }"
-        :disabled="
-          submitting === true || fetching === true || accepted === false || isDeleting === true
-        "
-      />
+
       <button-primary
         :text="'Add New Card'"
         class="!bg-secondary !text-primary font-bold"
@@ -274,7 +255,9 @@
           'opacity-75 cursor-not-allowed':
             submitting === true || fetching === true || isDeleting === true,
         }"
-        :disabled="submitting === true || fetching === true || isDeleting === true"
+        :disabled="
+          submitting === true || fetching === true || isDeleting === true
+        "
       />
     </div>
 
@@ -305,7 +288,11 @@ const { user } = storeToRefs(authstore);
 
 // console.log(user, "user hiss");
 
-const {show:showConfirmDelete,setShowFalse:closeConfirmDelete,setShowTrue:openConfirmDelete} = useToggle();
+const {
+  show: showConfirmDelete,
+  setShowFalse: closeConfirmDelete,
+  setShowTrue: openConfirmDelete,
+} = useToggle();
 
 const fetching = ref(false);
 const submitting = ref(false);
@@ -313,7 +300,7 @@ const accepted = ref(false);
 const isDeleting = ref(false);
 
 const cards = ref([]);
-const cardForDelete = ref('');
+const cardForDelete = ref("");
 const selectedCard = reactive({
   cuid: "",
   masked_card: "",
@@ -330,24 +317,22 @@ const checkSelect = () => {
   }
 };
 
-
 const confirmDelete = (cuid) => {
   cardForDelete.value = cuid;
   openConfirmDelete();
-}
-
+};
 
 const fetchCards = async () => {
   fetching.value = true;
   UtilsService.getCards()
     .then((response) => {
       const data = response;
-      // console.log(data, " data for get cards");
+      console.log(data, " data for get cards");
       cards.value = data;
-        
-    if(data.length <= 0){
-      return navigateTo('/add-card');
-    }
+
+      if (data.length <= 0) {
+        return navigateTo("/add-card");
+      }
       fetching.value = false;
     })
     .catch((err) => {
@@ -356,25 +341,32 @@ const fetchCards = async () => {
     });
 };
 
-const initDeleteCard =  async () => {
+const initDeleteCard = async () => {
   isDeleting.value = true;
-  UtilsService.deleteCard(cardForDelete.value).then((response) => {
-    isDeleting.value = !true;
-    console.log(response,'response');
-    
-    if(response.data.length <= 0){
-      return navigateTo('/add-card');
-    }
-    return response;
-  })
-  .then((res) => {
-    fetchCards();
-    closeConfirmDelete()
-  }).catch((err) => {
-    isDeleting.value = !true;
-    console.log(err,'err')
-  })
-}
+
+  const newcards = cards.value.filter(
+    (card) => card.cuid !== cardForDelete.value
+  );
+
+  console.log(newcards, "newC");
+  UtilsService.deleteCard(cardForDelete.value)
+    .then((response) => {
+      isDeleting.value = !true;
+      // console.log(response,'response');
+
+
+      cards.value = newcards;
+
+      return response;
+    })
+    .then((res) => {
+      closeConfirmDelete();
+    })
+    .catch((err) => {
+      isDeleting.value = !true;
+      console.log(err, "err");
+    });
+};
 
 const handlePay = async () => {
   submitting.value = true;
@@ -391,7 +383,6 @@ const handleSelectCard = (card) => {
   selectedCard.payment_type_description = card.payment_type_description;
   submitting.value = false;
 };
-
 
 useHead({
   title: "Select Card",
