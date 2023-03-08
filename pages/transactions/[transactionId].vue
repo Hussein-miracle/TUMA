@@ -5,48 +5,70 @@
     </h2>
 
     <div class="transaction-details__content">
-      <div
-        class="transaction-details__content--header bg-white flex justify-between w-full px-6 items-center border-y-ash-1 border-y-[0.65px] py-1"
-      >
-        <div class="left flex items-center gap-x-4">
-          <div
-            class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center uppercase"
-          >
-            <!-- <icons-dummy-bank-logo /> -->
-                        {{ transaction.transaction_provider }}
 
-          </div>
-
-          <div class="details flex flex-col">
-            <h2 class="text-primary">
-              {{ transactionData.first_name }} {{ transactionData.last_name }}
-            </h2>
-            <h4 class="text-secondary">{{ transactionData.address }}</h4>
-          </div>
-        </div>
-
-
-        <div class='right flex flex-col items-start'>
-                  <div
-          class="right text-secondary text-skeleton"
-          v-if="isLoading === true"
-        ></div>
-        <div class="right text-secondary text-skeleton" v-else>
-          <span v-money>{{ transaction.amount }}</span>
-          {{ transaction.from_currency }}
-        </div>
         <div
-          class="right text-secondary text-skeleton"
-          v-if="isLoading === true"
-        ></div>
-        <div class="right text-secondary text-skeleton" v-else>
-          <span v-money>{{ transaction.converted_amount }}</span>
-          {{ transaction.to_currency }}
-        </div>
-        </div>
-      </div>
+            class="transaction-details__content--header bg-white flex justify-between w-full px-6 items-center border-y-ash-1 border-y-[0.65px] py-1"
+          >
+            <div class="left flex items-center gap-x-4">
+              
+              <div      class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center uppercase">
+                {{ transaction.transaction_provider }}
+              </div>
 
+              <div class="details flex flex-col">
+                
+                <h2 class="text-primary">
+                  {{ transactionData.first_name }} {{ transactionData.last_name }}
+                </h2>
+
+                <h4 class="text-secondary">{{ transactionData.address }}</h4>
+              </div>
+
+            </div> 
+
+
+              <div class="right flex flex-col items-start">
+          <div
+            class="right text-secondary text-skeleton"
+            v-if="isLoading === true"
+          ></div>
+          <div class="right text-secondary text-skeleton" v-else>
+            <span v-money>{{ transaction.amount }}</span>
+            {{ transaction.from_currency }}
+          </div>
+          <div
+            class="right text-secondary text-skeleton"
+            v-if="isLoading === true"
+          ></div>
+          <div class="right text-secondary text-skeleton" v-else>
+            <span v-money>{{ transaction.converted_amount }}</span>
+            {{ transaction.to_currency }}
+          </div>
+        </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      
       <div class="transaction-details__content--main px-10">
+
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -56,6 +78,7 @@
             {{ transaction.reference }}
           </p>
         </div>
+
 
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
@@ -67,6 +90,7 @@
           </p>
         </div>
 
+
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -77,6 +101,9 @@
           </p>
         </div>
 
+
+
+
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -86,8 +113,10 @@
             {{ transaction.transaction_provider }}
           </p>
         </div>
+
       </div>
-    </div>
+
+    
 
     <button-primary
       @click="handleRepeatTransaction"
@@ -100,6 +129,9 @@
           isLoading === true || repeatingTransaction === true,
       }"
     />
+    </div>
+
+
   </div>
 </template>
 
@@ -160,6 +192,7 @@ const handleRepeatTransaction = async () => {
     address: "",
     phone_number: "",
   };
+
   for (const item in needs) {
     if (item in result) {
       result[item] = needs[item];
@@ -202,8 +235,8 @@ const handleRepeatTransaction = async () => {
     //       mobileValue.value = String(mobile?.converted);
     //       bestValue.value = { ...result.best_value };
     //       assignConvertedAmount();
-    //   }
-  }
+    }
+  
   //console.log(paymentSummary,'ps');
 
   localStorage.setItem("progged", JSON.stringify(true));
@@ -220,7 +253,7 @@ const fetchTransaction = async () => {
   isLoading.value = true;
   UtilsService.getTransaction(reference)
     .then((response) => {
-      console.log(response, "r");
+      // console.log(response, "r");
       repeatForm.to_user = response.ruid;
       repeatForm.from_currency = response.from_currency;
       repeatForm.to_currency = response.to_currency;

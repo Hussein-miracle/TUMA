@@ -306,6 +306,37 @@
       </div>
     </div>
 
+
+    <div class='marketplace w-96 h-72 bg-white my-4 rounded-sm flex flex-col items-center  justify-center'>
+
+      <div class="loading" v-if=' loading === true'>
+        <div class="arc"></div>
+        <div class="arc"></div>
+        <div class="arc"></div>
+      </div>
+      <ul class='!w-full !h-full  px-1 py-2 overflow-y-scroll whitespace-pre' v-else>
+
+      <li class='client  !h-20 rounded-md !w-full my-1.5 overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all' 
+      v-for='client in marketPlace'  @click='handleClickClient(client)'
+      :class="{'!bg-ash-2' : conversionDetails.client_id === client.clientId}"
+      >
+        <div class='w-full h-full text-black flex items-center'>
+          <img :src='client.logo' :alt='client.name' v-if='client.logo'  class='w-12 h-12 object-cover'/>
+          <span class='uppercase rounded-full w-12 h-12 text-primary font-bold  flex items-center justify-center mx-1 bg-secondary' v-else>
+            {{client.name[0]}}
+          </span>
+          <span class='font-bold'>{{client.name}}</span>
+        </div>
+
+        <div class='flex items-center gap-x-1 p-1'>
+           <span>{{ selectedRecipientCountry.currency_symbol }}</span><span>{{client.best_value}}</span>
+          <!-- <span>Commission</span> -->
+        </div>
+
+      </li>
+      </ul>
+    </div>
+
     <div
       class="fieldset mx-auto mt-8 rounded-md w-72 px-2 py-1 flex items-center justify-between flex-col bg-white"
     >
@@ -474,6 +505,8 @@ const {
   defaultRecipientCountry
 } = storeToRefs(store);
 
+
+const marketPlace = ref([]);
 // console.log(defaultSendingDetails, "DSD");
 
 // const sender_currencies =
@@ -494,6 +527,28 @@ const changeDetails = reactive({
   forwardAmount: defaultAmount.value || "0.00",
 });
 const Amount = ref(null);
+useHead({
+  title: "Send Money",
+});
+
+const conversionDetails = reactive({
+  amount: "",
+  client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
+  sender_currency: "",
+  conversion_type: "forward",
+  sender_currency: "",
+  recipient_country_code: "",
+});
+
+const handleClickClient = async (clientDetails) => {
+  // if(conversionDetails.conversion_type === 'forward'){
+    changeDetails.reverseAmount = parseFloat(clientDetails.best_value.replaceAll(',',''));
+  // }
+  conversionDetails.client_id = clientDetails.clientId;
+
+  await initialFetch();
+  
+}
 
 const handleForward = (conversionDetails) => {
   const type = "forward";
@@ -697,18 +752,7 @@ const cashValue = ref("");
 const bankValue = ref("");
 const mobileValue = ref("");
 
-useHead({
-  title: "Send Money",
-});
 
-const conversionDetails = reactive({
-  amount: "",
-  client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
-  sender_currency: "",
-  conversion_type: "forward",
-  sender_currency: "",
-  recipient_country_code: "",
-});
 
 const updateMethods = async () => {};
 
@@ -794,9 +838,27 @@ const initialFetch = async () => {
       UtilsService.getConversionRates(conversionDetails)
         .then((response) => {
           loading.value = false;
-          const result = response.data;
+          const result = response.data?.default;
 
-          //  console.log(result, "res");
+          const mp = response.data.marketplace;
+
+          // console.log(mp , 'mp');
+          const transformedMp = [];
+          for(const clientId in mp){
+            // console.log(clientId , 'clientId')
+            const client = mp[clientId];
+            client.clientId = clientId;
+            const clientBV = Object.entries(client.rate.best_value)[0][1].converted_forward;
+
+            // console.log(clientBV,'client b_v');
+            client.best_value = clientBV;
+            // console.log(client,'client');
+            transformedMp.push(client);
+          }
+
+          // console.log(transformedMp,'trnas mp!!')
+          marketPlace.value = transformedMp;
+          // console.log(marketPlace, "mpp trans res");
           const converted_amount = result.converted_amount;
           // console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
@@ -1116,4 +1178,74 @@ input[type="radio"]:focus label.btn {
     transform: rotate(360deg);
   }
 }
+
+
+
+.loading {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  transform-style: preserve-3d;
+  perspective: 800px;
+
+  .arc {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border-bottom: 3px solid #fec02f;
+
+    @for $i from 1 through 3 {
+      &:nth-child(#{$i}) {
+        animation: rotate#{$i} 1.15s linear infinite;
+      }
+    }
+
+    &:nth-child(1) {
+      animation-delay: -0.8s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.4s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0s;
+    }
+  }
+}
+
+@keyframes rotate1 {
+  from {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(1turn);
+  }
+}
+
+@keyframes rotate2 {
+  from {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(1turn);
+  }
+}
+
+@keyframes rotate3 {
+  from {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(1turn);
+  }
+}
+
 </style>

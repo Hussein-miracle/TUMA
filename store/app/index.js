@@ -199,17 +199,17 @@ export const useAppStore = defineStore("app", {
     },
 
     setRecipientCurrencyDetails: (value) => {
-      console.log(value, "RecipientCurrencyDetails");
+      // console.log(value, "RecipientCurrencyDetails");
       useAppStore().recipientCurrencyDetails = { ...value };
     },
     setDefaultRecipientCountry: (value) => {
-      console.log(value, "DefaultRecipientCountry");
+      // console.log(value, "DefaultRecipientCountry");
       useAppStore().defaultRecipientCountry = value;
     },
 
     setSenderCurrencyDetails: (value) => {
       const sta = { ...useAppStore().senderCurrencyDetails, ...value };
-      console.log(sta, "new SenderCurrencyDetails");
+      // console.log(sta, "new SenderCurrencyDetails");
       useAppStore().senderCurrencyDetails = { ...sta };
     },
     setReasons: (value) => {
@@ -295,7 +295,7 @@ export const useAppStore = defineStore("app", {
         const data = response.data;
         // console.log(data,'default data ');
         const { default: def, currency } = data;
-        console.log(def, "default");
+        // console.log(def, "default");
         const recipient_country = def.recepient_country;
         useAppStore().defaultRecipientCountry = recipient_country;
         useAppStore().defaultAmount = def.amount_to_send;

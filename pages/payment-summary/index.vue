@@ -116,7 +116,7 @@ const {
 
 const { conversion_type } = paymentSummary.value;
 // console.log(paymentSummary.value, "summaryData");
-console.log(remittanceMethod.value, "rem met value");
+//console.log(remittanceMethod.value, "rem met value");
 // console.log(senderCurrencyDetails.value, "SDSD");
 // console.log(recipientCurrencyDetails.value, "RDRD");
 
@@ -203,7 +203,7 @@ const handleCreateTransaction = async () => {
   if (!!reason_id) {
     UtilsService.createTransaction(transactionData.value)
       .then((result) => {
-        console.log(result, "trans creation data");
+        // console.log(result, "trans creation data");
         const data = result.data;
         const upload_required = data?.upload_required;
         const has_a_card = data?.has_a_card;
@@ -212,7 +212,7 @@ const handleCreateTransaction = async () => {
 
         isLoading.value = false;
 
-        console.log(data, "transa data");
+        // console.log(data, "transa data");
         if (has_a_card) {
           navigateTo("/select-card");
         } else {

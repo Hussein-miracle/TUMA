@@ -117,11 +117,9 @@ class UtilsService{
   async getRate(clientId = import.meta.env.VITE_APP_TUMA_CLIENT_ID ){
     const response =  await axiosInstance.get(`/client/${clientId}`);
     const data = response.data;
-
     return data;
   }
-
-
+  
   async deleteCard(cuid){
     const response =  await axiosInstance.delete(`/card/${cuid}`);
   

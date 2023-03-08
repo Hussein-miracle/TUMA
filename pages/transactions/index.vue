@@ -3,7 +3,7 @@
     class="transaction-logs bg-[#F4F5F7] overflow-y-scroll"
     :class="{ 'flex items-center flex-col justify-center': fetching === true || transactions.length <= 0 }"
   >
-    <div class="sk-circle" v-if="fetching">
+    <!-- <div class="sk-circle" v-if="fetching">
       <div class="sk-circle1 sk-child"></div>
       <div class="sk-circle2 sk-child"></div>
       <div class="sk-circle3 sk-child"></div>
@@ -16,7 +16,17 @@
       <div class="sk-circle10 sk-child"></div>
       <div class="sk-circle11 sk-child"></div>
       <div class="sk-circle12 sk-child"></div>
-    </div>
+    </div> -->
+
+
+
+      <div class="loading" v-if=' fetching === true'>
+        <div class="arc"></div>
+        <div class="arc"></div>
+        <div class="arc"></div>
+      </div>
+
+
 
     <template v-else-if="transactions.length > 0">
       <transaction-log
@@ -90,7 +100,7 @@ onBeforeMount(async () => {
 });
 </script>
 
-<style>
+<style lang='scss'>
 .transaction-logs {
   height: calc(100vh - 3rem);
   min-height: calc(100vh - 3rem);
@@ -243,6 +253,74 @@ onBeforeMount(async () => {
   40% {
     -webkit-transform: scale(1);
     transform: scale(1);
+  }
+}
+
+
+.loading {
+  position: relative;
+  width: 20vw;
+  height: 20vw;
+  transform-style: preserve-3d;
+  perspective: 800px;
+
+  .arc {
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border-bottom: 3px solid #fec02f;
+
+    @for $i from 1 through 3 {
+      &:nth-child(#{$i}) {
+        animation: rotate#{$i} 1.15s linear infinite;
+      }
+    }
+
+    &:nth-child(1) {
+      animation-delay: -0.8s;
+    }
+
+    &:nth-child(2) {
+      animation-delay: -0.4s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0s;
+    }
+  }
+}
+
+@keyframes rotate1 {
+  from {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(1turn);
+  }
+}
+
+@keyframes rotate2 {
+  from {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(1turn);
+  }
+}
+
+@keyframes rotate3 {
+  from {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0);
+  }
+
+  to {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(1turn);
   }
 }
 </style>
