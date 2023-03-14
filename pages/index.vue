@@ -33,6 +33,7 @@ import UtilsService from "@/services/utils.service";
 import data from "@/data/onboarding";
 import { assets } from "@/utils/index";
 
+const router = useRouter();
 const { logout } = useUserStore();
 const { setCountries } = useAppStore();
 const index = ref(1);
@@ -76,9 +77,12 @@ onMounted(() => {
   }, 5500);
 });
 
-// onBeforeMount(() => {
-//   fetchCountries();
-// })
+onBeforeMount(() => {
+  const rememberMe = JSON.parse(localStorage.getItem('rememberMe'));
+  if(rememberMe === true){
+    router.push('/send-money');
+  }
+})
 
 onBeforeUnmount(() => {
   clearInterval(interval);

@@ -52,7 +52,6 @@
 
         
       >
-        <!-- @click="navigateTo('/upload')" -->
         <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center" @click="handleUpload">
           <div
             class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
@@ -206,9 +205,9 @@ const handleGetProfile = async () => {
   isLoading.value = true;
   AuthService.getProfile().then((response) => {
     isLoading.value = false;
-    console.log(response,'response');
+    // console.log(response,'response');
     const data = response.data;
-    console.log(data,'response data');
+    // console.log(data,'response data');
     for(const item in data){
       if(item in profileDetails){
         profileDetails[item] = data[item];

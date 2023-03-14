@@ -130,7 +130,7 @@ definePageMeta({
   layout: "default",
   middleware: ["auth"],
 });
-// const data = JSON.parse(localStorage.getItem("payS"));
+
 
 const summaryDetails = reactive({
   first_name: "",
@@ -141,7 +141,7 @@ const summaryDetails = reactive({
 
 const fetchRes = () => {
   const result = currentRecipientData.value.result;
-  // console.log(result, "from store Pays");
+  // console.log(result, "from store Paystore");
 
   for (const item in result) {
     if (item in summaryDetails) {

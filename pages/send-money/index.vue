@@ -263,7 +263,7 @@
                           class="object-contain w-4 h-4"
                         />
                         <span v-if="selectedRecipientCountry?.name">{{
-                          selectedRecipientCountry?.currency_code
+                          selectedRecipientCountry?.name
                         }}</span>
                         <span v-else> Select Recipient Country</span>
                       </DialogTitle>
@@ -288,7 +288,7 @@
                               :src="country.flag"
                               class="object-contain w-4 h-4"
                             />
-                            <span>{{ country?.currency_code }}</span>
+                            <span>{{ country?.name }}</span>
                           </div>
                         </template>
                         <template v-else>
@@ -306,39 +306,54 @@
       </div>
     </div>
 
-
-    <div class='marketplace w-96 h-72 bg-white my-4 rounded-sm flex flex-col items-center  justify-center'>
-
-      <div class="loading" v-if=' loading === true'>
+    <div
+      class="marketplace w-64 sm:w-96 h-64 bg-white my-4 rounded-sm flex flex-col items-center justify-center"
+    >
+      <div class="loading" v-if="loading === true">
         <div class="arc"></div>
         <div class="arc"></div>
         <div class="arc"></div>
       </div>
-      <ul class='!w-full !h-full  px-1 py-2 overflow-y-scroll whitespace-pre' v-else>
-
-      <li class='client  !h-20 rounded-md !w-full my-1.5 overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all' 
-      v-for='client in marketPlace'  @click='handleClickClient(client)'
-      :class="{'!bg-ash-2' : conversionDetails.client_id === client.clientId}"
+      <ul
+        class="!w-full !h-full px-1 py-2 overflow-y-scroll whitespace-pre"
+        v-else
       >
-        <div class='w-full h-full text-black flex items-center'>
-          <img :src='client.logo' :alt='client.name' v-if='client.logo'  class='w-12 h-12 object-cover'/>
-          <span class='uppercase rounded-full w-12 h-12 text-primary font-bold  flex items-center justify-center mx-1 bg-secondary' v-else>
-            {{client.name[0]}}
-          </span>
-          <span class='font-bold'>{{client.name}}</span>
-        </div>
+        <li
+          class="client !h-20 rounded-md !w-full my-1.5 overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all"
+          v-for="client in marketPlace"
+          @click="handleClickClient(client)"
+          :key="client.clientId"
+          :class="{
+            '!bg-ash-2': conversionDetails.client_id === client.clientId,
+          }"
+        >
+          <div class="w-full h-full text-black flex items-center">
+            <img
+              :src="client.logo"
+              :alt="client.name"
+              v-if="client.logo"
+              class="w-12 h-12 object-cover"
+            />
+            <span
+              class="uppercase rounded-full w-12 h-12 text-primary font-bold flex items-center justify-center mx-1 bg-secondary"
+              v-else
+            >
+              {{ client.name[0] }}
+            </span>
+            <span class="font-bold">{{ client.name }}</span>
+          </div>
 
-        <div class='flex items-center gap-x-1 p-1'>
-           <span>{{ selectedRecipientCountry.currency_symbol }}</span><span>{{client.best_value}}</span>
-          <!-- <span>Commission</span> -->
-        </div>
-
-      </li>
+          <div class="flex items-center gap-x-1 p-1">
+            <span>{{ selectedRecipientCountry.currency_symbol }}</span
+            ><span>{{ client.best_value }}</span>
+            <!-- <span>Commission</span> -->
+          </div>
+        </li>
       </ul>
     </div>
 
     <div
-      class="fieldset mx-auto mt-8 rounded-md w-72 px-2 py-1 flex items-center justify-between flex-col bg-white"
+      class="fieldset mx-auto mt-2 sm:mt-4 rounded-md w-64 sm:w-72 px-1 sm:px-2 py-1 flex items-center justify-between flex-col bg-white"
     >
       <div
         class="legend flex items-center justify-between w-full"
@@ -502,9 +517,8 @@ const {
   getRecipientCurrencyDetails: recipientCurrencyDetails,
   defaultSendingDetails,
   defaultAmount,
-  defaultRecipientCountry
+  defaultRecipientCountry,
 } = storeToRefs(store);
-
 
 const marketPlace = ref([]);
 // console.log(defaultSendingDetails, "DSD");
@@ -542,13 +556,14 @@ const conversionDetails = reactive({
 
 const handleClickClient = async (clientDetails) => {
   // if(conversionDetails.conversion_type === 'forward'){
-    changeDetails.reverseAmount = parseFloat(clientDetails.best_value.replaceAll(',',''));
+  changeDetails.reverseAmount = parseFloat(
+    clientDetails.best_value.replaceAll(",", "")
+  );
   // }
   conversionDetails.client_id = clientDetails.clientId;
 
   await initialFetch();
-  
-}
+};
 
 const handleForward = (conversionDetails) => {
   const type = "forward";
@@ -589,10 +604,14 @@ const keyUpBackward = async () => {
 // SENDER
 const isSenderOpen = ref(false);
 
-const getDefaultSender = () => {
-  const defaultCountry = defaultCurrencies?.value?.find(
-    (item) => item.default === true
-  );
+const getDefaultSender = (codePassed = "") => {
+  const defaultCountry = defaultCurrencies?.value?.find((item) => {
+    if (!!codePassed && item.currency_code === codePassed) {
+      return item;
+    } else if (item.default === true) {
+      return item;
+    }
+  });
   // console.log(defaultCountry,'Dc');
 
   const sender_country = countries.value?.find(
@@ -671,12 +690,10 @@ const handleSelectSenderCountry = async (curr) => {
 
 // RECIPIENT START
 const isRecipientOpen = ref(false);
-const getDefaultRecipient = () => {
-  const code = defaultRecipientCountry.value;
-  console.log(code,'code givevn')
-  const defaultCountry = countries?.value?.find(
-    (item) => item.code === code
-  );
+const getDefaultRecipient = (codePassed = "") => {
+  const code = codePassed || defaultRecipientCountry.value;
+  console.log(code, "code givevn");
+  const defaultCountry = countries?.value?.find((item) => item.code === code);
   // console.log(defaultCountry,'dc');
 
   const initialSample = {
@@ -696,7 +713,7 @@ const selectedRecipientCountryDetails = reactive({
   recipient_currency: "",
   recipient_currency_symbol: "",
   recipient_country: "",
-  recipient_country_code:''
+  recipient_country_code: "",
 });
 
 function closeRecipientModal() {
@@ -728,8 +745,7 @@ const handleSelectRecipientCountry = async (country) => {
   selectedRecipientCountryDetails.recipient_country = country.name;
   selectedRecipientCountryDetails.recipient_currency_symbol =
     country.currency_symbol;
-  selectedRecipientCountryDetails.recipient_country_code =
-    country.code;
+  selectedRecipientCountryDetails.recipient_country_code = country.code;
   selectedRecipientCountry.value = country;
 
   handleContinueRecipient();
@@ -751,8 +767,6 @@ const bestValue = ref({
 const cashValue = ref("");
 const bankValue = ref("");
 const mobileValue = ref("");
-
-
 
 const updateMethods = async () => {};
 
@@ -814,8 +828,8 @@ const initialFetch = async () => {
   // ) {
   //   conversionDetails.recipient_country_code = "NGA";
   // } else {
-    conversionDetails.recipient_country_code =
-      selectedRecipientCountry.value.code;
+  conversionDetails.recipient_country_code =
+    selectedRecipientCountry.value.code;
   // }
   // console.log(conversionDetails,'cd');
   if (
@@ -844,11 +858,12 @@ const initialFetch = async () => {
 
           // console.log(mp , 'mp');
           const transformedMp = [];
-          for(const clientId in mp){
+          for (const clientId in mp) {
             // console.log(clientId , 'clientId')
             const client = mp[clientId];
             client.clientId = clientId;
-            const clientBV = Object.entries(client.rate.best_value)[0][1].converted_forward;
+            const clientBV = Object.entries(client.rate.best_value)[0][1]
+              .converted_forward;
 
             // console.log(clientBV,'client b_v');
             client.best_value = clientBV;
@@ -857,7 +872,7 @@ const initialFetch = async () => {
           }
 
           // console.log(transformedMp,'trnas mp!!')
-          marketPlace.value = transformedMp;
+          marketPlace.value = [...transformedMp];
           // console.log(marketPlace, "mpp trans res");
           const converted_amount = result.converted_amount;
           // console.log(converted_amount, "conved amout");
@@ -948,7 +963,19 @@ onMounted(async () => {
 });
 
 onBeforeMount(async () => {
-  // await handleDefaultSender();
+  const paymentSummary = JSON.parse(localStorage.getItem("payS"));
+
+  const repeatAmount = paymentSummary?.result?.amount;
+  if (repeatAmount) {
+    console.log(paymentSummary, "paySSS");
+    console.log(repeatAmount, "repAm");
+    const from_currency = paymentSummary.result.from_currency;
+    const to_currency = paymentSummary.result.to_currency;
+    selectedSenderCountry.value = getDefaultSender(from_currency);
+    selectedRecipientCountry.value = getDefaultRecipient(to_currency)
+    changeDetails.forwardAmount = repeatAmount;
+    localStorage.removeItem("payS");
+  }
 });
 
 // onBeforeUnmount(() => {
@@ -957,6 +984,13 @@ onBeforeMount(async () => {
 
 watchDebounced(
   conversionDetails,
+  async () => {
+    initialFetch();
+  },
+  { debounce: 500, maxWait: 900 }
+);
+watchDebounced(
+  changeDetails,
   async () => {
     initialFetch();
   },
@@ -1043,7 +1077,7 @@ $percent: 75%;
   }
 
   .legend {
-    @apply px-2 py-1 rounded-sm;
+    // @apply px-2 py-1 rounded-sm;
     cursor: pointer;
     &:hover {
       @apply bg-whitelike;
@@ -1179,8 +1213,6 @@ input[type="radio"]:focus label.btn {
   }
 }
 
-
-
 .loading {
   position: relative;
   width: 4rem;
@@ -1247,5 +1279,4 @@ input[type="radio"]:focus label.btn {
     transform: rotateX(35deg) rotateY(55deg) rotateZ(1turn);
   }
 }
-
 </style>

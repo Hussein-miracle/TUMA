@@ -660,12 +660,6 @@ const handleSubmit = async (values) => {
           };
           useAppStore().setCurrentRecipientData(recipientData);
           localStorage.setItem("progged", JSON.stringify(true));
-          // TODO Add this to pinia store;
-          // const initialPayS = JSON.parse(localStorage.getItem('payS'))
-          // if(!!initialPayS){
-          //   localStorage.removeItem('payS');
-          // }
-          // localStorage.setItem("payS", JSON.stringify(paymentSummary));
           isLoading.value = false;
           navigateTo("/payment-summary");
         })

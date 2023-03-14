@@ -5,29 +5,26 @@
     </h2>
 
     <div class="transaction-details__content">
-
-        <div
-            class="transaction-details__content--header bg-white flex justify-between w-full px-6 items-center border-y-ash-1 border-y-[0.65px] py-1"
+      <div
+        class="transaction-details__content--header bg-white flex justify-between w-full px-6 items-center border-y-ash-1 border-y-[0.65px] py-1"
+      >
+        <div class="left flex items-center gap-x-4">
+          <div
+            class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center uppercase"
           >
-            <div class="left flex items-center gap-x-4">
-              
-              <div      class="logo bg-ash-1 w-16 h-16 rounded-full flex items-center justify-center uppercase">
-                {{ transaction.transaction_provider }}
-              </div>
+            {{ transaction.transaction_provider }}
+          </div>
 
-              <div class="details flex flex-col">
-                
-                <h2 class="text-primary">
-                  {{ transactionData.first_name }} {{ transactionData.last_name }}
-                </h2>
+          <div class="details flex flex-col">
+            <h2 class="text-primary">
+              {{ transactionData.first_name }} {{ transactionData.last_name }}
+            </h2>
 
-                <h4 class="text-secondary">{{ transactionData.address }}</h4>
-              </div>
+            <h4 class="text-secondary">{{ transactionData.address }}</h4>
+          </div>
+        </div>
 
-            </div> 
-
-
-              <div class="right flex flex-col items-start">
+        <div class="right flex flex-col items-start">
           <div
             class="right text-secondary text-skeleton"
             v-if="isLoading === true"
@@ -45,30 +42,9 @@
             {{ transaction.to_currency }}
           </div>
         </div>
+      </div>
 
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-      
       <div class="transaction-details__content--main px-10">
-
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -78,7 +54,6 @@
             {{ transaction.reference }}
           </p>
         </div>
-
 
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
@@ -90,7 +65,6 @@
           </p>
         </div>
 
-
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -101,9 +75,6 @@
           </p>
         </div>
 
-
-
-
         <div
           class="reference border-b-ash-1 border-b-[0.65px] mt-2 mb-1 h-20 flex flex-col items-start"
         >
@@ -113,25 +84,20 @@
             {{ transaction.transaction_provider }}
           </p>
         </div>
-
       </div>
 
-    
-
-    <button-primary
-      @click="handleRepeatTransaction"
-      type="button"
-      :text="'Repeat Transaction'"
-      :disabled="isLoading === true || repeatingTransaction === true"
-      class="font-bold"
-      :class="{
-        'opacity-80 cursor-not-allowed':
-          isLoading === true || repeatingTransaction === true,
-      }"
-    />
+      <button-primary
+        @click="handleRepeatTransaction"
+        type="button"
+        :text="'Repeat Transaction'"
+        :disabled="isLoading === true || repeatingTransaction === true"
+        class="font-bold"
+        :class="{
+          'opacity-80 cursor-not-allowed':
+            isLoading === true || repeatingTransaction === true,
+        }"
+      />
     </div>
-
-
   </div>
 </template>
 
@@ -147,9 +113,10 @@ definePageMeta({
   layout: "default",
   middleware: ["auth", "checkroute"],
 });
-const currentTransact = useAppStore();
+const currentTransactStore = useAppStore();
 // console.log(currentTransaction, "tC");
-const { currentTransaction: transactionData } = storeToRefs(currentTransact);
+const { currentTransaction: transactionData } =
+  storeToRefs(currentTransactStore);
 
 // console.log(transactionData ,'TDDD');
 
@@ -208,45 +175,15 @@ const handleRepeatTransaction = async () => {
     reasonId: repeatForm.reason_id,
   };
 
-  if (!!paymentSummary.reasonId) {
-    // UtilsService.getConversionRates(conversionDetails).then((response) => {
-    //       const result = response.data;
-    //       // console.log(result, "res");
-    //       const converted_amount = result.converted_amount;
-    //       // console.log(converted_amount,'conved amout')
-    //       const cash = converted_amount.cash;
-    //       const bank = converted_amount.bank;
-    //       const mobile = converted_amount.mobile;
-    //       // console.log(cash,'cash');
-    //       useAppStore().setPaymentSummary(converted_amount);
-    //       const details = {
-    //         cash,
-    //         mobile,
-    //         bank,
-    //         recipient_currency: result.recipient_currency,
-    //         conversion_rate: result.conversion_rate,
-    //       };
-    //       useAppStore().setConversionData({
-    //         amount:conversionDetails.amount,
-    //       })
-    //       useAppStore().setRemittanceDetails(details);
-    //       cashValue.value = String(cash?.converted);
-    //       bankValue.value = String(bank?.converted);
-    //       mobileValue.value = String(mobile?.converted);
-    //       bestValue.value = { ...result.best_value };
-    //       assignConvertedAmount();
-    }
-  
-  //console.log(paymentSummary,'ps');
-
-  localStorage.setItem("progged", JSON.stringify(true));
-
-  // TODO Add this to pinia store;
+  // console.log(paymentSummary, "ps");
+  // *refactor to add to store
   localStorage.setItem("payS", JSON.stringify(paymentSummary));
 
-  isLoading.value = false;
+  setTimeout(() => {
+    isLoading.value = false;
+  navigateTo("/send-money");
+  }, 500);
 
-  navigateTo("/payment-summary");
 };
 
 const fetchTransaction = async () => {

@@ -104,6 +104,10 @@ export const useAppStore = defineStore("app", {
     mobileMoney:{
       mobile_money_number:'',
     },
+    repeatTransaction: {
+      amount:'',
+      currency:'',
+    }
   }),
   getters: {
     showTodo: (state) => {
@@ -342,6 +346,9 @@ export const useAppStore = defineStore("app", {
       useAppStore().setCountries(data);
 
       return Promise.resolve(data);
+    },
+    setRepeatTransaction:(value) => {
+
     },
   },
   // persist: true,

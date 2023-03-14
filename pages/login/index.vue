@@ -3,15 +3,17 @@
     <div
       class="logo bg-transparent max-w-md text-center relative sm:left-[50%] sm:-translate-x-[50%]"
     >
-      <h1 class="logo-text text-secondary font-extrabold text-9xl">tuma</h1>
+      <h1 class="logo-text text-secondary font-extrabold text-6xl sm:text-9xl">
+        tuma
+      </h1>
       <span
-        class="logo-trademark text-primary bg-secondary rounded-full px-2 py-1 relative sm:left-[25%] sm:-translate-x-[50%]"
+        class="logo-trademark text-primary bg-secondary rounded-full px-2 py-1 relative sm:left-[25%] sm:-translate-x-[50%] text-sm sm:text-md left-[15%]"
         >by Bisco Express</span
       >
     </div>
 
     <VeeForm
-      class="flex flex-col gap-y-3 items-center mt-6 login__form sm:w-[60%] md:w-[40%] self-center"
+      class="flex flex-col gap-y-3 items-center mt-6 login__form w-[85%] sm:w-[60%] md:w-[40%] self-center"
       :validation-schema="loginSchema"
       @submit="handleSubmit"
     >
@@ -56,26 +58,28 @@
         />
       </div>
 
-      <div class="flex items-center justify-between w-full">
+      <div class="flex items-center justify-between w-full text-xs sm:text-sm">
         <div class="flex gap-x-1 items-center">
           <icons-check
             class="cursor-pointer"
-            v-if="loginForm.remember === true"
-            @click="loginForm.remember = !loginForm.remember"
+            v-if="form.remember === true"
+            @click="form.remember = !form.remember"
           />
           <span
             v-else
-            class="box w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
-            @click="loginForm.remember = !loginForm.remember"
+            class="box sm:w-[1.2rem] sm:h-[1.2rem] w-[1rem] h-[1rem] mr-1 cursor-pointer"
+            @click="form.remember = !form.remember"
           ></span>
-          <span class="text-ash-1">Remember me</span>
+          <span class="text-ash-1  cursor-pointer hover:text-primary duration-100 transition-colors" @click="form.remember = !form.remember"
+            >Remember me</span
+          >
         </div>
 
         <p
-          class="text-ash-1 cursor-pointer"
+          class="text-ash-1 cursor-pointer hover:text-primary duration-100 transition-colors"
           @click="navigateTo('/forgot-password')"
         >
-          Forgot my password?
+          Forgot password?
         </p>
       </div>
 
@@ -119,6 +123,9 @@ const emailRef = ref(null);
 const loginForm = reactive({
   email: "",
   password: "",
+});
+
+const form = reactive({
   remember: false,
 });
 
@@ -144,6 +151,9 @@ const handleSubmit = async (values) => {
   try {
     login(loginForm)
       .then((result) => {
+        if (form.remember === true) {
+          localStorage.setItem("rememberMe", true);
+        }
         // console.log(result,'res');
         return useAppStore().fetchCountries();
       })

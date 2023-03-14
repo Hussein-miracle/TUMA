@@ -95,9 +95,11 @@ definePageMeta({
   middleware: ["auth", "checkroute"],
 });
 
+
 onBeforeMount(async () => {
   fetchAllTransactions();
 });
+
 </script>
 
 <style lang='scss'>
