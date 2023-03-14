@@ -213,7 +213,7 @@ const fetchTrustPaymentDetail = async () => {
   isLoading.value = true;
   const reference = useAppStore().getTransactionRef;
   // UtilsService.getTransaction(reference)
-  UtilsService.getTransaction("a2b2a0f5-46b2-4a60-a8e3-47691fba6c77")
+  UtilsService.getTransaction(reference)
     .then((response) => {
       console.log(response, "r");
       msg.value = response.message;
