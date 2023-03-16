@@ -1,7 +1,10 @@
 <template>
   <div
     class="transaction-logs bg-[#F4F5F7] overflow-y-scroll"
-    :class="{ 'flex items-center flex-col justify-center': fetching === true || transactions.length <= 0 }"
+    :class="{
+      'flex items-center flex-col justify-center':
+        fetching === true || transactions.length <= 0,
+    }"
   >
     <!-- <div class="sk-circle" v-if="fetching">
       <div class="sk-circle1 sk-child"></div>
@@ -18,15 +21,11 @@
       <div class="sk-circle12 sk-child"></div>
     </div> -->
 
-
-
-      <div class="loading" v-if=' fetching === true'>
-        <div class="arc"></div>
-        <div class="arc"></div>
-        <div class="arc"></div>
-      </div>
-
-
+    <div class="loading" v-if="fetching === true">
+      <div class="arc"></div>
+      <div class="arc"></div>
+      <div class="arc"></div>
+    </div>
 
     <template v-else-if="transactions.length > 0">
       <transaction-log
@@ -44,11 +43,9 @@
       <spacer :y="true" :size="4" />
     </template>
 
-    <p v-else class="text-secondary text-xl mx-auto max-w-md ">
+    <p v-else class="text-secondary text-xl mx-6 sm:mx-8  sm:max-w-md">
       You haven't made any transaction yet.
     </p>
-
-
   </div>
 </template>
 
@@ -95,14 +92,12 @@ definePageMeta({
   middleware: ["auth", "checkroute"],
 });
 
-
 onBeforeMount(async () => {
   fetchAllTransactions();
 });
-
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 .transaction-logs {
   height: calc(100vh - 3rem);
   min-height: calc(100vh - 3rem);
@@ -257,7 +252,6 @@ onBeforeMount(async () => {
     transform: scale(1);
   }
 }
-
 
 .loading {
   position: relative;

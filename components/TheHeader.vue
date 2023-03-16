@@ -1,18 +1,30 @@
 <template>
   <header
-    class="theheader text-white flex justify-evenly items-center w-full py-1 bg-secondary"
+    class="theheader text-white flex justify-between items-center w-full py-1 px-1 sm:px-2 bg-secondary"
   >
-    <NuxtLink to="transactions" class="custom flex items-center" @click="navigateTo('/transactions')">
-      <!-- <icons-transactions :v2="currentRoute === 'transactions' " :v1="currentRoute !== 'transactions' "/> -->
-      <span class="mx-2">Transaction Logs</span>
+    <NuxtLink
+      to="transactions"
+      class="custom flex items-center text-sm sm:text-md justify-between gap-0.5 sm:gap-1"
+      @click="navigateTo('/transactions')"
+    >
+      <icons-transactions />
+      <span class="sm:ml-1">Transactions Log</span>
     </NuxtLink>
-    <NuxtLink to="send-money" class="custom flex items-center" @click="navigateTo('/send-money')">
-      <!-- <icons-send />  -->
-      <span class="mx-2">Send Money</span>
+    <NuxtLink
+      to="send-money"
+      class="custom flex items-center text-sm sm:text-md justify-between gap-0.5 sm:gap-1"
+      @click="navigateTo('/send-money')"
+    >
+      <icons-send />
+      <span class="sm:ml-1">Send Money</span>
     </NuxtLink>
-    <NuxtLink to="profile" class="custom flex items-center" @click="navigateTo('/profile')">
-      <!-- <icons-profile :v2="currentRoute === 'profile' " /> -->
-      <span class="mx-2">Profile</span>
+    <NuxtLink
+      to="profile"
+      class="custom flex items-center text-sm sm:text-md justify-between gap-0.5 sm:gap-1"
+      @click="navigateTo('/profile')"
+    >
+      <icons-profile />
+      <span class="sm:ml-1">Profile</span>
     </NuxtLink>
   </header>
 </template>
@@ -32,15 +44,15 @@ a.custom.router-link-exact-active {
   @apply text-primary;
   position: relative;
 
-  &::after {
-    @apply bg-primary;
-    content: "";
-    width: 100%;
-    height: pxToRem(3);
-    position: absolute;
-    bottom: pxToRem(-16);
-    left: 0;
-  }
+  // &::after {
+  //   @apply bg-primary;
+  //   content: "";
+  //   width: 100%;
+  //   height: pxToRem(3);
+  //   position: absolute;
+  //   bottom: pxToRem(-16);
+  //   left: 0;
+  // }
 
   svg {
     // display: none;
@@ -56,5 +68,6 @@ a.custom.router-link-exact-active {
 
 .theheader {
   height: 3rem;
+  width: 100%;
 }
 </style>

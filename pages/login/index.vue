@@ -70,7 +70,9 @@
             class="box sm:w-[1.2rem] sm:h-[1.2rem] w-[1rem] h-[1rem] mr-1 cursor-pointer"
             @click="form.remember = !form.remember"
           ></span>
-          <span class="text-ash-1  cursor-pointer hover:text-primary duration-100 transition-colors" @click="form.remember = !form.remember"
+          <span
+            class="text-ash-1 cursor-pointer hover:text-primary duration-100 transition-colors"
+            @click="form.remember = !form.remember"
             >Remember me</span
           >
         </div>
@@ -196,6 +198,16 @@ definePageMeta({
 onMounted(() => {
   // ref(emailRef).value.focus();
 });
+onBeforeMount(() => {
+  const rememberMe = JSON.parse(localStorage.getItem("rememberMe"));
+  form.remember = rememberMe;
+});
+
+
+
+watch(form,() => {
+  localStorage.setItem('rememberMe',form.remember);
+})
 </script>
 
 <style lang="scss" scoped>

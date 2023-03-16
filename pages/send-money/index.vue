@@ -692,7 +692,7 @@ const handleSelectSenderCountry = async (curr) => {
 const isRecipientOpen = ref(false);
 const getDefaultRecipient = (codePassed = "") => {
   const code = codePassed || defaultRecipientCountry.value;
-  console.log(code, "code givevn");
+  // console.log(code, "code givevn");
   const defaultCountry = countries?.value?.find((item) => item.code === code);
   // console.log(defaultCountry,'dc');
 

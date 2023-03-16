@@ -214,7 +214,7 @@ const handleGetProfile = async () => {
       }
     }
     isLoading.value = false;
-    console.log(err,'err');
+    // console.log(err,'err');
   }).catch((err) => {
     console.log(err,'profile err')
   })
