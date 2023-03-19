@@ -43,7 +43,7 @@
       <spacer :y="true" :size="4" />
     </template>
 
-    <p v-else class="text-secondary text-xl mx-6 sm:mx-8  sm:max-w-md">
+    <p v-else class="text-secondary text-xl mx-6 sm:mx-8 sm:max-w-md">
       You haven't made any transaction yet.
     </p>
   </div>

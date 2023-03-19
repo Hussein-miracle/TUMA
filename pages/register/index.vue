@@ -304,7 +304,7 @@
     </VeeForm>
 
     <p class="text-secondary text-center">
-      Already have an account?
+      Already registered ?
       <span class="text-primary cursor-pointer" @click="navigateTo('/login')"
         >Sign in</span
       >

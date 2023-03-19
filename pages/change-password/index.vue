@@ -86,6 +86,7 @@
         type="submit"
         :text="'change password'"
         :disable="isLoading === true"
+        :showLoader='isLoading === true'
         class="rounded-3xl px-1 py-0.5 sm:py-1 sm:px-2 text-white"
         :class="{ 'opacity-70 cursor-not-allowed': isLoading === true }"
       />

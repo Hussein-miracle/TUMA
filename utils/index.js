@@ -81,3 +81,11 @@ export const TRANSACTION_STATUSES = {
 
   
 };
+
+
+
+export const VERIFICATION_STATUSES = {
+  VERIFIED:'verified',
+  UNVERIFIED:'unverified',
+  UNDER_REVIEW:'under-review'
+};

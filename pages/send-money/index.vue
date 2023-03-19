@@ -340,13 +340,23 @@
             >
               {{ client.name[0] }}
             </span>
-            <span class="font-bold">{{ client.name }}</span>
+            <span class="font-bold mr-1 sm:mr-2">{{ client.name }}</span>
+
+            <icons-mobile
+              v-if="client.best_value_id.toLowerCase() === 'mobile'"
+            />
+            <icons-bank
+              v-else-if="client.best_value_id.toLowerCase() === 'bank'"
+            />
+            <icons-cash
+              v-else-if="client.best_value_id.toLowerCase() === 'cash'"
+            />
           </div>
 
-          <div class="flex items-center gap-x-1 p-1">
+          <div class="flex items-center gap-x-1 p-1 text-tumablack">
             <span>{{ selectedRecipientCountry.currency_symbol }}</span
             ><span>{{ client.best_value }}</span>
-            <!-- <span>Commission</span> -->
+            <span>Commission</span>
           </div>
         </li>
       </ul>
@@ -358,6 +368,7 @@
       <div
         class="legend flex items-center justify-between w-full"
         @click="remittanceMethod = 'cash'"
+        :class="{ 'text-primary': remittanceMethod === 'cash' }"
       >
         <div
           class="option cursor-pointer flex gap-x-2 flex-row-reverse items-center justify-start text-left"
@@ -373,6 +384,8 @@
             value="cash"
             hidden
           />
+
+          <icons-cash />
 
           <label
             for="cash"
@@ -399,6 +412,7 @@
       <div
         class="legend flex items-center justify-between w-full cursor-pointer"
         @click="remittanceMethod = 'bank'"
+        :class="{ 'text-primary': remittanceMethod === 'bank' }"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
@@ -412,6 +426,7 @@
             value="bank"
             hidden
           />
+          <icons-bank />
           <label
             for="bank"
             class="btn w-4 h-4 rounded-full bg-whitelike border-primary border-2"
@@ -437,6 +452,7 @@
       <div
         class="legend cursor-pointer flex items-center justify-between w-full"
         @click="remittanceMethod = 'mobile'"
+        :class="{ 'text-primary': remittanceMethod === 'mobile' }"
       >
         <div
           class="option flex flex-row-reverse gap-x-2 items-center justify-start text-left"
@@ -450,7 +466,7 @@
             value="mobile"
             hidden
           />
-
+          <icons-mobile />
           <label
             for="mobile"
             class="btn w-4 h-4 rounded-full bg-whitelike border-primary border-2"
@@ -862,8 +878,10 @@ const initialFetch = async () => {
             // console.log(clientId , 'clientId')
             const client = mp[clientId];
             client.clientId = clientId;
-            const clientBV = Object.entries(client.rate.best_value)[0][1]
-              .converted_forward;
+            const clientEntries = Object.entries(client.rate.best_value)[0];
+            const clientBVId = clientEntries[0];
+            client.best_value_id = clientBVId;
+            const clientBV = clientEntries[1].converted_forward;
 
             // console.log(clientBV,'client b_v');
             client.best_value = clientBV;
@@ -871,7 +889,7 @@ const initialFetch = async () => {
             transformedMp.push(client);
           }
 
-          // console.log(transformedMp,'trnas mp!!')
+          console.log(transformedMp, "trnas mp!!");
           marketPlace.value = [...transformedMp];
           // console.log(marketPlace, "mpp trans res");
           const converted_amount = result.converted_amount;
@@ -972,7 +990,7 @@ onBeforeMount(async () => {
     const from_currency = paymentSummary.result.from_currency;
     const to_currency = paymentSummary.result.to_currency;
     selectedSenderCountry.value = getDefaultSender(from_currency);
-    selectedRecipientCountry.value = getDefaultRecipient(to_currency)
+    selectedRecipientCountry.value = getDefaultRecipient(to_currency);
     changeDetails.forwardAmount = repeatAmount;
     localStorage.removeItem("payS");
   }

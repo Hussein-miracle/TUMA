@@ -14,9 +14,17 @@
         <span class="profile__details--content__email"
           >{{profileDetails.email}}</span
         >
-        <span class="text-primary uppercase font-bold"
-          >{{profileDetails.verified}}</span
+       <div class="uppercase font-bold text-skeleton">
+         <span class="text-green-500"
+           v-if="profileDetails.verified === VERIFICATION_STATUSES.VERIFIED">{{profileDetails.verified}}</span
         >
+         <span class="text-red-500"
+           v-if="profileDetails.verified === VERIFICATION_STATUSES.UNVERIFIED">{{profileDetails.verified}}</span
+        >
+         <span class="text-primary"
+           v-if="profileDetails.verified === VERIFICATION_STATUSES.UNDER_REVIEW">{{profileDetails.verified}}</span
+        >
+       </div>
       </div>
 
       <div
@@ -94,7 +102,7 @@
       >
         <div class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center">
           <div
-            class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
+            class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16 !text-tumablack"
           >
             <icons-profile class="w-5 h-5" />
           </div>
@@ -159,7 +167,7 @@ import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 import useToggle from '@/composables_/useToggle';
 import AuthService from "@/services/auth.service";
-
+import {VERIFICATION_STATUSES} from '@/utils/index'
 
 const {show:showDelete,setShowFalse:closeDelete,setShowTrue:openDelete} = useToggle();
 
@@ -257,6 +265,30 @@ onMounted( async () => {
         @apply bg-ash-1;
       }
     }
+  }
+}
+
+
+.text-skeleton:empty {
+  width: 6rem;
+  height: 22px;
+  display: inline-block;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 80%
+    ),
+    lightgray;
+  background-repeat: repeat-y;
+  background-size: 50px 500px;
+  background-position: 0 0;
+  animation: shine 1s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 100% 0, /* move highlight to right */ 0 0;
   }
 }
 </style>

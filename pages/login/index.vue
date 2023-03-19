@@ -89,6 +89,7 @@
         type="submit"
         :text="'login'"
         :disabled="isLoading === true"
+        :showLoader='isLoading === true'
         :class="{ 'opacity-80 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
