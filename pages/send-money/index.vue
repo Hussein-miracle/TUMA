@@ -322,9 +322,9 @@
           class="client !h-20 rounded-md !w-full my-1.5 overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all"
           v-for="client in marketPlace"
           @click="handleClickClient(client)"
-          :key="client.clientId"
+          :key="client.uuid"
           :class="{
-            '!bg-ash-2': conversionDetails.client_id === client.clientId,
+            '!bg-ash-2': conversionDetails.client_id === client.uuid,
           }"
         >
           <div class="w-full h-full text-black flex items-center">
@@ -559,8 +559,6 @@ const changeDetails = reactive({
 
 const Amount = ref(null);
 
-
-
 const conversionDetails = reactive({
   amount: "",
   client_id: import.meta.env.VITE_APP_TUMA_CLIENT_ID,
@@ -765,7 +763,6 @@ const handleSelectRecipientCountry = async (country) => {
     country.currency_symbol;
   selectedRecipientCountryDetails.recipient_country_code = country.code;
 
-
   selectedRecipientCountry.value = country;
 
   handleContinueRecipient();
@@ -788,7 +785,26 @@ const cashValue = ref("");
 const bankValue = ref("");
 const mobileValue = ref("");
 
-const updateMethods = async () => {};
+const updateMarketPlace = async (marketP) => {
+  const transformedMp = [];
+  // marketPlace.value = [];
+  for (const clientId in marketP) {
+    const client = ref({...marketP[clientId]});
+    const clientBestValue = Object.assign({},client.value.rate.best_value);
+    const clientBVId = ref(Object.keys(clientBestValue)[0]).value;
+    client.value.best_value_id = clientBVId;
+    const clientBV = clientBestValue[clientBVId];
+    console.log(clientBV,'cbv')
+    if(clientBV){
+      client.value.best_value = clientBV?.converted_forward;
+      transformedMp.push(client.value);
+    }
+  }
+
+  // console.log(transformedMp, "trnas mp!!");
+  marketPlace.value = [...transformedMp];
+  // console.log(marketPlace.value, "mpp trans res");
+};
 
 const remittanceMethod = ref("");
 
@@ -872,28 +888,10 @@ const initialFetch = async () => {
       UtilsService.getConversionRates(conversionDetails)
         .then((response) => {
           loading.value = false;
-          const result = response.data?.default;
-
-          const mp = {...response.data.marketplace};
-
-          // console.log(mp , 'mp');
-          const transformedMp = [];
-          for (const clientId in mp) {
-            const client = {...mp[clientId],clientId};
-            // console.log(client , 'client')
-            const clientBVId  = Object.keys({...client.rate.best_value});
-            client.best_value_id = clientBVId[0];
-            const clientBV = Object.values({...client.rate.best_value});
-            client.best_value  = {...clientBV[0]}.converted_forward;
-            // // console.log(client,'client');
-            transformedMp.push(client);
-          }
-
-          // console.log(transformedMp, "trnas mp!!");
-          marketPlace.value = [...transformedMp];
-          // console.log(marketPlace.value, "mpp trans res");
+          const result = { ...response.data.default };
+          const mp = { ...response.data.marketplace };
+          updateMarketPlace(mp);
           const converted_amount = result.converted_amount;
-          // console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
@@ -954,8 +952,8 @@ const initialFetch = async () => {
             // reverseAmount.value = converted;
             changeDetails.reverseAmount = formatStringToMoney(converted);
             // assignConvertedAmount(forwardAmount);
-          } 
-          
+          }
+
           if (conversionDetails.conversion_type === "reverse") {
             // assignConvertedAmount(reverseAmount);
             const details = Object.entries({ ...result.best_value })[0];
@@ -1009,6 +1007,7 @@ watchDebounced(
   },
   { debounce: 500, maxWait: 900 }
 );
+
 watchDebounced(
   changeDetails,
   async () => {
