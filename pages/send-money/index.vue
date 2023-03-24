@@ -363,7 +363,7 @@
     </div>
 
     <div
-      class="fieldset mx-auto mt-2 sm:mt-4 rounded-md w-64 sm:w-72 px-1 sm:px-2 py-1 flex items-center justify-between flex-col bg-white"
+      class="fieldset mx-auto mt-2 sm:mt-4 rounded-md w-64 sm:w-72 px-1 sm:px-2 py-1 flex items-center justify-between flex-col bg-white gap-y-2"
     >
       <div
         class="legend flex items-center justify-between w-full"
@@ -556,10 +556,10 @@ const changeDetails = reactive({
   reverseAmount: "0.00",
   forwardAmount: defaultAmount.value || "0.00",
 });
+
 const Amount = ref(null);
-useHead({
-  title: "Send Money",
-});
+
+
 
 const conversionDetails = reactive({
   amount: "",
@@ -758,10 +758,14 @@ const handleContinueRecipient = async () => {
 const handleSelectRecipientCountry = async (country) => {
   // console.log(country,'country');
   selectedRecipientCountryDetails.recipient_currency = country.currency_code;
+
   selectedRecipientCountryDetails.recipient_country = country.name;
+
   selectedRecipientCountryDetails.recipient_currency_symbol =
     country.currency_symbol;
   selectedRecipientCountryDetails.recipient_country_code = country.code;
+
+
   selectedRecipientCountry.value = country;
 
   handleContinueRecipient();
@@ -870,28 +874,24 @@ const initialFetch = async () => {
           loading.value = false;
           const result = response.data?.default;
 
-          const mp = response.data.marketplace;
+          const mp = {...response.data.marketplace};
 
           // console.log(mp , 'mp');
           const transformedMp = [];
           for (const clientId in mp) {
-            // console.log(clientId , 'clientId')
-            const client = mp[clientId];
-            client.clientId = clientId;
-            const clientEntries = Object.entries(client.rate.best_value)[0];
-            const clientBVId = clientEntries[0];
-            client.best_value_id = clientBVId;
-            const clientBV = clientEntries[1].converted_forward;
-
-            // console.log(clientBV,'client b_v');
-            client.best_value = clientBV;
-            // console.log(client,'client');
+            const client = {...mp[clientId],clientId};
+            // console.log(client , 'client')
+            const clientBVId  = Object.keys({...client.rate.best_value});
+            client.best_value_id = clientBVId[0];
+            const clientBV = Object.values({...client.rate.best_value});
+            client.best_value  = {...clientBV[0]}.converted_forward;
+            // // console.log(client,'client');
             transformedMp.push(client);
           }
 
-          console.log(transformedMp, "trnas mp!!");
+          // console.log(transformedMp, "trnas mp!!");
           marketPlace.value = [...transformedMp];
-          // console.log(marketPlace, "mpp trans res");
+          // console.log(marketPlace.value, "mpp trans res");
           const converted_amount = result.converted_amount;
           // console.log(converted_amount, "conved amout");
           Amount.value = converted_amount;
@@ -954,7 +954,9 @@ const initialFetch = async () => {
             // reverseAmount.value = converted;
             changeDetails.reverseAmount = formatStringToMoney(converted);
             // assignConvertedAmount(forwardAmount);
-          } else if (conversionDetails.conversion_type === "reverse") {
+          } 
+          
+          if (conversionDetails.conversion_type === "reverse") {
             // assignConvertedAmount(reverseAmount);
             const details = Object.entries({ ...result.best_value })[0];
             // console.log(details , 'details')
