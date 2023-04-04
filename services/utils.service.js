@@ -129,6 +129,16 @@ class UtilsService{
   }
 
 
+  async getTAC(){
+    const response =  await axiosInstance.get(`/utils/tandc`);
+    const data = response.data;
+    return data;
+  }
+  async getPolicy(){
+    const response =  await axiosInstance.get(`/utils/policy`);
+    const data = response.data;
+    return data;
+  }
 
 
 }

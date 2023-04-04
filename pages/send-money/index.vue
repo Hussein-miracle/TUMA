@@ -343,19 +343,22 @@
             <span class="font-bold mr-1 sm:mr-2">{{ client.name }}</span>
 
             <icons-mobile
-              v-if="client.best_value_id.toLowerCase() === 'mobile'"
+              v-if="client.best_value_identifier.toLowerCase() === 'mobile'"
             />
             <icons-bank
-              v-else-if="client.best_value_id.toLowerCase() === 'bank'"
+              v-else-if="client.best_value_identifier.toLowerCase() === 'bank'"
             />
             <icons-cash
-              v-else-if="client.best_value_id.toLowerCase() === 'cash'"
+              v-else-if="client.best_value_identifier.toLowerCase() === 'cash'"
             />
           </div>
 
           <div class="flex items-center gap-x-1 p-1 text-tumablack">
-            <span>{{ selectedRecipientCountry.currency_symbol }}</span
-            ><span>{{ client.best_value }}</span>
+            <span>{{ selectedRecipientCountry.currency_symbol }}</span>
+            <span v-if="client.best_value_identifier">{{
+              client.rate.best_value[client.best_value_identifier]
+                .converted_forward
+            }}</span>
             <span>Commission</span>
           </div>
         </li>
@@ -786,24 +789,10 @@ const bankValue = ref("");
 const mobileValue = ref("");
 
 const updateMarketPlace = async (marketP) => {
+  const mp = [...marketP];
+  //console.log(mp, "heheh mp");
   const transformedMp = [];
-  // marketPlace.value = [];
-  for (const clientId in marketP) {
-    const client = ref({...marketP[clientId]});
-    const clientBestValue = Object.assign({},client.value.rate.best_value);
-    const clientBVId = ref(Object.keys(clientBestValue)[0]).value;
-    client.value.best_value_id = clientBVId;
-    const clientBV = clientBestValue[clientBVId];
-    console.log(clientBV,'cbv')
-    if(clientBV){
-      client.value.best_value = clientBV?.converted_forward;
-      transformedMp.push(client.value);
-    }
-  }
-
-  // console.log(transformedMp, "trnas mp!!");
-  marketPlace.value = [...transformedMp];
-  // console.log(marketPlace.value, "mpp trans res");
+  marketPlace.value = [];
 };
 
 const remittanceMethod = ref("");
@@ -811,11 +800,15 @@ const remittanceMethod = ref("");
 const isLoadingCountries = ref(false);
 
 const handleContinue = () => {
-  if (conversionDetails.amount !== "" && remittanceMethod.value !== "") {
+  if (!!conversionDetails.amount && !!remittanceMethod.value) {
     useAppStore().setRemittanceMethod(remittanceMethod.value);
+
     useAppStore().setPaymentSummary(Amount.value);
-    //console.log(Amount.value,'cDDDDD!!!HEy Amount.value...')
-    // console.log(conversionDetails,'cDDDDD!!!HEy')
+
+    //console.log(Amount.value,'cDDDDD!!!HEy Amount.value...');
+
+    // con sole.log(conversionDetails,'cDDDDD!!!HEy');
+
     if (conversionDetails.conversion_type === "forward") {
       const country = countries?.value.find(
         (country) => country?.code === conversionDetails?.recipient_country_code
@@ -857,17 +850,9 @@ const initialFetch = async () => {
   }
 
   conversionDetails.sender_currency = selectedSenderCountry.value.currency_code;
-
-  // if (
-  //   selectedRecipientCountry.value.code === "NG" &&
-  //   selectedRecipientCountry.value.currency_code === "NGN"
-  // ) {
-  //   conversionDetails.recipient_country_code = "NGA";
-  // } else {
   conversionDetails.recipient_country_code =
     selectedRecipientCountry.value.code;
-  // }
-  // console.log(conversionDetails,'cd');
+
   if (
     !!conversionDetails.amount &&
     !!conversionDetails.recipient_country_code &&
@@ -886,18 +871,21 @@ const initialFetch = async () => {
       // console.log(conversionDetails, "convD");
       loading.value = true;
       UtilsService.getConversionRates(conversionDetails)
-        .then((response) => {
-          loading.value = false;
-          const result = { ...response.data.default };
-          const mp = { ...response.data.marketplace };
-          updateMarketPlace(mp);
+        .then(async (response) => {
+          const data = response.data;
+          // console.log(data, "rate fetch data");
+          const result = data.default;
+          const mp = data.marketplace;
           const converted_amount = result.converted_amount;
+          marketPlace.value = mp;
+          const market = [...mp];
+          // console.log(market, "market");
+          // updateMarketPlace(mp);
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
           const bank = converted_amount.bank;
           const mobile = converted_amount.mobile;
-          // // console.log(cash,'cash');
-
+          // console.log(cash,'cash');
           const details = {
             cash,
             mobile,
@@ -905,12 +893,9 @@ const initialFetch = async () => {
             recipient_currency: result.recipient_currency,
             conversion_rate: result.conversion_rate,
           };
-
-          bestValue.value = { ...result.best_value };
+          bestValue.value = result.best_value;
           useAppStore().setRemittanceDetails(details);
-
           const newConved = { ...converted_amount };
-
           if (conversionDetails.conversion_type === "forward") {
             cashValue.value = `${cash?.converted}`;
             bankValue.value = `${bank?.converted}`;
@@ -967,6 +952,7 @@ const initialFetch = async () => {
             // forwardAmount.value  = `${converted}`;
             changeDetails.forwardAmount = formatStringToMoney(converted);
           }
+          loading.value = false;
         })
         .catch((err) => {
           loading.value = false;
@@ -1000,7 +986,7 @@ onBeforeMount(async () => {
 //   amountInput.removeEventListener("blur", handleTypeBlur);
 // });
 
-watchDebounced(
+watch(
   conversionDetails,
   async () => {
     initialFetch();
@@ -1028,6 +1014,7 @@ definePageMeta({
 
 <style lang="scss" scoped>
 $percent: 75%;
+
 .send-money {
   min-height: calc(100vh - 3rem);
   background-image: linear-gradient(
@@ -1120,7 +1107,9 @@ label.btn {
     background-color: #fec02f;
 
     width: $percent;
+
     height: $percent;
+
     z-index: 5;
   }
 }

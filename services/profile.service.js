@@ -19,6 +19,14 @@ class ProfileService{
     return data;
   }
 
+
+  async uploadUserImage(details){
+    const response =  await axiosInstance.post(`/auth/profile/photo`,details);
+
+    const data = response.data;
+
+    return data;
+  }
 }
 
 

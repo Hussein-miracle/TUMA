@@ -65,27 +65,20 @@ export const formatStringToMoney = (string) => {
   return main;
 };
 
-
-
-
-
 export const TRANSACTION_STATUSES = {
   SUCCESS: "completed",
   PENDING: "pending",
-
-
-
-
   CANCELLED: "cancelled",
   FAILED: "failed",
-
-  
 };
 
-
-
 export const VERIFICATION_STATUSES = {
-  VERIFIED:'verified',
-  UNVERIFIED:'unverified',
-  UNDER_REVIEW:'under-review'
+  VERIFIED: "verified",
+  UNVERIFIED: "unverified",
+  UNDER_REVIEW: "under-review",
+};
+
+export const CONVERSION_TYPES = {
+  FORWARD: "forward",
+  BACKWARD: "backward",
 };
