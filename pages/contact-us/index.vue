@@ -49,7 +49,7 @@
 
 
 
-      <p class="p-2  sm:my-6"> <a href="https://www.dagdag.co/terms-condition" target="_blank" class="text-blue-400">Terms & Conditions</a> and <a href="https://www.dagdag.co/privacy" target="_blank" class="text-blue-400">Privacy Policy</a> </p>
+      <p class="p-2  sm:my-6"> <span @click="handleNavigate('terms-and-conditions')" class="text-blue-400 cursor-pointer" title="Terms and Conditions">Terms & Conditions</span> and <span title="Privacy Policy"  @click="handleNavigate('policy')"  class="text-blue-400 cursor-pointer">Privacy Policy</span> </p>
 
     </div>
   </div>
@@ -60,6 +60,14 @@ definePageMeta({
   layout: "default",
   middleware:['auth']
 });
+
+
+const handleNavigate = (string) => {
+  const link = `${window.location.origin}/${string}`;
+  console.log(link,'link clicked');
+
+  window.open(link,'_blank');
+}
 
 </script>
 

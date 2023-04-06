@@ -961,6 +961,14 @@ const initialFetch = async () => {
   }
 };
 onMounted(async () => {
+  UtilsService.getTAC().then((res) => {
+    console.log(res.data,'tac rdata')
+  });
+
+  UtilsService.getPolicy().then((res) => {
+    console.log(res.data,'policy rdata')
+
+  })
   // if(!touched){
   await initialFetch();
   // }
