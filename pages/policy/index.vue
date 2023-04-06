@@ -63,7 +63,7 @@ const getPolicy = async () => {
       // const sanitizedResult = DOMPurify.satinize(result,{});
       // htmlcode.value = sanitizedResult;
       htmlcode.value = result;
-      console.log(htmlcode.value, "code sent from server policy");
+     // console.log(htmlcode.value, "code sent from server policy");
       isFetching.value = false;
       // console.log(res.data, "tac rdata");
     })
