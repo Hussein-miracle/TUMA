@@ -176,8 +176,8 @@ const { getUser: user } = storeToRefs(appState);
 const {tempUser} = useUserStore();
 
 
-console.log(user.value, "gU");
-console.log(tempUser, "tempU");
+// console.log(user.value, "gU");
+// console.log(tempUser, "tempU");
 
 
 const verifying = ref(false);

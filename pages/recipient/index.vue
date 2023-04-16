@@ -541,7 +541,7 @@ const handleSelectRecipient = (recipient) => {
 };
 
 const handleCityInput = async (e) => {
-  console.log(e, "cityInput");
+  // console.log(e, "cityInput");
   // isLoadingCity.value = true;
   // setTimeout(() => {
   //   isLoadingCity.value = false;
@@ -550,7 +550,7 @@ const handleCityInput = async (e) => {
   // }, 500);
 };
 const handleCityClick = async (e) => {
-  console.log(e, "cityInputClick");
+  // console.log(e, "cityInputClick");
   // showWithMap.value = false;
 };
 
@@ -628,7 +628,7 @@ const handleSubmit = async (values) => {
     saveMobileDetails();
   }
 
-  try {
+ 
     const recipientCreationData = {
       first_name: recipientForm.first_name,
       last_name: recipientForm.last_name,
@@ -670,10 +670,6 @@ const handleSubmit = async (values) => {
           console.log(err, "err");
         });
     }
-  } catch (err) {
-    isLoading.value = false;
-    console.log(err, "err");
-  }
 };
 
 const onAddressBlur = async () => {

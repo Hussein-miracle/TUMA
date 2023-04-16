@@ -285,19 +285,20 @@
         ></span>
         <p class="p-1">
           I have read and agree to the
-          <span
-            @click="handleNavigate('terms-and-conditions')"
+          <NuxtLink
+           to='/terms-and-conditions'
+          
             class="text-blue-400 cursor-pointer"
             title="Terms and Conditions"
-            >Terms & Conditions</span
+            >Terms & Conditions</NuxtLink
           >
           and
-          <span
+        <NuxtLink
+           to='/policy'
             title="Privacy Policy"
-            @click="handleNavigate('policy')"
+          
             class="text-blue-400 cursor-pointer"
-            >Privacy Policy</span
-          >
+            >Privacy Policy</NuxtLink>
         </p>
       </div>
 
@@ -378,12 +379,12 @@ const signupForm = reactive({
   country: "",
 });
 
-const handleNavigate = (string) => {
-  const link = `${window.location.origin}/${string}`;
-  // console.log(link,'link clicked');
+// const handleNavigate = (string) => {
+//   const link = `${window.location.origin}/${string}`;
+//   // console.log(link,'link clicked');
 
-  window.open(link, "_blank");
-};
+//   window.open(link, "_blank");
+// };
 
 const handleSelectCountry = (country) => {
   // console.log(country,'country');

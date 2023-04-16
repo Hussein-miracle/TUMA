@@ -45,7 +45,7 @@ class AuthService {
   async getRefreshToken() {
     const response = await axiosInstance.post("/refresh/token");
 
-    console.log(response, "refreshRes");
+    //console.log(response, "refreshRes");
 
     return response;
   }

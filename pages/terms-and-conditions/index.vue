@@ -79,6 +79,14 @@ const getTAC = async () => {
 onMounted(async () => {
   getTAC();
 });
+
+useHead({
+    title:'Terms and Conditions'
+})
+definePageMeta({
+  layout:false,
+
+});
 </script>
 
 <style lang="scss" scoped>

@@ -82,11 +82,15 @@ export const useUserStore = defineStore("user", {
     setUserDetails: (response) => {
       const data = response.data.data;
 
-      // const expired = data.expires_in;
+      const expired = +data.expires_in;
 
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
       // console.log(data,'login data in store');
+      const expirationDate = new Date((new Date().getTime() + expired) * 1000);
+
+    
+
       if (data.access_token) {
         useUserStore().token = data.access_token;
         useUserStore().user = data.user;
@@ -95,9 +99,12 @@ export const useUserStore = defineStore("user", {
         TokenService.setToken(data.access_token);
       }
 
-      // if(expired){
-      //   TokenService.setExpiration(expirationDate);
-      // }
+      if(expired){
+          window.TUMA_AUTH_TIMER = setTimeout(() => {
+        useUserStore().logout();
+      }, expired * 1000);
+        TokenService.setExpiration(expirationDate);
+      }
     },setOldPassword:(p) => {
       useUserStore().oldPassword = p;
     },
@@ -116,7 +123,10 @@ export const useUserStore = defineStore("user", {
       const state = useUserStore();
       state.user = null;
       state.token = null;
-      navigateTo("/login");
+      if( window.TUMA_AUTH_TIMER){
+        clearTimeout(window.TUMA_AUTH_TIMER);
+      }
+      return navigateTo("/login");
       // setTimeout(() => {
       //   console.clear();
       //   setTimeout(() => {

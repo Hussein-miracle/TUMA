@@ -215,7 +215,7 @@ const fetchTrustPaymentDetail = async () => {
   // UtilsService.getTransaction(reference)
   UtilsService.getTransaction(reference)
     .then((response) => {
-      console.log(response, "r");
+      //(response, "r");
       msg.value = response.message;
       status.value = response.status;
       isLoading.value = false;

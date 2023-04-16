@@ -6,11 +6,10 @@ import { checkNetwork } from "~~/utils";
 export default defineNuxtRouteMiddleware((item) => {
   checkNetwork();
 
-  const { authenticated, logout ,clearUserDetails} = useUserStore();
+  const { authenticated, logout ,isUser} = useUserStore();
 
-  if (!authenticated) {
-    clearUserDetails();
-    logout();
-    return navigateTo("/login");
+  if (!authenticated  || !isUser) {
+    return logout();
   }
+
 });

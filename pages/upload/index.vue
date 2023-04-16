@@ -49,14 +49,14 @@ function launchWebSdk(accessToken, applicantEmail, applicantPhone) {
     })
     .withOptions({ addViewportTag: false, adaptIframeHeight: true })
     .on("stepCompleted", (payload) => {
-      console.log("stepCompleted", payload);
+     // console.log("stepCompleted", payload);
     })
     .on("onError", (error) => {
-      console.log("onError", payload);
+     // console.log("onError", payload);
     })
     .onMessage((type, payload) => {
       isLoading.value = false;
-      console.log("onMessage", type, payload);
+      //console.log("onMessage", type, payload);
     })
     .build();
 
@@ -67,7 +67,7 @@ const handleLoadSumSub = async () => {
   isLoading.value = true;
   UtilsService.getSumSubToken()
     .then((result) => {
-      console.log(result, "result from be for sumsub");
+    //  console.log(result, "result from be for sumsub");
       const email = result.email_address;
       const phone = result.phone;
       const token = result.sumsub.token;

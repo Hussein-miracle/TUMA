@@ -52,7 +52,7 @@ const modifyIndex = () => {
 };
 
 useHead({
-  title: "Onboarding",
+  title: "Tuma Onboarding",
 
   link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
 });

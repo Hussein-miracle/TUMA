@@ -192,8 +192,8 @@ const props = defineProps(["opened", "closeModal"]);
 const store = useAppStore();
 const { remittanceDetail, recipientCurrencyDetails } = storeToRefs(store);
 
-console.log(remittanceDetail.value, "remDet");
-console.log(recipientCurrencyDetails.value, "reciDet");
+// console.log(remittanceDetail.value, "remDet");
+// console.log(recipientCurrencyDetails.value, "reciDet");
 const remittanceMethod = ref("");
 const updateRemittanceMethod = async () => {
   if (remittanceMethod.value.length) {

@@ -283,7 +283,7 @@ const handleDeleteAccount = async () => {
 const handleImageUpload = async (e) => {
   const file = e.target.files[0];
   // userProfileImage.value = file;
-  console.log(file, "target file");
+  // console.log(file, "target file");
   // const std = JSON.stringify(file);
   // console.log(std,'stringFiled')
   imageForm.image = file;
@@ -313,7 +313,7 @@ const handleGetProfile = async () => {
       isLoading.value = false;
       const data = response.data;
       // console.log(data,'response data');
-      console.log(data, "response  get profile");
+      // console.log(data, "response  get profile");
       for (const item in data) {
         if (item in profileDetails) {
           profileDetails[item] = data[item];

@@ -73,6 +73,13 @@ const getPolicy = async () => {
     });
 };
 
+useHead({
+      title:'Privacy Policy'
+})
+definePageMeta({
+  layout:false,
+});
+
 onMounted(async () => {
   getPolicy();
 });

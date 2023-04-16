@@ -27,6 +27,7 @@
     "vee-validate": "^4.7.3",
     "vue-dompurify-html": "^4.0.0",
     "vue-tel-input": "^6.0.5",
+    "vue3-toastify": "^0.1.6",
     "yup": "^0.32.11"
   }
 }

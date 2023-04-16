@@ -501,6 +501,8 @@
 
     <button
       class="btn bg-primary text-whitelike px-4 py-2 rounded-sm mt-2 text-xl"
+      :disabled='loading === true'
+      :class="{'cursor-not-allowed opacity-75': loading === true}"
       @click="handleContinue"
     >
       Continue
@@ -578,7 +580,7 @@ const handleClickClient = async (clientDetails) => {
   const rate = clientDetails.rate.best_value;
   const best_value = rate[id];
 
-  console.log(best_value, "bvss");
+  // console.log(best_value, "bvss");
 
   // if (conversionDetails.conversion_type === "forward") {
   //   changeDetails.reverseAmount = parseFloat(best_value.replaceAll(",", ""));
@@ -588,7 +590,7 @@ const handleClickClient = async (clientDetails) => {
   // }
 
   conversionDetails.client_id = clientDetails.uuid;
-  // await initialFetch();
+  await initialFetch();
 };
 
 const handleForward = (conversionDetails) => {
@@ -1009,6 +1011,9 @@ watch(
 // watch(conversionDetails, async () => {
 //   await initialFetch();
 // });
+useHead({
+  title:'Send Money TUMA'
+})
 
 definePageMeta({
   layout: "default",
