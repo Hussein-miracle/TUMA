@@ -86,7 +86,7 @@
         </div>
       </div>
 
-      <button-primary
+      <!-- <button-primary
         @click="handleRepeatTransaction"
         type="button"
         :text="'Repeat Transaction'"
@@ -96,7 +96,7 @@
           'opacity-80 cursor-not-allowed':
             isLoading === true || repeatingTransaction === true,
         }"
-      />
+      /> -->
     </div>
   </div>
 </template>

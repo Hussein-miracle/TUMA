@@ -325,6 +325,7 @@
           :key="client.uuid"
           :class="{
             '!bg-ash-2': conversionDetails.client_id === client.uuid,
+            hidden: !client.best_value_identifier,
           }"
         >
           <div class="w-full h-full text-black flex items-center">
@@ -572,14 +573,22 @@ const conversionDetails = reactive({
 });
 
 const handleClickClient = async (clientDetails) => {
-  // if(conversionDetails.conversion_type === 'forward'){
-  changeDetails.reverseAmount = parseFloat(
-    clientDetails.best_value.replaceAll(",", "")
-  );
-  // }
-  conversionDetails.client_id = clientDetails.clientId;
+  // console.log(clientDetails,'cdetails');
+  const id = clientDetails.best_value_identifier;
+  const rate = clientDetails.rate.best_value;
+  const best_value = rate[id];
 
-  await initialFetch();
+  console.log(best_value, "bvss");
+
+  // if (conversionDetails.conversion_type === "forward") {
+  //   changeDetails.reverseAmount = parseFloat(best_value.replaceAll(",", ""));
+  // } 
+  // else if (conversionDetails.conversion_type === "reverse") {
+  //   changeDetails.forwardAmount = parseFloat(best_value.replaceAll(",", ""));
+  // }
+
+  conversionDetails.client_id = clientDetails.uuid;
+  // await initialFetch();
 };
 
 const handleForward = (conversionDetails) => {
@@ -934,9 +943,8 @@ const initialFetch = async () => {
 
             // console.log(converted, "converted forward");
 
-            // reverseAmount.value = converted;
             changeDetails.reverseAmount = formatStringToMoney(converted);
-            // assignConvertedAmount(forwardAmount);
+         
           }
 
           if (conversionDetails.conversion_type === "reverse") {
@@ -946,10 +954,6 @@ const initialFetch = async () => {
             const [key, value] = details;
             // console.log(value,'val rev');
             const { converted } = value;
-
-            //console.log(converted, "converted rev");
-
-            // forwardAmount.value  = `${converted}`;
             changeDetails.forwardAmount = formatStringToMoney(converted);
           }
           loading.value = false;
@@ -961,14 +965,6 @@ const initialFetch = async () => {
   }
 };
 onMounted(async () => {
-  UtilsService.getTAC().then((res) => {
-    console.log(res.data,'tac rdata')
-  });
-
-  UtilsService.getPolicy().then((res) => {
-    console.log(res.data,'policy rdata')
-
-  })
   // if(!touched){
   await initialFetch();
   // }
@@ -979,8 +975,8 @@ onBeforeMount(async () => {
 
   const repeatAmount = paymentSummary?.result?.amount;
   if (repeatAmount) {
-    console.log(paymentSummary, "paySSS");
-    console.log(repeatAmount, "repAm");
+    // console.log(paymentSummary, "paySSS");
+    // console.log(repeatAmount, "repAm");
     const from_currency = paymentSummary.result.from_currency;
     const to_currency = paymentSummary.result.to_currency;
     selectedSenderCountry.value = getDefaultSender(from_currency);
@@ -1002,13 +998,13 @@ watch(
   { debounce: 500, maxWait: 900 }
 );
 
-watchDebounced(
-  changeDetails,
-  async () => {
-    initialFetch();
-  },
-  { debounce: 500, maxWait: 900 }
-);
+// watchDebounced(
+//   changeDetails,
+//   async () => {
+//     initialFetch();
+//   },
+//   { debounce: 500, maxWait: 900 }
+// );
 
 // watch(conversionDetails, async () => {
 //   await initialFetch();

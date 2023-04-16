@@ -41,11 +41,22 @@
         </div>
       </div>
 
-      <div class="relative flex flex-col justify-between">
-        <image
-          class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary bg-secondary w-14 h-14 uppercase"
-          v-if="userImage"
-          :src="userImage"
+      <VeeForm
+        class="relative flex flex-col justify-between"
+        @submit="handleSubmitImage"
+        :initial-values="imageForm"
+      >
+        <img
+          class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary w-14 h-14 uppercase object-contain"
+          v-if="profileDetails.profile_image"
+          :src="profileDetails.profile_image"
+          alt="user profile image"
+        />
+        <img
+          class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary w-14 h-14 uppercase object-contain"
+          v-else-if="imageForm.image"
+          :src="imageForm.image"
+          alt="user profile image"
         />
         <div
           v-else
@@ -55,22 +66,34 @@
           {{ user.fname[0] }} {{ user.sname[0] }}
         </div>
         <label
-          for="userImage"
+          for="image"
           title="Upload"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/4"
         >
-          <icons-camera class="w-5 h-5 !fill-white !stroke-white" />
-          <!-- <span>Click to upload image</span> -->
+          <!-- <icons-camera class="w-5 h-5 !fill-white !stroke-white" /> -->
+          <span class=" text-primary text-xs">Upload</span>
         </label>
-        <input
+        <VeeField
+          id="image"
+          name="image"
           type="file"
+          ref="imageRef"
           accept="image/*"
+          
+          aria-hidden="true"
+          hidden="true"
           @change="handleImageUpload"
-          class="absolute top-1/2 left-1/2"
-          id="userImage"
-          hidden
         />
-      </div>
+
+        <button
+          class="outline-none border-none bg-primary w-14 h-8 text-sm p-0.5 rounded-md mt-0.5"
+          type="submit"
+          :disabled='disableUpload === true'
+          :class="{'opacity-75 cursor-not-allowed': disableUpload === true}"
+        >
+          Submit
+        </button>
+      </VeeForm>
     </div>
 
     <div
@@ -217,8 +240,8 @@ const {
 } = useToggle();
 
 const isLoading = ref(false);
-const userImage = ref(null);
-
+const userProfileImage = ref("");
+const imageRef = ref(null);
 useHead({
   title: "Profile",
 });
@@ -237,7 +260,13 @@ const { user } = storeToRefs(authstore);
 const profileDetails = reactive({
   verified: "",
   email: "",
+  profile_image:'',
 });
+
+const imageForm = reactive({
+  image: "",
+});
+const  disableUpload = ref(true);
 const logout = () => {
   const { logout: log } = useUserStore();
   log();
@@ -252,21 +281,28 @@ const handleDeleteAccount = async () => {
 };
 
 const handleImageUpload = async (e) => {
-  const formdata = new FormData();
   const file = e.target.files[0];
+  // userProfileImage.value = file;
   console.log(file, "target file");
-  formdata.append("image", file);
-  // formdata.append("image", JSON.stringify(file));
-  // console.log(formdata.getAll("image"), "fd image");
+  // const std = JSON.stringify(file);
+  // console.log(std,'stringFiled')
+  imageForm.image = file;
 
-  // const fd = JSON.stringify(formdata);
-  // console.log(fd, "ddffd");
+  // const formdata = new FormData();
+  // formdata.append("image", file);
+};
 
-  ProfileService.uploadUserImage(formdata)
+const handleSubmitImage = async (values) => {
+  // console.log(values,'vssss');
+  imageForm.image = values.image;
+  disableUpload.value = true;
+  ProfileService.uploadUserImage(values)
     .then((response) => {
+      disableUpload.value = false;
       console.log(response, "response");
     })
     .catch((err) => {
+      disableUpload.value = false;
       console.log(err, "pft image upload err");
     });
 };
@@ -274,10 +310,10 @@ const handleGetProfile = async () => {
   isLoading.value = true;
   AuthService.getProfile()
     .then((response) => {
-      console.log(response, "response  get profile");
       isLoading.value = false;
       const data = response.data;
       // console.log(data,'response data');
+      console.log(data, "response  get profile");
       for (const item in data) {
         if (item in profileDetails) {
           profileDetails[item] = data[item];
@@ -294,6 +330,14 @@ const handleGetProfile = async () => {
 onMounted(async () => {
   handleGetProfile();
 });
+
+watch(imageForm, () => {
+  if (!!imageForm.image) {
+    disableUpload.value = false;
+  }
+});
+
+
 </script>
 
 <style lang="scss" scoped>

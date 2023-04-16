@@ -13,13 +13,12 @@
           id="first_name"
           placeholder="First Name"
         />
-
         <label for="first_name" class="mb-2 text-ash-1">First Name</label>
-
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="first_name"
         />
+
       </div>
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
@@ -29,9 +28,7 @@
           id="last_name"
           placeholder="Last Name"
         />
-
         <label for="last_name" class="mb-2 text-ash-1">Last Name</label>
-
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="last_name"
@@ -116,7 +113,7 @@
         />
       </div>
 
-      <div class="item flex flex-col-reverse my-1 w-full ">
+      <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
           v-model="editForm.email"
@@ -127,7 +124,9 @@
           class="cursor-not-allowed"
         />
 
-        <label for="email" class="mb-2 text-ash-1 cursor-not-allowed">Email</label>
+        <label for="email" class="mb-2 text-ash-1 cursor-not-allowed"
+          >Email</label
+        >
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
@@ -139,7 +138,7 @@
         type="submit"
         :text="'Save'"
         :disabled="isLoading === true"
-        :class="{'opacity-75 cursor-not-allowed':isLoading === true}"
+        :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
   </div>
@@ -216,22 +215,24 @@ const fetchProfile = async () => {
 const handleSubmit = async (values) => {
   isLoading.value = true;
   const data = {
-    last_name:values.last_name,
-    first_name:values.first_name
-  }
+    last_name: values.last_name,
+    first_name: values.first_name,
+  };
 
   // console.log(data,'ddddata');
-  UtilsService.postProfile(data).then((user) => {
-    // console.log(user,'ress');
-    useUserStore().setUser(user);
+  UtilsService.postProfile(data)
+    .then((user) => {
+      // console.log(user,'ress');
+      useUserStore().setUser(user);
 
-    navigateTo('/send-money');
+      navigateTo("/send-money");
 
-    isLoading.value = false;
-  }).catch((err) => {
-    isLoading.value = false;
-    console.log(err,'error updating')
-  })
+      isLoading.value = false;
+    })
+    .catch((err) => {
+      isLoading.value = false;
+      console.log(err, "error updating");
+    });
 };
 
 let address;
@@ -277,15 +278,13 @@ onUnmounted(() => {
   // address.removeEventListener("blur", onAddressBlur);
 });
 
-
 useHead({
   title: "Edit Account",
 });
 
-
 definePageMeta({
   layout: "default",
-  middleware:['auth']
+  middleware: ["auth"],
 });
 </script>
 

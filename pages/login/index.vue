@@ -72,6 +72,7 @@
           ></span>
           <span
             class="text-ash-1 cursor-pointer hover:text-primary duration-100 transition-colors"
+            :class="{ '!text-primary': form.remember === true }"
             @click="form.remember = !form.remember"
             >Remember me</span
           >
@@ -89,7 +90,7 @@
         type="submit"
         :text="'login'"
         :disabled="isLoading === true"
-        :showLoader='isLoading === true'
+        :showLoader="isLoading === true"
         :class="{ 'opacity-80 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
@@ -103,6 +104,12 @@
         Join now</span
       >
     </p>
+    <div class="div flex gap-x-1 sm:gap-x-2 mx-auto">
+      <p>Haven't Been Verified ?</p>
+      <NuxtLink @click="handleVerify" class="flex items-center link gap-x-2 cursor-pointer text-primary">
+        <h2>Verify</h2>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -116,7 +123,7 @@ import { useAppStore } from "@/store/app/index";
 import validatePassword from "@/composables_/validatePassword";
 import useToggle from "~/composables_/useToggle";
 
-const { login } = useUserStore();
+const { login, setTemp } = useUserStore();
 const { fetchDefault } = useAppStore();
 const { show, toggleShow } = useToggle();
 
@@ -131,6 +138,14 @@ const loginForm = reactive({
 const form = reactive({
   remember: false,
 });
+
+const handleVerify = () => {
+  localStorage.setItem("getVerifyEmail", JSON.stringify(true));
+  setTemp({
+    email: loginForm.email,
+  });
+  navigateTo("/register/verification");
+};
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -204,11 +219,9 @@ onBeforeMount(() => {
   form.remember = rememberMe;
 });
 
-
-
-watch(form,() => {
-  localStorage.setItem('rememberMe',form.remember);
-})
+watch(form, () => {
+  localStorage.setItem("rememberMe", form.remember);
+});
 </script>
 
 <style lang="scss" scoped>

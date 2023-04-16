@@ -6,7 +6,7 @@
     >
       Recipient
     </h2>
-     <!-- <div class="sk-fading-circle" v-if='fetching === true'>
+    <!-- <div class="sk-fading-circle" v-if='fetching === true'>
   <div class="sk-circle1 sk-circle"></div>
   <div class="sk-circle2 sk-circle"></div>
   <div class="sk-circle3 sk-circle"></div>
@@ -21,13 +21,11 @@
   <div class="sk-circle12 sk-circle"></div>
 </div> -->
 
-
-      <div class="loading" v-if=' fetching === true'>
-        <div class="arc"></div>
-        <div class="arc"></div>
-        <div class="arc"></div>
-      </div>
-
+    <div class="loading" v-if="fetching === true">
+      <div class="arc"></div>
+      <div class="arc"></div>
+      <div class="arc"></div>
+    </div>
 
     <div
       class="former-recipients flex flex-col items-center gap-y-4 overflow-hidden whitespace-nowrap mt-4"
@@ -229,9 +227,10 @@
           />
         </div>
 
-        <div
+        <!-- <div
           class="item flex flex-col-reverse my-1 w-full"
           v-show="remittanceMethod.toLowerCase() === 'mobile'"
+        
         >
           <VeeField
             type="text"
@@ -271,7 +270,7 @@
             class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
             name="mobile_money_number"
           />
-        </div>
+        </div> -->
 
         <div
           v-show="remittanceMethod.toLowerCase() === 'bank'"
@@ -397,7 +396,7 @@
       </VeeForm>
 
       <remittance-method-modal :opened="isOpen" :closeModal="closeModal" />
-
+      
       <spacer :y="true" :size="4" />
     </div>
   </div>
@@ -406,7 +405,7 @@
 <script setup>
 import * as yup from "yup";
 import { watchDebounced } from "@vueuse/core";
-import { storeToRefs,mapStores } from "pinia";
+import { storeToRefs, mapStores } from "pinia";
 import { VueTelInput } from "vue-tel-input";
 import "vue-tel-input/dist/vue-tel-input.css";
 import { useAppStore } from "@/store/app/index";
@@ -524,6 +523,8 @@ const saveMobileDetails = () => {
   // }
 };
 const handleSelectRecipient = (recipient) => {
+  console.log(recipient, "curr recipient");
+
   itemSelected.value = recipient;
   // const reasonSel = reasons.value.find((r) => {
   //   if (r?.reason === recipientForm.reason) {
@@ -536,20 +537,20 @@ const handleSelectRecipient = (recipient) => {
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
   recipientForm.phone = recipient.phone_number;
-  showWithMap.value = !showWithMap.value;
+  // showWithMap.value = !showWithMap.value;
 };
 
 const handleCityInput = async (e) => {
-  //console.log(e, "cityInput");
-  isLoadingCity.value = true;
-  setTimeout(() => {
-    isLoadingCity.value = false;
-    const value = e.target.value;
-    recipientForm.address = value;
-  }, 500);
+  console.log(e, "cityInput");
+  // isLoadingCity.value = true;
+  // setTimeout(() => {
+  //   isLoadingCity.value = false;
+  //   const value = e.target.value;
+  //   recipientForm.address = value;
+  // }, 500);
 };
 const handleCityClick = async (e) => {
-  // console.log(e, "cityInputClick");
+  console.log(e, "cityInputClick");
   // showWithMap.value = false;
 };
 
@@ -561,11 +562,11 @@ const setPlace = (e) => {
 const createRecipientSchema = (method) => {
   method = method.toLowerCase();
 
-  if (method === "cash") {
+  if (method === "cash" || method === "mobile") {
     return yup.object().shape({
       first_name: yup.string().required("First name is required!"),
       last_name: yup.string().required("Last name is required!"),
-      phone: yup.string().required("Phone is required!"),
+      phone: yup.string().required("Recipient Phone Number is required!"),
       address: yup.string().required("City is Required"),
       reason: yup.string().required("Reason for payment is required"),
     });
@@ -586,26 +587,27 @@ const createRecipientSchema = (method) => {
     });
   }
 
-  if (method === "mobile") {
-    return yup.object().shape({
-      first_name: yup.string().required("First name is required!"),
-      last_name: yup.string().required("Last name is required!"),
-      phone: yup.string().required("Phone is required!"),
-      address: yup.string().required("City is Required"),
-      reason: yup.string().required("Reason for payment is required"),
-      mobile_money_number: yup
-        .string()
-        .required("Mobile money number required."),
-    });
-  }
+  // if (method === "mobile") {
+  //   return yup.object().shape({
+  //     first_name: yup.string().required("First name is required!"),
+  //     last_name: yup.string().required("Last name is required!"),
+  //     phone: yup.string().required("Phone is required!"),
+  //     address: yup.string().required("City is Required"),
+  //     reason: yup.string().required("Reason for payment is required"),
+  //     // mobile_money_number: yup
+  //     //   .string()
+  //     //   .required("Mobile money number required."),
+  //   });
+  // }
 };
 
-
-let recipientSchema = createRecipientSchema(remittanceMethod.value.toLowerCase());
-watch(remittanceMethod,() => {
+let recipientSchema = createRecipientSchema(
+  remittanceMethod.value.toLowerCase()
+);
+watch(remittanceMethod, () => {
   // console.log(remittanceMethod,'remWatch')
   recipientSchema = createRecipientSchema(remittanceMethod.value.toLowerCase());
-})
+});
 
 let address;
 
@@ -767,7 +769,7 @@ watchDebounced(
 }
 
 .sk-fading-circle {
-  margin-inline:auto;
+  margin-inline: auto;
   width: 9rem;
   height: 9rem;
   position: relative;
@@ -782,7 +784,7 @@ watchDebounced(
 }
 
 .sk-fading-circle .sk-circle:before {
-  content: '';
+  content: "";
   display: block;
   margin: 0 auto;
   width: 15%;
@@ -790,116 +792,128 @@ watchDebounced(
   background-color: #fec02f;
   border-radius: 100%;
   -webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
-          animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
+  animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
 }
 .sk-fading-circle .sk-circle2 {
   -webkit-transform: rotate(30deg);
-      -ms-transform: rotate(30deg);
-          transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  transform: rotate(30deg);
 }
 .sk-fading-circle .sk-circle3 {
   -webkit-transform: rotate(60deg);
-      -ms-transform: rotate(60deg);
-          transform: rotate(60deg);
+  -ms-transform: rotate(60deg);
+  transform: rotate(60deg);
 }
 .sk-fading-circle .sk-circle4 {
   -webkit-transform: rotate(90deg);
-      -ms-transform: rotate(90deg);
-          transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 .sk-fading-circle .sk-circle5 {
   -webkit-transform: rotate(120deg);
-      -ms-transform: rotate(120deg);
-          transform: rotate(120deg);
+  -ms-transform: rotate(120deg);
+  transform: rotate(120deg);
 }
 .sk-fading-circle .sk-circle6 {
   -webkit-transform: rotate(150deg);
-      -ms-transform: rotate(150deg);
-          transform: rotate(150deg);
+  -ms-transform: rotate(150deg);
+  transform: rotate(150deg);
 }
 .sk-fading-circle .sk-circle7 {
   -webkit-transform: rotate(180deg);
-      -ms-transform: rotate(180deg);
-          transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 .sk-fading-circle .sk-circle8 {
   -webkit-transform: rotate(210deg);
-      -ms-transform: rotate(210deg);
-          transform: rotate(210deg);
+  -ms-transform: rotate(210deg);
+  transform: rotate(210deg);
 }
 .sk-fading-circle .sk-circle9 {
   -webkit-transform: rotate(240deg);
-      -ms-transform: rotate(240deg);
-          transform: rotate(240deg);
+  -ms-transform: rotate(240deg);
+  transform: rotate(240deg);
 }
 .sk-fading-circle .sk-circle10 {
   -webkit-transform: rotate(270deg);
-      -ms-transform: rotate(270deg);
-          transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  transform: rotate(270deg);
 }
 .sk-fading-circle .sk-circle11 {
   -webkit-transform: rotate(300deg);
-      -ms-transform: rotate(300deg);
-          transform: rotate(300deg); 
+  -ms-transform: rotate(300deg);
+  transform: rotate(300deg);
 }
 .sk-fading-circle .sk-circle12 {
   -webkit-transform: rotate(330deg);
-      -ms-transform: rotate(330deg);
-          transform: rotate(330deg); 
+  -ms-transform: rotate(330deg);
+  transform: rotate(330deg);
 }
 .sk-fading-circle .sk-circle2:before {
   -webkit-animation-delay: -1.1s;
-          animation-delay: -1.1s; 
+  animation-delay: -1.1s;
 }
 .sk-fading-circle .sk-circle3:before {
   -webkit-animation-delay: -1s;
-          animation-delay: -1s; 
+  animation-delay: -1s;
 }
 .sk-fading-circle .sk-circle4:before {
   -webkit-animation-delay: -0.9s;
-          animation-delay: -0.9s; 
+  animation-delay: -0.9s;
 }
 .sk-fading-circle .sk-circle5:before {
   -webkit-animation-delay: -0.8s;
-          animation-delay: -0.8s; 
+  animation-delay: -0.8s;
 }
 .sk-fading-circle .sk-circle6:before {
   -webkit-animation-delay: -0.7s;
-          animation-delay: -0.7s; 
+  animation-delay: -0.7s;
 }
 .sk-fading-circle .sk-circle7:before {
   -webkit-animation-delay: -0.6s;
-          animation-delay: -0.6s; 
+  animation-delay: -0.6s;
 }
 .sk-fading-circle .sk-circle8:before {
   -webkit-animation-delay: -0.5s;
-          animation-delay: -0.5s; 
+  animation-delay: -0.5s;
 }
 .sk-fading-circle .sk-circle9:before {
   -webkit-animation-delay: -0.4s;
-          animation-delay: -0.4s;
+  animation-delay: -0.4s;
 }
 .sk-fading-circle .sk-circle10:before {
   -webkit-animation-delay: -0.3s;
-          animation-delay: -0.3s;
+  animation-delay: -0.3s;
 }
 .sk-fading-circle .sk-circle11:before {
   -webkit-animation-delay: -0.2s;
-          animation-delay: -0.2s;
+  animation-delay: -0.2s;
 }
 .sk-fading-circle .sk-circle12:before {
   -webkit-animation-delay: -0.1s;
-          animation-delay: -0.1s;
+  animation-delay: -0.1s;
 }
 
 @-webkit-keyframes sk-circleFadeDelay {
-  0%, 39%, 100% { opacity: 0; }
-  40% { opacity: 1; }
+  0%,
+  39%,
+  100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
 }
 
 @keyframes sk-circleFadeDelay {
-  0%, 39%, 100% { opacity: 0; }
-  40% { opacity: 1; } 
+  0%,
+  39%,
+  100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
 }
 
 .loading {

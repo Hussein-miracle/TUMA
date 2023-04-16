@@ -102,10 +102,10 @@
           name="phone"
         />
       </div>
-        <VeeErrorMsg
-          class="text-red-600 py-1 px-1 my-1 max-w-md rounded-md bg-red-300 capitalize"
-          name="country"
-        />
+      <VeeErrorMsg
+        class="text-red-600 py-1 px-1 my-1 max-w-md rounded-md bg-red-300 capitalize"
+        name="country"
+      />
       <div class="item flex flex-col-reverse my-1 w-full">
         <template v-if="countries.length > 0">
           <div
@@ -283,20 +283,27 @@
           class="box w-[1.2rem] h-[1.2rem] mr-1 cursor-pointer"
           @click="tac = !tac"
         ></span>
-        <span class="text-ash-1 text-[12px] max-w-xs"
-          >I have read and agree to the
-          <a href="https://www.dagdag.co/terms" class="text-blue-500">
-            Terms & Conditions</a
+        <p class="p-1">
+          I have read and agree to the
+          <span
+            @click="handleNavigate('terms-and-conditions')"
+            class="text-blue-400 cursor-pointer"
+            title="Terms and Conditions"
+            >Terms & Conditions</span
           >
           and
-          <a href="https://www.dagdag.co/privacy" class="text-blue-500">
-            Privacy Policy</a
+          <span
+            title="Privacy Policy"
+            @click="handleNavigate('policy')"
+            class="text-blue-400 cursor-pointer"
+            >Privacy Policy</span
           >
-        </span>
+        </p>
       </div>
 
       <button-primary
         :type="'submit'"
+        :showLoader="isLoading === true"
         :text="'Sign Up'"
         :disabled="isLoading === true || tac === false"
         :class="{ 'opacity-60': tac === false || isLoading === true }"
@@ -310,7 +317,7 @@
       >
     </p>
     <p class="text-secondary text-center">
-      Created account but haven't verified ? 
+      Created account but haven't verified ?
       <span class="text-primary cursor-pointer" @click="handleVerify"
         >Verify</span
       >
@@ -371,6 +378,13 @@ const signupForm = reactive({
   country: "",
 });
 
+const handleNavigate = (string) => {
+  const link = `${window.location.origin}/${string}`;
+  // console.log(link,'link clicked');
+
+  window.open(link, "_blank");
+};
+
 const handleSelectCountry = (country) => {
   // console.log(country,'country');
   selectedCountry.value = country;
@@ -412,12 +426,11 @@ const signupSchema = yup.object().shape({
 });
 
 const handleVerify = () => {
-  navigateTo("register/verification");
-}
+  navigateTo("/register/verification");
+};
 const handleSubmit = async (values) => {
   isLoading.value = true;
   // console.log(values, "reg values");
-
 
   try {
     AuthService.register(signupForm)
@@ -450,14 +463,14 @@ const handleSubmit = async (values) => {
         console.log(err, "err");
       });
   } catch (err) {
-     const msg = err?.response?.data.message;
-        createToast(`${msg}`, {
-          showIcon: true,
-          type: "warning",
-          transition: "bounce",
-          // position:'top-center'
-        });
-        isLoading.value = false;
+    const msg = err?.response?.data.message;
+    createToast(`${msg}`, {
+      showIcon: true,
+      type: "warning",
+      transition: "bounce",
+      // position:'top-center'
+    });
+    isLoading.value = false;
   }
 };
 
@@ -475,7 +488,7 @@ onBeforeMount(async () => {
 });
 watch(signupForm, () => {
   // console.log(signupForm, "sF");
-  if(!!signupForm.phone){
+  if (!!signupForm.phone) {
     signupForm.phone = signupForm.phone.split(" ").join("");
   }
 });

@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     // '~/plugins/mono',
     '@vueuse/nuxt',
+    //'@fawmi/vue-google-maps',
 
     [
       "@pinia/nuxt",
@@ -69,6 +70,8 @@ export default defineNuxtConfig({
       
     },
   },
+  plugins: [{ src: '~/plugins/vuedompurifyhtml', mode: 'client' }]
+  ,
   build:{
     transpile: ["@fawmi/vue-google-maps"],
   }

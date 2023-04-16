@@ -64,7 +64,7 @@ definePageMeta({
 
 const handleNavigate = (string) => {
   const link = `${window.location.origin}/${string}`;
-  console.log(link,'link clicked');
+  // console.log(link,'link clicked');
 
   window.open(link,'_blank');
 }

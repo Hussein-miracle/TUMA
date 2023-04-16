@@ -75,6 +75,11 @@ class AuthService {
     const data = res.data;
     return data;
   }
+  
+  async getVerificationCode(details){
+    const res = await axiosInstance.post("/resend/verification/mail", details);
+    return res;
+  }
 }
 
 const authService = new AuthService();

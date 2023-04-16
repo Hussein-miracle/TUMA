@@ -44,6 +44,11 @@
         </div>
 
         <div class="flex justify-between items-center">
+          <p>Delivery Channel</p>
+          <div class="uppercase">{{ remittanceMethod }}</div>
+        </div>
+
+        <div class="flex justify-between items-center">
           <p>Sent via</p>
           <div class="">Tuma</div>
         </div>
