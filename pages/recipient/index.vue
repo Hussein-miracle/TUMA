@@ -115,20 +115,18 @@
             @click="handleCityClick"
             @input="handleCityClick"
             id="address"
-            v-show="showWithMap === false ? true : false"
-            placeholder="Type and Select City from Google Dropdown List"
+            hidden
+            placeholder="Type and Select City from Google Dropdown List A"
           />
           <GMapAutocomplete
             @place_changed="setPlace"
-            type="text"
-            v-model="recipientForm.address"
             name="address2"
-            v-if="showWithMap === true ? true : false"
+            v-model="recipientForm.address"
             id="address2"
             @input="handleCityInput"
             @click="handleCityClick"
             ref="addressRef"
-            placeholder="Type and Select City from Google Dropdown List"
+            placeholder="Type and Select City from Google Dropdown List B"
             :options="{
               types: ['(cities)'],
               libraries: 'places',
@@ -396,7 +394,7 @@
       </VeeForm>
 
       <remittance-method-modal :opened="isOpen" :closeModal="closeModal" />
-      
+
       <spacer :y="true" :size="4" />
     </div>
   </div>
@@ -523,7 +521,12 @@ const saveMobileDetails = () => {
   // }
 };
 const handleSelectRecipient = (recipient) => {
-  console.log(recipient, "curr recipient");
+  // console.log(recipient, "curr recipient");
+
+  // const gmap = document.getElementById("address2");
+  // gmap.dataset["modelvalue"] = recipient.address;
+  // gmap.value = recipient.address;
+  // console.log(gmap, "gmap");
 
   itemSelected.value = recipient;
   // const reasonSel = reasons.value.find((r) => {
@@ -541,12 +544,14 @@ const handleSelectRecipient = (recipient) => {
 };
 
 const handleCityInput = async (e) => {
-  // console.log(e, "cityInput");
+  const value = e.target.value.trim();
+  // console.log(value, "cityInput");
+  // if(value.length > 0){
+  recipientForm.address = value;
+  // }
   // isLoadingCity.value = true;
   // setTimeout(() => {
   //   isLoadingCity.value = false;
-  //   const value = e.target.value;
-  //   recipientForm.address = value;
   // }, 500);
 };
 const handleCityClick = async (e) => {
@@ -567,7 +572,7 @@ const createRecipientSchema = (method) => {
       first_name: yup.string().required("First name is required!"),
       last_name: yup.string().required("Last name is required!"),
       phone: yup.string().required("Recipient Phone Number is required!"),
-      address: yup.string().required("City is Required"),
+      address: yup.string().required("City is required!"),
       reason: yup.string().required("Reason for payment is required"),
     });
   }
@@ -577,7 +582,7 @@ const createRecipientSchema = (method) => {
       first_name: yup.string().required("First name is required!"),
       last_name: yup.string().required("Last name is required!"),
       phone: yup.string().required("Phone is required!"),
-      address: yup.string().required("City is Required"),
+      address: yup.string().required("City is required!"),
       reason: yup.string().required("Reason for payment is required"),
       bank_account_number: yup
         .string()
@@ -628,48 +633,47 @@ const handleSubmit = async (values) => {
     saveMobileDetails();
   }
 
- 
-    const recipientCreationData = {
-      first_name: recipientForm.first_name,
-      last_name: recipientForm.last_name,
-      phone_number: recipientForm.phone,
-      address: recipientForm.address,
-    };
+  const recipientCreationData = {
+    first_name: recipientForm.first_name,
+    last_name: recipientForm.last_name,
+    phone_number: recipientForm.phone,
+    address: recipientForm.address,
+  };
 
-    // console.log(recipientCreationData, "RDDDDD!!!");
+  // console.log(recipientCreationData, "RDDDDD!!!");
 
-    const reasonSel = reasons.value.find((r) => {
-      if (r?.reason === recipientForm.reason) {
-        return r;
-      }
-    });
-
-    const reason_id = reasonSel.id;
-
-    // console.log(reason_id,'reason');
-
-    if (!!reason_id) {
-      UtilsService.createRecipient(recipientCreationData)
-        .then((response) => {
-          const result = response.data;
-          // console.log(result, "recipient creation result");
-          const recipientData = {
-            result: {
-              ...result,
-              address: recipientCreationData.address,
-            },
-            reasonId: reason_id,
-          };
-          useAppStore().setCurrentRecipientData(recipientData);
-          localStorage.setItem("progged", JSON.stringify(true));
-          isLoading.value = false;
-          navigateTo("/payment-summary");
-        })
-        .catch((err) => {
-          isLoading.value = false;
-          console.log(err, "err");
-        });
+  const reasonSel = reasons.value.find((r) => {
+    if (r?.reason === recipientForm.reason) {
+      return r;
     }
+  });
+
+  const reason_id = reasonSel.id;
+
+  // console.log(reason_id,'reason');
+
+  if (!!reason_id) {
+    UtilsService.createRecipient(recipientCreationData)
+      .then((response) => {
+        const result = response.data;
+        // console.log(result, "recipient creation result");
+        const recipientData = {
+          result: {
+            ...result,
+            address: recipientCreationData.address,
+          },
+          reasonId: reason_id,
+        };
+        useAppStore().setCurrentRecipientData(recipientData);
+        localStorage.setItem("progged", JSON.stringify(true));
+        isLoading.value = false;
+        navigateTo("/payment-summary");
+      })
+      .catch((err) => {
+        isLoading.value = false;
+        console.log(err, "err");
+      });
+  }
 };
 
 const onAddressBlur = async () => {
