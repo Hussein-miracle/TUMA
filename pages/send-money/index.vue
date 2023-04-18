@@ -1,5 +1,5 @@
 <template>
-  <div class="send-money px-6 py-3 relative flex flex-col items-center">
+  <div class="send-money px-6 py-3 relative flex flex-col items-center w-full">
     <h5 class="text-secondary font-semibold text-xl self-start text-left">
       Welcome {{ user.fname }}.
     </h5>
@@ -14,7 +14,7 @@
         class="spinner bg-secondary absolute right-1 top-1"
         v-if="loading"
       ></div>
-      <div class="top h-1/2 px-8">
+      <div class="top h-1/2 px-2 sm:px-8">
         <h6 class="text-ash-1 font-semibold">Enter Amount</h6>
 
         <div
@@ -47,11 +47,11 @@
 
           <!-- <sender-currency-select /> -->
 
-          <div class="inset-0 flex items-center justify-center">
+          <div class="inset-0 flex items-center justify-center  max-w-[8rem]">
             <button
               type="button"
               @click="openSenderModal"
-              class="rounded-md bg-primary px-2 py-2 text-sm max-w-[10rem] hover:bg-opacity-20 focus:outline-none flex justify-between truncate gap-x-1 items-center"
+              class="rounded-md bg-primary px-2 py-2 text-sm w-full hover:bg-opacity-20 focus:outline-none flex justify-between truncate gap-x-1 items-center"
             >
               <div
                 class="text-whitelike mx-auto flex gap-x-1 items-center"
@@ -65,7 +65,7 @@
                   class="object-contain w-4 h-4"
                 />
 
-                <span>{{ selectedSenderCountry?.currency_code }}</span>
+                <span>{{ selectedSenderCountry?.currency_code }} </span>
               </div>
 
               <span v-else class="text-whitelike mx-auto">Select Currency</span>
@@ -109,6 +109,7 @@
                         as="h3"
                         class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
                       >
+                      <span>selected currency: </span>
                         <img
                           v-if="
                             selectedSenderCountry &&
@@ -119,7 +120,7 @@
                         />
                         <span v-if="selectedSenderCountry?.currency_code">{{
                           selectedSenderCountry?.currency_code
-                        }}</span>
+                        }} </span>
                         <span v-else> Select Sender Currency</span>
                       </DialogTitle>
                       <div
@@ -160,7 +161,7 @@
         </div>
       </div>
 
-      <div class="bottom h-1/2 px-8">
+      <div class="bottom h-1/2 px-2 sm:px-8">
         <h4 class="text-ash-1 font-semibold">Recipient Gets</h4>
 
         <div
@@ -190,14 +191,14 @@
 
           <div class="line bg-ash-1"></div>
           <!-- <RecipientCurrencySelect /> start -->
-          <div class="inset-0 flex items-center justify-center">
+          <div class="inset-0 flex items-center justify-center max-w-[8rem]">
             <button
               type="button"
               @click="openRecipientModal"
-              class="rounded-md bg-primary px-2 py-2 text-sm font-medium hover:bg-opacity-20 focus:outline-none flex gap-x-1 items-center"
+              class="rounded-md bg-primary  px-2 py-2   text-sm font-medium hover:bg-opacity-20 focus:outline-none flex  gap-x-1 items-center w-full"
             >
               <div
-                class="text-whitelike mx-auto flex gap-x-1 items-center"
+                class="text-whitelike mx-auto flex gap-x-1 items-center overflow-clip"
                 v-if="
                   selectedRecipientCountry && selectedRecipientCountry?.name
                 "
@@ -209,7 +210,7 @@
                   :src="selectedRecipientCountry?.flag"
                   class="object-contain w-4 h-4"
                 />
-                <span>{{ selectedRecipientCountry?.name }}</span>
+                <span class="truncate">{{ selectedRecipientCountry?.name }}</span>
               </div>
 
               <span v-else class="text-whitelike mx-auto">Select Currency</span>
@@ -220,6 +221,9 @@
               />
             </button>
           </div>
+
+
+
           <TransitionRoot appear :show="isRecipientOpen" as="template">
             <Dialog as="div" class="relative z-10">
               <TransitionChild
@@ -248,12 +252,13 @@
                     leave-to="opacity-0 scale-95"
                   >
                     <DialogPanel
-                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[60vh] flex flex-col items-center sm:h-[40vh] sm:w-[30vw]"
+                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[35vh]  flex flex-col items-center sm:h-[40vh] sm:w-[30vw]"
                     >
                       <DialogTitle
                         as="h3"
                         class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
                       >
+                      <span>selected country: </span>
                         <img
                           v-if="
                             selectedRecipientCountry &&
@@ -262,7 +267,7 @@
                           :src="selectedRecipientCountry?.flag"
                           class="object-contain w-4 h-4"
                         />
-                        <span v-if="selectedRecipientCountry?.name">{{
+                        <span v-if="selectedRecipientCountry?.name">  {{
                           selectedRecipientCountry?.name
                         }}</span>
                         <span v-else> Select Recipient Country</span>
@@ -288,7 +293,7 @@
                               :src="country.flag"
                               class="object-contain w-4 h-4"
                             />
-                            <span>{{ country?.name }}</span>
+                            <span >{{ country?.name }}</span>
                           </div>
                         </template>
                         <template v-else>
@@ -307,7 +312,7 @@
     </div>
 
     <div
-      class="marketplace w-64 sm:w-96 h-64 bg-white my-4 rounded-sm flex flex-col items-center justify-center"
+      class="marketplace  w-[85vw]  sm:w-96 h-64 bg-white my-4 rounded-sm flex flex-col items-center justify-center"
     >
       <div class="loading" v-if="loading === true">
         <div class="arc"></div>
@@ -319,7 +324,7 @@
         v-else
       >
         <li
-          class="client !h-20 rounded-md !w-full my-1.5 overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all"
+          class="client !h-20 rounded-md !w-full my-1.5 text-sm sm:text-base overflow-hidden flex items-center cursor-pointer bg-whitelike hover:bg-ash-1 duration-350 transistion-all"
           v-for="client in marketPlace"
           @click="handleClickClient(client)"
           :key="client.uuid"
