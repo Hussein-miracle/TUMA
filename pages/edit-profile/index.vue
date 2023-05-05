@@ -251,7 +251,8 @@ const fetchProfile = async () => {
         }
       }
       isLoading.value = false;
-      nuxtApp.$toast.success("Users details fetch Successful.");
+      nuxtApp.$toast.warn("Users details fetch Successful.");
+      // nuxtApp.$toast.success("Users details fetch Successful.");
     })
     .catch((err) => {
       // console.log(err, "err");
@@ -275,7 +276,8 @@ const handleSubmit = async (values) => {
       // navigateTo("/send-money");
       window.location.reload();
       isLoading.value = false;
-      nuxtApp.$toast.success("Save Successful.");
+      // nuxtApp.$toast.success("Save Successful.");
+      nuxtApp.$toast.warn("Saving Details Successful.");
     })
     .catch((err) => {
       isLoading.value = false;
