@@ -387,6 +387,7 @@
         <button-primary
           :type="'submit'"
           :text="'CONTINUE'"
+          :showLoader="isLoading === true"
           class="uppercase !text-secondary font-semibold text-xl"
           :disabled="isLoading === true"
           :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"

@@ -95,6 +95,7 @@
       :text="'Confirm'"
       class="uppercase !text-secondary font-semibold text-xl mt-12"
       :disabled="isLoading === true"
+      :showLoader="isLoading === true"
       :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
       @click="handleCreateTransaction"
     />
