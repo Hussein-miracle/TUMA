@@ -97,9 +97,9 @@
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
-          v-model="editForm.country"
-          name="country"
-          id="country"
+          v-model="editForm.country_full"
+          name="country_full"
+          id="country_full"
           placeholder="Country"
           readonly="true"
           class="cursor-not-allowed"
@@ -111,7 +111,7 @@
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
-          name="country"
+          name="country_full"
         />
       </div>
 
@@ -205,7 +205,7 @@ import userCountry from "@/data/timezone";
 // console.log(userCountry,'uCountry')
 
 const { show, toggleShow } = useToggle();
-
+const nuxtApp = useNuxtApp();
 const addressRef = ref(null);
 const isLoading = ref(false);
 const isLoadingCity = ref(false);
@@ -224,13 +224,14 @@ const editForm = reactive({
   email: "",
   address: "",
   country: "",
+  country_full: "",
 });
 
 const fetchProfile = async () => {
   isLoading.value = true;
   UtilsService.getProfile()
     .then((response) => {
-      console.log(response, "ressponse profiel");
+      // console.log(response, "ressponse profiel");
       const details = response;
       for (const item in details) {
         if (item in editForm) {
@@ -246,16 +247,16 @@ const fetchProfile = async () => {
             editForm.last_name = response[item];
           } else if (item === "fname") {
             editForm.first_name = response[item];
-          } else if (item === "address") {
-            // editForm.city = response[item];
           }
         }
       }
       isLoading.value = false;
+      nuxtApp.$toast.success("Users details fetch Successful.");
     })
     .catch((err) => {
-      console.log(err, "err");
+      // console.log(err, "err");
       isLoading.value = false;
+      nuxtApp.$toast.error("Error Fetching User Profile Details.");
     });
 };
 
@@ -268,19 +269,18 @@ const handleSubmit = async (values) => {
 
   // console.log(data,'ddddata');
   UtilsService.postProfile(data)
-    .then((user) => {
-      // console.log(user,'ress');
+    .then(async (user) => {
+      // console.log(user, "ress");
       useUserStore().setUser(user);
-
       // navigateTo("/send-money");
-
       window.location.reload();
-
       isLoading.value = false;
+      nuxtApp.$toast.success("Save Successful.");
     })
     .catch((err) => {
       isLoading.value = false;
-      console.log(err, "error updating");
+      // console.log(err, "error updating");
+      nuxtApp.$toast.error("Error Saving Details.");
     });
 };
 
