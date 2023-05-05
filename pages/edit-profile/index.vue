@@ -13,12 +13,11 @@
           id="first_name"
           placeholder="First Name"
         />
-        <label for="first_name" class="mb-2 text-ash-1">First Name</label>
+        <label for="first_name" class="mb-1 text-ash-1">First Name</label>
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="first_name"
         />
-
       </div>
       <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
@@ -28,13 +27,13 @@
           id="last_name"
           placeholder="Last Name"
         />
-        <label for="last_name" class="mb-2 text-ash-1">Last Name</label>
+        <label for="last_name" class="mb-1 text-ash-1">Last Name</label>
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="last_name"
         />
       </div>
-      <!-- <div class="item flex flex-col-reverse my-1 w-full">
+      <div class="item flex flex-col-reverse my-1 w-full">
         <VeeField
           type="text"
           v-model="editForm.city"
@@ -42,34 +41,79 @@
           id="city"
           placeholder="City"
           readonly="true"
+          hidden
         />
-         <GMapAutocomplete
-            @place_changed="setPlace"
-            type="text"
-             v-model="editForm.city"
-            name="address"
-            id="address"
-            @input="handleCityInput"
-            @click="handleCityInputClick"
-            ref="addressRef"
-            placeholder="Type and Select City from the Dropdown"
-            :options="{
-              types: ['(cities)'],
-              libraries: 'places',
-              componentRestrictions: {
-                country: (flags.find((item) => item.name === userCountry).code.toLowerCase()),
-              },
-            }"
-          >
-          </GMapAutocomplete> -->
-      <!-- country: restrict.country_code.code.toLowerCase(), 
+        <GMapAutocomplete
+          @place_changed="setPlace"
+          type="text"
+          v-model="editForm.city"
+          name="address"
+          id="address"
+          @input="handleCityInput"
+          @click="handleCityInputClick"
+          ref="addressRef"
+          placeholder="Type and Select City from the Dropdown"
+          :options="{
+            types: ['(cities)'],
+            libraries: 'places',
+            componentRestrictions: {
+              country: flags
+                .find((item) => item.name === userCountry)
+                .code.toLowerCase(),
+            },
+          }"
+        >
+        </GMapAutocomplete>
+
         <label for="city" class="mb-2 text-ash-1">City</label>
 
         <VeeErrorMsg
           class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
           name="city"
         />
-      </div> -->
+      </div>
+
+      <div class="item flex flex-col-reverse my-1 w-full">
+        <VeeField
+          type="text"
+          v-model="editForm.address"
+          name="address"
+          id="address"
+          placeholder="Address"
+          readonly="true"
+          class="cursor-not-allowed"
+        />
+
+        <label for="address" class="mb-1 text-ash-1 cursor-not-allowed"
+          >Address</label
+        >
+
+        <VeeErrorMsg
+          class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+          name="address"
+        />
+      </div>
+
+      <div class="item flex flex-col-reverse my-1 w-full">
+        <VeeField
+          type="text"
+          v-model="editForm.country"
+          name="country"
+          id="country"
+          placeholder="Country"
+          readonly="true"
+          class="cursor-not-allowed"
+        />
+
+        <label for="country" class="mb-1 text-ash-1 cursor-not-allowed"
+          >Country</label
+        >
+
+        <VeeErrorMsg
+          class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
+          name="country"
+        />
+      </div>
 
       <div class="item-select flex flex-col-reverse my-1 w-full">
         <VeeField
@@ -138,6 +182,7 @@
         type="submit"
         :text="'Save'"
         :disabled="isLoading === true"
+        :showLoader="isLoading === true"
         :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
       />
     </VeeForm>
@@ -174,16 +219,18 @@ const focusedPhone = ref(false);
 const editForm = reactive({
   first_name: "",
   last_name: "",
-  // city: "",
+  city: "",
   phone_number: "",
   email: "",
+  address: "",
+  country: "",
 });
 
 const fetchProfile = async () => {
   isLoading.value = true;
   UtilsService.getProfile()
     .then((response) => {
-      // console.log(response, "ressponse profiel");
+      console.log(response, "ressponse profiel");
       const details = response;
       for (const item in details) {
         if (item in editForm) {
@@ -225,7 +272,9 @@ const handleSubmit = async (values) => {
       // console.log(user,'ress');
       useUserStore().setUser(user);
 
-      navigateTo("/send-money");
+      // navigateTo("/send-money");
+
+      window.location.reload();
 
       isLoading.value = false;
     })
