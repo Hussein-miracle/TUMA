@@ -1,7 +1,7 @@
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive("money", {
     mounted: (el) => {
-      const test = el.innerText;
+      const test = el.innerText.toString();
       if (!test.includes(",")) {
         const target = Number(test).toFixed(2);
 
@@ -14,6 +14,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         const unit = targetString[1];
         const final = `${money}.${unit}`;
         el.innerText = final;
+      } else if (test.includes(".")) {
+        console.log(test, "ts");
       }
     },
   });

@@ -33,6 +33,7 @@
         :key="transaction.reference"
         :status="transaction.status"
         :amount="+transaction.amount"
+        :converted_amount='transaction.converted_amount'
         :from_currency="transaction.from_currency"
         :to_currency="transaction.to_currency"
         :first_name="transaction.to_user.first_name"

@@ -1,5 +1,7 @@
 <template>
-  <div class="transaction-status flex gap-x-2 items-center">
+  <div
+    class="transaction-status flex gap-x-2 items-center text-xs sm:text-sm whitespace-nowrap"
+  >
     <icons-pending v-if="status === 'pending'" />
     <icons-cancelled v-show="status === 'cancelled' || status === 'failed'" />
     <icons-awaiting-pickup v-show="status === 'awaiting'" />
@@ -33,7 +35,9 @@ const props = defineProps(["status"]);
 <style lang="scss" scoped>
 .transaction-status {
   svg {
+    min-width: 0.9rem;
     width: 1rem;
+    min-height: 0.9rem;
     height: 1rem;
   }
 }

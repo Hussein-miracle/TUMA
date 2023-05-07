@@ -99,6 +99,8 @@
       :class="{ 'opacity-75 cursor-not-allowed': isLoading === true }"
       @click="handleCreateTransaction"
     />
+
+    <button-primary class="w-12 h-10" type='button' @click="handleBackward">back</button-primary>
   </div>
 </template>
 
@@ -155,6 +157,10 @@ const fetchRes = () => {
     }
   }
 };
+
+const handleBackward = () => {
+  window.history.go(-1);
+}
 
 const handleCreateTransaction = async () => {
   const {
