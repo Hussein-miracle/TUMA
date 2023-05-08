@@ -1,15 +1,18 @@
 import axiosInstance from "@/services/axios.instance";
 import { createToast } from "mosha-vue-toastify";
-import { useNuxtApp } from "#app";
+
+//import { useNuxtApp } from "#app";
 
 
 export const checkStatus = (status) => {
   // console.log(status,'status');
   return status !== "error";
 };
+
 export const checkStatusCode = (status) => {
   return status !== "error";
 };
+
 export const checkNetwork = () => {
   const online = navigator.onLine;
   if (!online) {

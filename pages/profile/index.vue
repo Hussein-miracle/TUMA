@@ -44,20 +44,27 @@
       <VeeForm
         class="relative flex flex-col justify-between"
         @submit="handleSubmitImage"
-        :initial-values="imageForm"
       >
-        <img
-          class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary w-14 h-14 uppercase object-contain"
-          v-if="profileDetails.profile_image"
-          :src="profileDetails.profile_image"
-          alt="user profile image"
-        />
-        <img
-          class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary w-14 h-14 uppercase object-contain"
-          v-else-if="imageForm.image"
-          :src="imageForm.image"
-          alt="user profile image"
-        />
+        <div
+          class="w-14 h-14 bg-red-400 rounded-full overflow-hidden"
+          v-if="profileDetails.profile_image && !userProfileImage"
+        >
+          <img
+            class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary uppercase object-cover"
+            :src="profileDetails.profile_image"
+            alt="user profile image"
+          />
+        </div>
+        <div
+          class="w-14 h-14 bg-green-400 rounded-full overflow-hidden"
+          v-else-if="userProfileImage"
+        >
+          <img
+            class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary w-full h-full uppercase object-cover"
+            :src="userProfileImage"
+            alt="current user image"
+          />
+        </div>
         <div
           v-else
           class="profile__details--logo rounded-full font-semibold flex justify-center items-center text-primary bg-secondary w-14 h-14 uppercase"
@@ -68,10 +75,10 @@
         <label
           for="image"
           title="Upload"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/4"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-9 bg-transparent w-16 h-16 flex items-center justify-center rounded-full"
         >
           <!-- <icons-camera class="w-5 h-5 !fill-white !stroke-white" /> -->
-          <span class=" text-primary text-xs">Upload</span>
+          <span class="text-primary text-xs mx-auto">Upload</span>
         </label>
         <VeeField
           id="image"
@@ -79,20 +86,19 @@
           type="file"
           ref="imageRef"
           accept="image/*"
-          
           aria-hidden="true"
           hidden="true"
           @change="handleImageUpload"
         />
-
+        <!-- 
         <button
           class="outline-none border-none bg-primary w-14 h-8 text-sm p-0.5 rounded-md mt-0.5"
           type="submit"
-          :disabled='disableUpload === true'
-          :class="{'opacity-75 cursor-not-allowed': disableUpload === true}"
+          :disabled="disableUpload === true"
+          :class="{ 'opacity-75 cursor-not-allowed': disableUpload === true }"
         >
           Submit
-        </button>
+        </button> -->
       </VeeForm>
     </div>
 
@@ -123,7 +129,7 @@
       >
         <div
           class="flex w-[90%] sm:w-[70%] self-start gap-x-4 items-center"
-          @click="handleUpload"
+          @click="handleImageUpload"
         >
           <div
             class="icon flex items-center justify-center bg-ash-1 rounded-full w-16 h-16"
@@ -256,17 +262,16 @@ const authstore = useUserStore();
 const { user } = storeToRefs(authstore);
 
 //console.log(user,'user in profile');
-
 const profileDetails = reactive({
   verified: "",
   email: "",
-  profile_image:'',
+  profile_image: "",
 });
 
 const imageForm = reactive({
   image: "",
 });
-const  disableUpload = ref(true);
+const disableUpload = ref(true);
 const logout = () => {
   const { logout: log } = useUserStore();
   log();
@@ -287,6 +292,17 @@ const handleImageUpload = async (e) => {
   // const std = JSON.stringify(file);
   // console.log(std,'stringFiled')
   imageForm.image = file;
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = (e) => {
+    userProfileImage.value = e.target.result;
+    // console.log(userProfileImage.value, "uploaded image url");
+    // imageForm.image = e.target.result;
+
+    handleSubmitImage(imageForm);
+  };
+
+  // userProfileImage.value = file;
 
   // const formdata = new FormData();
   // formdata.append("image", file);
@@ -294,18 +310,18 @@ const handleImageUpload = async (e) => {
 
 const handleSubmitImage = async (values) => {
   // console.log(values,'vssss');
-  imageForm.image = values.image;
-  disableUpload.value = true;
+  // imageForm.image = values.image;
+  // disableUpload.value = true;
   ProfileService.uploadUserImage(values)
     .then((response) => {
       disableUpload.value = false;
       // console.log(response, "response");
-      toast.success('Profile Image upload successful');
+      toast.success("Profile Image upload successful");
     })
     .catch((err) => {
       disableUpload.value = false;
       // console.log(err, "pft image upload err");
-      toast.error('Error uploading image..please try again')
+      toast.error("Error uploading image..please try again");
     });
 };
 const handleGetProfile = async () => {
@@ -327,7 +343,7 @@ const handleGetProfile = async () => {
     .catch((err) => {
       isLoading.value = false;
       // console.log(err, "profile err");
-      toast.error('Error fetching profile details.');
+      toast.error("Error fetching profile details.");
     });
 };
 
@@ -335,26 +351,28 @@ onMounted(async () => {
   handleGetProfile();
 });
 
+// watch(userProfileImage, () => {
+//   if (userProfileImage.value) {
+//     imageForm.image = userProfileImage.value;
+//   }
+// });
+
 watch(imageForm, () => {
   if (!!imageForm.image) {
     disableUpload.value = false;
   }
 });
-
-
 </script>
 
 <style lang="scss" scoped>
 .profile {
   background-color: #f4f5f7;
-
   height: calc(100vh - 3rem);
 
   &__details {
     border-width: 1px;
     border-style: solid;
     @apply border-b-ash-1;
-    // border-bottom: 1px solid;
   }
 
   &__items {
