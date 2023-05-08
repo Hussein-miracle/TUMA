@@ -54,6 +54,7 @@ import UtilsService from "@/services/utils.service";
 
 const isFetching = ref(false);
 const htmlcode = ref("");
+const toast = useNuxtApp().$toast;
 
 const getPolicy = async () => {
   isFetching.value = true;
@@ -69,7 +70,8 @@ const getPolicy = async () => {
     })
     .catch((err) => {
       isFetching.value = false;
-      console.log(err, "err getting tac details");
+      // console.log(err, "err getting tac details");
+      toast.error('Error getting policies details.')
     });
 };
 

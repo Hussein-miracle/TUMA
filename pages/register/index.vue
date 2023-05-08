@@ -286,19 +286,18 @@
         <p class="p-1">
           I have read and agree to the
           <NuxtLink
-           to='/terms-and-conditions'
-          
+            to="/terms-and-conditions"
             class="text-blue-400 cursor-pointer"
             title="Terms and Conditions"
             >Terms & Conditions</NuxtLink
           >
           and
-        <NuxtLink
-           to='/policy'
+          <NuxtLink
+            to="/policy"
             title="Privacy Policy"
-          
             class="text-blue-400 cursor-pointer"
-            >Privacy Policy</NuxtLink>
+            >Privacy Policy</NuxtLink
+          >
         </p>
       </div>
 
@@ -350,6 +349,8 @@ import AuthService from "@/services/auth.service";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 
+
+const toast = useNuxtApp().$toast;
 const { show, toggleShow } = useToggle();
 const {
   show: seeSelect,
@@ -426,14 +427,16 @@ const signupSchema = yup.object().shape({
   phone: yup.string().required("Phone is required!"),
 });
 
+
 const handleVerify = () => {
   navigateTo("/register/verification");
 };
+
 const handleSubmit = async (values) => {
   isLoading.value = true;
   // console.log(values, "reg values");
 
-  try {
+  // try {
     AuthService.register(signupForm)
       .then((result) => {
         // console.log(result,'res reg');
@@ -444,35 +447,37 @@ const handleSubmit = async (values) => {
         useAppStore().setAppUser(user);
         useUserStore().setUser(user);
         isLoading.value = false;
-        createToast("Registration Successfull,Please verify", {
-          showIcon: true,
-          type: "success",
-          transition: "bounce",
-          // position:'top-center'
-        });
+        // createToast("Registration Successfull,Please verify", {
+        //   showIcon: true,
+        //   type: "success",
+        //   transition: "bounce",
+        //   // position:'top-center'
+        // });
+        toast.success('Registration successful,please verify.')
         navigateTo("register/verification");
       })
       .catch((err) => {
         const msg = err?.response?.data.message;
-        createToast(`${msg}`, {
-          showIcon: true,
-          type: "warning",
-          transition: "bounce",
-          // position:'top-center'
-        });
+        // createToast(`${msg}`, {
+        //   showIcon: true,
+        //   type: "warning",
+        //   transition: "bounce",
+        //   // position:'top-center'
+        // });
         isLoading.value = false;
-        console.log(err, "err");
+        // console.log(err, "err");
+        toast.error(`${msg}`);
       });
-  } catch (err) {
-    const msg = err?.response?.data.message;
-    createToast(`${msg}`, {
-      showIcon: true,
-      type: "warning",
-      transition: "bounce",
-      // position:'top-center'
-    });
-    isLoading.value = false;
-  }
+  // } catch (err) {
+  //   const msg = err?.response?.data.message;
+  //   createToast(`${msg}`, {
+  //     showIcon: true,
+  //     type: "warning",
+  //     transition: "bounce",
+  //     // position:'top-center'
+  //   });
+  //   isLoading.value = false;
+  // }
 };
 
 useHead({

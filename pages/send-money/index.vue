@@ -47,7 +47,7 @@
 
           <!-- <sender-currency-select /> -->
 
-          <div class="inset-0 flex items-center justify-center  max-w-[8rem]">
+          <div class="inset-0 flex items-center justify-center max-w-[8rem]">
             <button
               type="button"
               @click="openSenderModal"
@@ -109,7 +109,7 @@
                         as="h3"
                         class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
                       >
-                      <span>selected currency: </span>
+                        <span>selected currency: </span>
                         <img
                           v-if="
                             selectedSenderCountry &&
@@ -118,9 +118,9 @@
                           :src="selectedSenderCountry?.flag"
                           class="object-contain w-4 h-4"
                         />
-                        <span v-if="selectedSenderCountry?.currency_code">{{
-                          selectedSenderCountry?.currency_code
-                        }} </span>
+                        <span v-if="selectedSenderCountry?.currency_code"
+                          >{{ selectedSenderCountry?.currency_code }}
+                        </span>
                         <span v-else> Select Sender Currency</span>
                       </DialogTitle>
                       <div
@@ -195,7 +195,7 @@
             <button
               type="button"
               @click="openRecipientModal"
-              class="rounded-md bg-primary  px-2 py-2   text-sm font-medium hover:bg-opacity-20 focus:outline-none flex  gap-x-1 items-center w-full"
+              class="rounded-md bg-primary px-2 py-2 text-sm font-medium hover:bg-opacity-20 focus:outline-none flex gap-x-1 items-center w-full"
             >
               <div
                 class="text-whitelike mx-auto flex gap-x-1 items-center overflow-clip"
@@ -210,7 +210,9 @@
                   :src="selectedRecipientCountry?.flag"
                   class="object-contain w-4 h-4"
                 />
-                <span class="truncate">{{ selectedRecipientCountry?.name }}</span>
+                <span class="truncate">{{
+                  selectedRecipientCountry?.name
+                }}</span>
               </div>
 
               <span v-else class="text-whitelike mx-auto">Select Currency</span>
@@ -221,8 +223,6 @@
               />
             </button>
           </div>
-
-
 
           <TransitionRoot appear :show="isRecipientOpen" as="template">
             <Dialog as="div" class="relative z-10">
@@ -252,13 +252,13 @@
                     leave-to="opacity-0 scale-95"
                   >
                     <DialogPanel
-                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[35vh]  flex flex-col items-center sm:h-[40vh] sm:w-[30vw]"
+                      class="max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all h-[35vh] flex flex-col items-center sm:h-[40vh] sm:w-[30vw]"
                     >
                       <DialogTitle
                         as="h3"
                         class="text-lg text-center font-medium leading-6 text-secondary flex gap-x-2 items-center"
                       >
-                      <span>selected country: </span>
+                        <span>selected country: </span>
                         <img
                           v-if="
                             selectedRecipientCountry &&
@@ -267,9 +267,9 @@
                           :src="selectedRecipientCountry?.flag"
                           class="object-contain w-4 h-4"
                         />
-                        <span v-if="selectedRecipientCountry?.name">  {{
-                          selectedRecipientCountry?.name
-                        }}</span>
+                        <span v-if="selectedRecipientCountry?.name">
+                          {{ selectedRecipientCountry?.name }}</span
+                        >
                         <span v-else> Select Recipient Country</span>
                       </DialogTitle>
                       <div
@@ -293,7 +293,7 @@
                               :src="country.flag"
                               class="object-contain w-4 h-4"
                             />
-                            <span >{{ country?.name }}</span>
+                            <span>{{ country?.name }}</span>
                           </div>
                         </template>
                         <template v-else>
@@ -312,7 +312,7 @@
     </div>
 
     <div
-      class="marketplace  w-[85vw]  sm:w-96 h-64 bg-white my-4 rounded-sm flex flex-col items-center justify-center"
+      class="marketplace w-[85vw] sm:w-96 h-64 bg-white my-4 rounded-sm flex flex-col items-center justify-center"
     >
       <div class="loading" v-if="loading === true">
         <div class="arc"></div>
@@ -506,8 +506,8 @@
 
     <button
       class="btn bg-primary text-whitelike px-4 py-2 rounded-sm mt-2 text-xl"
-      :disabled='loading === true'
-      :class="{'cursor-not-allowed opacity-75': loading === true}"
+      :disabled="loading === true"
+      :class="{ 'cursor-not-allowed opacity-75': loading === true }"
       @click="handleContinue"
     >
       Continue
@@ -532,6 +532,7 @@ import UtilsService from "@/services/utils.service";
 import { formatStringToMoney } from "../../utils/index";
 import { watchDebounced } from "@vueuse/core";
 
+const toast = useNuxtApp().$toast;
 const router = useRouter();
 const store = useAppStore();
 const authstore = useUserStore();
@@ -589,7 +590,7 @@ const handleClickClient = async (clientDetails) => {
 
   // if (conversionDetails.conversion_type === "forward") {
   //   changeDetails.reverseAmount = parseFloat(best_value.replaceAll(",", ""));
-  // } 
+  // }
   // else if (conversionDetails.conversion_type === "reverse") {
   //   changeDetails.forwardAmount = parseFloat(best_value.replaceAll(",", ""));
   // }
@@ -944,21 +945,20 @@ const initialFetch = async () => {
           if (conversionDetails.conversion_type === "forward") {
             const details = Object.entries({ ...result.best_value })[0];
             // console.log(details , 'details')
-            const [key, value] = details;
+            const [_key, value] = details;
             // console.log(value,'val froward');
             const { converted } = value;
 
             // console.log(converted, "converted forward");
 
             changeDetails.reverseAmount = formatStringToMoney(converted);
-         
           }
 
           if (conversionDetails.conversion_type === "reverse") {
             // assignConvertedAmount(reverseAmount);
             const details = Object.entries({ ...result.best_value })[0];
             // console.log(details , 'details')
-            const [key, value] = details;
+            const [_key, value] = details;
             // console.log(value,'val rev');
             const { converted } = value;
             changeDetails.forwardAmount = formatStringToMoney(converted);
@@ -966,7 +966,9 @@ const initialFetch = async () => {
           loading.value = false;
         })
         .catch((err) => {
+          // console.log(err,'error send-money initialFetch func ')
           loading.value = false;
+          toast.error('Error fetching current rates,check your network and refresh.');
         });
     }
   }
@@ -1017,8 +1019,8 @@ watch(
 //   await initialFetch();
 // });
 useHead({
-  title:'Send Money TUMA'
-})
+  title: "Send Money TUMA",
+});
 
 definePageMeta({
   layout: "default",

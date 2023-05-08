@@ -40,7 +40,7 @@ import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 
 const isLoading = ref(false);
-
+const toast = useNuxtApp().$toast;
 const cardDetails = reactive({
   card_number: "",
   card_name: "",
@@ -108,6 +108,7 @@ onBeforeMount(async () => {
     })
     .catch((err) => {
       console.log(err, "err");
+      toast.error('An Error occured please contact support.')
     });
 });
 

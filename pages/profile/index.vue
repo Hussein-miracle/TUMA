@@ -232,7 +232,7 @@ const {
   setShowFalse: closeDelete,
   setShowTrue: openDelete,
 } = useToggle();
-
+const toast = useNuxtApp().$toast;
 const {
   show: showConfirmDelete,
   setShowFalse: closeConfirmDelete,
@@ -303,7 +303,8 @@ const handleSubmitImage = async (values) => {
     })
     .catch((err) => {
       disableUpload.value = false;
-      console.log(err, "pft image upload err");
+      // console.log(err, "pft image upload err");
+      toast.error('Error uploading image..please try again')
     });
 };
 const handleGetProfile = async () => {
@@ -323,7 +324,9 @@ const handleGetProfile = async () => {
       // console.log(err,'err');
     })
     .catch((err) => {
-      console.log(err, "profile err");
+      isLoading.value = false;
+      // console.log(err, "profile err");
+      toast.error('Error fetching profile details.');
     });
 };
 

@@ -8,7 +8,7 @@ export const useAppStore = defineStore("app", {
   state: () => ({
     upload_required: false,
     userImage: null,
-    defaultDetails: useLocalStorage(" defaultDetails", {}),
+    defaultDetails: useLocalStorage("defaultDetails", {}),
     defaultSendingDetails: useLocalStorage("defaultSendingDetails", {}),
     defaultSet: {
       currency_code: "",
@@ -56,7 +56,6 @@ export const useAppStore = defineStore("app", {
       country_code: "",
     },
     transaction_ref: useLocalStorage("transaction_ref", ""),
-
     paymentSummary: useLocalStorage("paymentSummary", {
       cash: {
         initial_amount: "",
@@ -77,7 +76,6 @@ export const useAppStore = defineStore("app", {
         converted: "",
       },
     }),
-
     currentTransaction: {
       first_name: "",
       last_name: "",
@@ -88,26 +86,24 @@ export const useAppStore = defineStore("app", {
       result: null,
       reasonId: null,
     }),
-
     defaultAvailableCurrencies: useLocalStorage(
       "defaultAvailableCurrencies",
       []
     ),
-
     cuid: "",
     defaultRecipientCountry: useLocalStorage("defaultRecipientCountry", "NGA"),
-    bankDetails:{
-      bank_account_name:'',
-      bank_name:'',
-      bank_account_number:'',
+    bankDetails: {
+      bank_account_name: "",
+      bank_name: "",
+      bank_account_number: "",
     },
-    mobileMoney:{
-      mobile_money_number:'',
+    mobileMoney: {
+      mobile_money_number: "",
     },
     repeatTransaction: {
-      amount:'',
-      currency:'',
-    }
+      amount: "",
+      currency: "",
+    },
   }),
   getters: {
     showTodo: (state) => {
@@ -347,9 +343,7 @@ export const useAppStore = defineStore("app", {
 
       return Promise.resolve(data);
     },
-    setRepeatTransaction:(value) => {
-
-    },
+    setRepeatTransaction: (value) => {},
   },
   // persist: true,
   persist: {

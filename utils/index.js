@@ -1,5 +1,7 @@
 import axiosInstance from "@/services/axios.instance";
 import { createToast } from "mosha-vue-toastify";
+import { useNuxtApp } from "#app";
+
 
 export const checkStatus = (status) => {
   // console.log(status,'status');
@@ -20,6 +22,7 @@ export const checkNetwork = () => {
   }
 };
 
+// export const toast = (() => (useNuxtApp().$toast))();
 export class ErrMessage extends Error {
   constructor(data) {
     super(data);

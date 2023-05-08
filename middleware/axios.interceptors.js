@@ -5,10 +5,10 @@ import "mosha-vue-toastify/dist/style.css";
 
 import axiosInstance from "@/services/axios.instance";
 import TokenService from "@/services/token.service";
-import AuthService from "~~/services/auth.service";
+import AuthService from "@/services/auth.service";
 
 import { checkStatus, ErrMessage } from "~/utils";
-import useToast from "~~/composables_/useToast";
+import useToast from "@/composables_/useToast";
 import { initLogout } from "~~/store/auth";
 
 const setupInterceptor = () => {
@@ -16,7 +16,6 @@ const setupInterceptor = () => {
     (config) => {
       const token = TokenService.getLocalAccessToken();
       if (token) {
-        // @ts-ignore
         config.headers["Authorization"] = `Bearer ${token} `;
       }
       return config;
@@ -84,23 +83,7 @@ const setupInterceptor = () => {
           type: "info",
         });
       }
-      // if (originalConfig.url !== "/login" && err.response) {
-      //   // Access Token was expired
-      //   if (err.response.status === 401 && !originalConfig._retry) {
-      //     // EventBus.dispatch("logout");
-      //     // originalConfig._retry = true;
-      //     // try {
-      //     //   const rs = await axiosInstance.post("/refresh/token");
-      //     //   // console.log(rs, "rs");
-      //     //   const { access_token } = rs.data;
-      //     //   // .dispatch("auth/refreshToken", accessToken);
-      //     //   TokenService.updateLocalAccessToken(access_token);
-      //     //   return axiosInstance(originalConfig);
-      //     // } catch (_error) {
-      //     //   return Promise.reject(_error);
-      //     // }
-      //   }
-      // }
+
 
       return Promise.reject(err);
     }

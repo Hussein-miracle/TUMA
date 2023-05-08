@@ -6,8 +6,8 @@
       class="add-card__input flex flex-col items-center w-full"
       :class="{ 'flex items-center justify-center': isLoading === true }"
     >
-    <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
-    <div id="st-notification-frame" v-if="isLoading === false"></div>
+      <h4 class="text-secondary text-lg font-semibold">Pay securely</h4>
+      <div id="st-notification-frame" v-if="isLoading === false"></div>
       <!-- <VeeForm
         class="flex flex-col gap-y-3 items-center mt-6 w-[90%] add-card__form sm:w-[70%] md:w-[50%] self-center"
         @submit="handleSubmit"
@@ -136,13 +136,12 @@
 </template>
 
 <script setup>
-
 import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 const location = ref(`${window.location.origin}/transaction-status`);
 
 const isLoading = ref(false);
-
+const toast = useNuxtApp().$toast;
 // const cardDetails = reactive({
 //   card_number: "",
 //   card_name: "",
@@ -164,7 +163,6 @@ const getTrustToken = async () => {
 
   const reference = useAppStore().getTransactionRef;
 
-
   const details = {
     transaction_ref: reference,
   };
@@ -172,7 +170,7 @@ const getTrustToken = async () => {
   // console.log(data, 'for you too')
   const response = await UtilsService.postToTrustPayment(details);
 
- const data = response.data;
+  const data = response.data;
   const jwtToken = data["jwt_token"];
   const st = data.st;
   const res = {
@@ -184,22 +182,12 @@ const getTrustToken = async () => {
   return res;
 };
 
-
-
-
 const initTrustPayment = async (token) => {
-
-
-
   const st = SecureTrading({
     jwt: token,
-    formId:'st-form',
+    formId: "st-form",
   });
   return st.Components();
-
-
-
-
 };
 
 // const handleSubmit = async (values) => {
@@ -220,7 +208,8 @@ onBeforeMount(async () => {
       // console.log(result, "trustPayment result");
     })
     .catch((err) => {
-      console.log(err, "err");
+      // console.log(err, "err");
+      toast.error("An Error occured,please contact support.");
     });
 });
 
@@ -238,11 +227,12 @@ onBeforeMount(async () => {
 //   }
 // });
 
-
 definePageMeta({
   layout: "default",
-  middleware:['auth']
+  middleware: ["auth"],
 });
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -272,7 +262,9 @@ definePageMeta({
   }
 }
 
-#st-security-code-input,#expiration-date__input,#st-card-number-input {
+#st-security-code-input,
+#expiration-date__input,
+#st-card-number-input {
   border: none;
   border-bottom-width: 1.5px;
   border-bottom-style: solid;

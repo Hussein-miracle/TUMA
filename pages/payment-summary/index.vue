@@ -110,7 +110,7 @@ import UtilsService from "@/services/utils.service";
 import { storeToRefs } from "pinia";
 
 const appStore = useAppStore();
-
+const toast = useNuxtApp().$toast;
 const {
   remittanceMethod,
   paymentSummary,
@@ -233,7 +233,8 @@ const handleCreateTransaction = async () => {
       })
       .catch((err) => {
         isLoading.value = false;
-        console.log(err, "err");
+        // console.log(err, "err");
+        toast.error('Error confirming transaction details.')
       });
   }
 };

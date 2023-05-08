@@ -108,7 +108,7 @@ import { useUserStore } from "@/store/auth/index";
 const { show, setShowFalse, setShowTrue, toggleShow } = useToggle();
 
 const props = defineProps(["showDelete", "closeDelete", "openConfirmDelete"]);
-
+const toast = useNuxtApp().$toast;
 const store = useAppStore();
 const disable = ref(false);
 const form = reactive({
@@ -118,21 +118,23 @@ const form = reactive({
 const submit = () => {
   disable.value = true;
   if (!form.password) {
-    createToast("You need to input your password to carry out this action.", {
-      showIcon: true,
-      type: "warning",
-      transition: "bounce",
-      // position:'top-center'
-    });
-    disable.value = !true;
-    return;
+    // createToast("You need to input your password to carry out this action.", {
+    //   showIcon: true,
+    //   type: "warning",
+    //   transition: "bounce",
+    //   // position:'top-center'
+    // });
+    disable.value = false;
+    return toast.info('You need to input your password to carry out this action.');
   }
 
   useUserStore().setOldPassword(form.password);
 
   props.closeDelete();
   props.openConfirmDelete();
-  disable.value = !true;
+  disable.value = false;
+
+  toast.warn("You're about to delete your account");
 };
 
 onMounted(() => {});

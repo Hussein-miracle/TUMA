@@ -184,6 +184,9 @@ import { useAppStore } from "@/store/app/index";
 import UtilsService from "@/services/utils.service";
 import { TRANSACTION_STATUSES } from "@/utils/index";
 
+const toast = useNuxtApp().$toast;
+
+
 const route = useRoute();
 const appStore = useAppStore();
 const { upload_required } = storeToRefs(appStore);
@@ -222,7 +225,8 @@ const fetchTrustPaymentDetail = async () => {
     })
     .catch((err) => {
       isLoading.value = false;
-      console.log(err, "err");
+      // console.log(err, "err");
+      toast.error('Error fetching transaction status,please try again or contact support');
     });
 };
 onMounted(() => {

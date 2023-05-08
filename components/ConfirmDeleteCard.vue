@@ -97,7 +97,7 @@ const props = defineProps(["showConfirmDelete", "closeConfirmDelete"]);
 
 const store = useAppStore();
 const isDeleting = ref(!true);
-
+const toast =  useNuxtApp().$toast;
 const close = () => {
   props.closeConfirmDelete();
 };
@@ -113,12 +113,13 @@ const initDelete = async () => {
   AuthService.deleteAccount(data)
     .then((res) => {
       
-      createToast(`Account Deleted`, {
+      createToast(`Card deleted`, {
         showIcon: true,
         type: "info",
         transition: "bounce",
         position: "top-right",
       });
+  
         isDeleting.value = false;
     })
     .then((r) => {
@@ -130,7 +131,7 @@ const initDelete = async () => {
     })
     .catch((err) => {
       isDeleting.value = false;
-      createToast(`Error deleting Account`, {
+      createToast(`Error deleting card`, {
         showIcon: true,
         type: "warning",
         transition: "bounce",

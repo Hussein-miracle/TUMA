@@ -104,12 +104,15 @@
         Join now</span
       >
     </p>
-    <div class="div flex gap-x-1 sm:gap-x-2 mx-auto">
+    <!-- <div class="div flex gap-x-1 sm:gap-x-2 mx-auto">
       <p>Haven't Been Verified ?</p>
-      <NuxtLink @click="handleVerify" class="flex items-center link gap-x-2 cursor-pointer text-primary">
+      <NuxtLink
+        @click="handleVerify"
+        class="flex items-center link gap-x-2 cursor-pointer text-primary"
+      >
         <h2>Verify</h2>
       </NuxtLink>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -129,7 +132,7 @@ const { show, toggleShow } = useToggle();
 
 const isLoading = ref(false);
 const emailRef = ref(null);
-
+const toast = useNuxtApp().$toast;
 const loginForm = reactive({
   email: "",
   password: "",
@@ -166,42 +169,37 @@ const loginSchema = yup.object().shape({
 
 const handleSubmit = async (values) => {
   isLoading.value = true;
-  try {
-    login(loginForm)
-      .then((result) => {
-        if (form.remember === true) {
-          localStorage.setItem("rememberMe", true);
-        }
-        // console.log(result,'res');
-        return useAppStore().fetchCountries();
-      })
-      .then((result) => {
-        // console.log(result,'res');
-        return useAppStore().fetchDefault();
-      })
-      .then((currs) => {
-        // console.log(currs,'currs');
-        isLoading.value = false;
-        navigateTo("/send-money");
-      })
-      .catch((err) => {
-        // console.log(err,'err login err')
-        isLoading.value = false;
-
-        const errResponse = err?.response;
-        if (errResponse.status === 400) {
-          createToast(`Invalid Email or Password.`, {
-            showIcon: true,
-            type: "warning",
-            transition: "bounce",
-            position: "top-right",
-          });
-        }
-      });
-  } catch (err) {
-    isLoading.value = !true;
-    console.error(err);
-  }
+  // try {
+  login(loginForm)
+    .then((result) => {
+      if (form.remember === true) {
+        localStorage.setItem("rememberMe", true);
+      }
+      // console.log(result,'res');
+      return useAppStore().fetchCountries();
+    })
+    .then((result) => {
+      // console.log(result,'res');
+      return useAppStore().fetchDefault();
+    })
+    .then((currs) => {
+      // console.log(currs,'currs');
+      isLoading.value = false;
+      navigateTo("/send-money");
+    })
+    .catch((err) => {
+      // console.log(err,'err login err')
+      isLoading.value = false;
+      const errResponse = err?.response;
+      if (errResponse.status === 400) {
+        return toast.error("Invalid Email or Password.");
+      }
+      toast.error("An error occured please contact support.");
+    });
+  // } catch (err) {
+  //   isLoading.value = !true;
+  //   console.error(err);
+  // }
 };
 
 useHead({

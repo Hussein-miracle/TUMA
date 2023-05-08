@@ -114,7 +114,7 @@ definePageMeta({
 
 const { show, toggleShow } = useToggle();
 const { show: see, toggleShow: toggleSee } = useToggle();
-
+const toast = useNuxtApp().$toast;
 const isLoading = ref(false);
 
 const changePasswordForm = reactive({
@@ -163,24 +163,26 @@ const handleSubmit = async (values) => {
   AuthService.changePassword(values)
     .then((response) => {
       isLoading.value = false;
-      createToast(`Password changed successfully`, {
-        showIcon: true,
-        type: "success",
-        transition: "bounce",
-        // position:'top-center'
-      });
+      // createToast(`Password changed successfully`, {
+      //   showIcon: true,
+      //   type: "success",
+      //   transition: "bounce",
+      //   // position:'top-center'
+      // });
+      toast.success('Password changed successfully.')
       navigateTo("/login");
     })
     .catch((err) => {
       isLoading.value = false;
       const msg = err?.response?.data?.message;
-      createToast(`${msg}`, {
-        showIcon: true,
-        type: "warning",
-        transition: "bounce",
-        // position:'top-center'
-      });
+      // createToast(`${msg}`, {
+      //   showIcon: true,
+      //   type: "warning",
+      //   transition: "bounce",
+      //   // position:'top-center'
+      // });
       // console.log(err,'err');
+      toast.error(`${msg}`);
     });
 };
 </script>

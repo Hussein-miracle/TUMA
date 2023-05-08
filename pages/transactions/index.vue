@@ -57,6 +57,7 @@ const { setCurrentTransaction } = useAppStore();
 useHead({
   title: "Trasactions",
 });
+const toast = useNuxtApp().$toast;
 const fetching = ref(false);
 const transactions = ref([]);
 
@@ -81,10 +82,12 @@ const fetchAllTransactions = async () => {
       // console.log(response, "r");
       transactions.value = response;
       fetching.value = false;
+      // toast.success('fetc')
     })
     .catch((err) => {
       fetching.value = false;
-      console.log(err, "err");
+      // console.log(err, "err");
+      toast.error('An Error occured while fetching the transactions log.');
     });
 };
 

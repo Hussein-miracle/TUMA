@@ -39,16 +39,22 @@
 <script setup>
 import * as yup from "yup";
 import AuthService from "@/services/auth.service";
+
 useHead({
   title: "Forgot Password",
 });
+
 definePageMeta({
   layout: false,
 });
+
 const isLoading = ref(false);
+
 const form = reactive({
   email: "",
 });
+
+const toast = useNuxtApp().$toast;
 
 const forgotPasswordSchema = yup.object().shape({
   email: yup
@@ -66,7 +72,8 @@ const handleSubmit = async (values) => {
     isLoading.value = false;
   }).catch((err) => {
     isLoading.value = false;
-    console.log(err,'errr');
+    // console.log(err,'errr');/
+    toast.error('Error resetting password...please try again.')
   })
 };
 </script>

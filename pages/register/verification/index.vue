@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center">
     <h2
-      class="verification__main--title text-lg  sm:text-4xl font-bold text-secondary sm:mb-4 sm:mt-4"
+      class="verification__main--title text-lg sm:text-4xl font-bold text-secondary sm:mb-4 sm:mt-4"
     >
       OTP Verification
     </h2>
@@ -13,18 +13,21 @@
       </span>
     </p>
      -->
-  <p class="mx-auto text-ash-1 px-3 sm:text-base text-sm self-center max-w-md" v-show="get_verify_email === false">
-    The OTP code <span> has been </span>
+    <p
+      class="mx-auto text-ash-1 px-3 sm:text-base text-sm self-center max-w-md"
+      v-show="get_verify_email === false"
+    >
+      The OTP code <span> has been </span>
 
-    <!-- <span v-else>will be</span> -->
-    sent to <span v-if="user.email">this</span
-    ><span v-else>your</span> email address
-    <span class="font-bold  text-md text-secondary" v-if="user.email">{{
-      user.email
-    }}</span
-    >, you will need to enter the verification code (OTP) to complete your
-    registration process.
-  </p>
+      <!-- <span v-else>will be</span> -->
+      sent to <span v-if="user.email">this</span><span v-else>your</span> email
+      address
+      <span class="font-bold text-md text-secondary" v-if="user.email">{{
+        user.email
+      }}</span
+      >, you will need to enter the verification code (OTP) to complete your
+      registration process.
+    </p>
 
     <VeeForm
       v-if="get_verify_email === true"
@@ -128,7 +131,9 @@
         />
       </div>
 
-      <div class="self-center mt-2 text-center flex flex-col items-center justify-between">
+      <div
+        class="self-center mt-2 text-center flex flex-col items-center justify-between"
+      >
         <button-primary
           :text="'Verify'"
           :showIcon="false"
@@ -137,24 +142,24 @@
           :class="{ 'opacity-80 cursor-not-allowed': verifying === true }"
         />
 
-         <p class="flex gap-x-1 items-center mt-4 max-w-xs mx-auto" v-if="countdown > 0">
-        Resend code in
-        <span class="text-primary">{{ formatSecTime(countdown) }}</span>
-      </p>
-
-
-
-        <p class="font-bold mt-2 text-secondary" v-else>
-        <span>   Didn't receive the OTP ? </span>
-
-                <button
-        class="flex gap-x-1 items-center cursor-pointer max-w-xs hover:border-primary border-solid rounded-lg hover:border-2 p-1 text-primary hover:text-black transition-all duration-200 mx-auto"
-        @click="handleResendCode"
-      >
-        Resend code
-      </button>
+        <p
+          class="flex gap-x-1 items-center mt-4 max-w-xs mx-auto"
+          v-if="countdown > 0"
+        >
+          Resend code in
+          <span class="text-primary">{{ formatSecTime(countdown) }}</span>
         </p>
 
+        <p class="font-bold mt-2 text-secondary" v-else>
+          <span> Didn't receive the OTP ? </span>
+
+          <button
+            class="flex gap-x-1 items-center cursor-pointer max-w-xs hover:border-primary border-solid rounded-lg hover:border-2 p-1 text-primary hover:text-black transition-all duration-200 mx-auto"
+            @click="handleResendCode"
+          >
+            Resend code
+          </button>
+        </p>
       </div>
     </VeeForm>
   </div>
@@ -170,18 +175,17 @@ import { useUserStore } from "@/store/auth/index";
 import { useAppStore } from "@/store/app/index";
 import { storeToRefs } from "pinia";
 
-const appState = useAppStore();
 
+
+
+const appState = useAppStore();
 const { getUser: user } = storeToRefs(appState);
 const {tempUser} = useUserStore();
 
 
 // console.log(user.value, "gU");
 // console.log(tempUser, "tempU");
-
-
 const verifying = ref(false);
-
 const code = ref("");
 const timer = ref(null);
 const firstDigitRef = ref(null);
@@ -191,6 +195,7 @@ const fourthDigitRef = ref(null);
 const fifthDigitRef = ref(null);
 const sixthDigitRef = ref(null);
 const get_verify_email = ref(false);
+const toast = useNuxtApp().$toast;
 // const user = storeToRefs()
 
 useHead({
@@ -229,23 +234,26 @@ const handleResendCode = async () => {
   countdown.value = 120;
   AuthService.getVerificationCode(form)
     .then((response) => {
-      createToast(`Check your email a verification code has been sent`, {
-        showIcon: true,
-        type: "success",
-        transition: "bounce",
-        // position:'top-center'
-      });
+      // createToast(`Check your email a verification code has been sent`, {
+      //   showIcon: true,
+      //   type: "success",
+      //   transition: "bounce",
+      //   // position:'top-center'
+      // });
+
+      toast.success('Check your email a verification code has been sent');
     })
     .catch((err) => {
-      createToast(
-        `An error occured our engineers have been notified...please refresh and try again after awhile.`,
-        {
-          showIcon: true,
-          type: "warning",
-          transition: "bounce",
-          // position:'top-center'
-        }
-      );
+      // createToast(
+      //   `An error occured our engineers have been notified...please refresh and try again after awhile.`,
+      //   {
+      //     showIcon: true,
+      //     type: "warning",
+      //     transition: "bounce",
+      //     // position:'top-center'
+      //   }
+      // );
+      toast.error('An error occured please refresh and try again after awhile or contact support. ')
     });
 };
 
@@ -286,43 +294,45 @@ const handleSubmit = async () => {
 
   // console.log(data, "code data");
   verifying.value = true;
-  try {
+  // try {
     if (code.value.length === 6) {
       useUserStore()
         .verifyOtp(data)
         .then((res) => {
           // console.log(res, "data after verfity");
           const msg = res.message;
-          createToast(`${msg}⚡⚡`, {
-            type: "success",
-            showIcon: true,
-            position: "top-center",
-          });
-          verifying.value = !true;
+          // createToast(`${msg}⚡⚡`, {
+          //   type: "success",
+          //   showIcon: true,
+          //   position: "top-center",
+          // });
+          verifying.value = false;
+          toast.success(`${msg}`);
           navigateTo("/login");
         })
         .catch((err) => {
           const msg = err?.response?.data.message;
-          createToast(`${msg}`, {
-            showIcon: true,
-            type: "warning",
-            transition: "bounce",
-            // position:'top-center'
-          });
-          verifying.value = !true;
+          // createToast(`${msg}`, {
+          //   showIcon: true,
+          //   type: "warning",
+          //   transition: "bounce",
+          //   // position:'top-center'
+          // });
+          toast.error(`${msg}`);
+          verifying.value = false;
         });
     }
-  } catch (err) {
-    const msg = err?.response?.data.message;
-    createToast(`${msg}`, {
-      showIcon: true,
-      type: "warning",
-      transition: "bounce",
-      // position:'top-center'
-    });
-    verifying.value = !true;
-    // console.error(err);
-  }
+  // } catch (err) {
+  //   const msg = err?.response?.data.message;
+  //   createToast(`${msg}`, {
+  //     showIcon: true,
+  //     type: "warning",
+  //     transition: "bounce",
+  //     // position:'top-center'
+  //   });
+  //   verifying.value = !true;
+  //   // console.error(err);
+  // }
 };
 
 const initVerify = async () => {
@@ -360,7 +370,7 @@ onMounted(() => {
       }, 1000);
 
     window.addEventListener("paste", handlePaste);
-    
+
   }
 });
 

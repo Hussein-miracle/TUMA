@@ -95,7 +95,7 @@ import { useUserStore } from "@/store/auth";
 const { show, setShowFalse, setShowTrue, toggleShow } = useToggle();
 
 const props = defineProps(["showConfirmDelete", "closeConfirmDelete"]);
-
+const t = useNuxtApp().$toast;
 const store = useAppStore();
 const isDeleting = ref(!true);
 
@@ -116,14 +116,14 @@ const initDelete = async () => {
   // console.log(data,'data');
   AuthService.deleteAccount(data)
     .then((res) => {
-      
-      createToast(`Account Deleted`, {
-        showIcon: true,
-        type: "info",
-        transition: "bounce",
-        position: "top-right",
-      });
-        isDeleting.value = false;
+      // createToast(`Account Deleted`, {
+      //   showIcon: true,
+      //   type: "info",
+      //   transition: "bounce",
+      //   position: "top-right",
+      // });
+      t.success("Account Deleted Successfully");
+      isDeleting.value = false;
     })
     .then((r) => {
       close();
@@ -134,12 +134,13 @@ const initDelete = async () => {
     })
     .catch((err) => {
       isDeleting.value = false;
-      createToast(`Error deleting Account`, {
-        showIcon: true,
-        type: "warning",
-        transition: "bounce",
-        position: "top-right",
-      });
+      // createToast(`Error deleting Account`, {
+      //   showIcon: true,
+      //   type: "warning",
+      //   transition: "bounce",
+      //   position: "top-right",
+      // });
+      t.error("Error deleting your account.");
     });
 };
 

@@ -55,7 +55,7 @@
 
 <script setup>
 import UtilsService from "@/services/utils.service";
-
+      const toast = useNuxtApp().$toast;
 const isFetching = ref(false);
 const htmlcode = ref("");
 
@@ -73,7 +73,8 @@ const getTAC = async () => {
     })
     .catch((err) => {
       isFetching.value = false;
-      console.log(err, "err getting tac details");
+      // console.log(err, "err getting tac details");
+      toast.error('Error getting terms and conditions details.')
     });
 };
 onMounted(async () => {

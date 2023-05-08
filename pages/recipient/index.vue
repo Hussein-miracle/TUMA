@@ -422,6 +422,7 @@ const focusedMobile = ref(false);
 const itemSelected = ref(null);
 const showWithMap = ref(true);
 const formerRecipients = ref([]);
+const toast = useNuxtApp().$toast;
 
 const reasonForRemittance = ref("");
 
@@ -456,10 +457,12 @@ const fetchRecipients = async () => {
       // console.log(data , ' data for get recipients');
       formerRecipients.value = data;
       fetching.value = false;
+      
     })
     .catch((err) => {
       fetching.value = false;
-      console.log(err, "err");
+      // console.log(err, "err");
+      toast.error('Error fetching previous recipients');
     });
 };
 
@@ -672,7 +675,8 @@ const handleSubmit = async (values) => {
       })
       .catch((err) => {
         isLoading.value = false;
-        console.log(err, "err");
+        // console.log(err, "err");
+        toast.error('An error occured please contact support.')
       });
   }
 };

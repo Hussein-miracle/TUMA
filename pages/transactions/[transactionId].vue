@@ -114,6 +114,7 @@ definePageMeta({
   middleware: ["auth", "checkroute"],
 });
 const currentTransactStore = useAppStore();
+const toast = useNuxtApp().$toast;
 // console.log(currentTransaction, "tC");
 const { currentTransaction: transactionData } =
   storeToRefs(currentTransactStore);
@@ -206,7 +207,8 @@ const fetchTransaction = async () => {
     })
     .catch((err) => {
       isLoading.value = false;
-      console.log(err, "err");
+      // console.log(err, "err");
+      toast.error('Error getting transaction details,please contact support');
     });
 };
 
