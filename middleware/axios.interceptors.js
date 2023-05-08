@@ -47,7 +47,7 @@ const setupInterceptor = () => {
     async (err) => {
       const status = err.response?.status;
       const originalConfig = err.config;
-      console.log(err, "err");
+      // console.log(err, "err");
       // console.log(originalConfig, "cg");
 
       if (originalConfig?.url !== "/login" && status === 401) {

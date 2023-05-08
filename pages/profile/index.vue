@@ -299,7 +299,8 @@ const handleSubmitImage = async (values) => {
   ProfileService.uploadUserImage(values)
     .then((response) => {
       disableUpload.value = false;
-      console.log(response, "response");
+      // console.log(response, "response");
+      toast.success('Profile Image upload successful');
     })
     .catch((err) => {
       disableUpload.value = false;

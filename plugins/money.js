@@ -15,7 +15,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         const final = `${money}.${unit}`;
         el.innerText = final;
       } else if (test.includes(".")) {
-        console.log(test, "ts");
+        // console.log(test, "ts");
       }
     },
   });

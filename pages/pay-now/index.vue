@@ -107,7 +107,7 @@ onBeforeMount(async () => {
       // console.log(result, "trustPayment result");
     })
     .catch((err) => {
-      console.log(err, "err");
+      // console.log(err, "err");
       toast.error('An Error occured please contact support.')
     });
 });
