@@ -351,7 +351,7 @@ const selectedCard = reactive({
 const checkSelect = () => {
   for (const item in selectedCard) {
     if (selectedCard[item] === "") {
-      submitting.value = !true;
+      submitting.value = false;
     }
   }
 };
