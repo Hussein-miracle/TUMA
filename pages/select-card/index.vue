@@ -249,7 +249,14 @@
             v-else
           ></div>
 
-          <button-primary
+
+          <p class="text-xs sm:text-md">
+            I have read and agree to the Terms & Conditions and Privacy Policy
+          </p>
+
+        </div>
+
+                  <button-primary
             :text="'Pay now'"
             class="text-secondary font-bold"
             type="button"
@@ -268,10 +275,6 @@
               isDeleting === true
             "
           />
-          <p class="text-xs sm:text-md">
-            I have read and agree to the Terms & Conditions and Privacy Policy
-          </p>
-        </div>
       </div>
       <div
         class="card-numbers w-full sm:w-[80%] mx-auto flex flex-col gap-y-1 items-center mt-4 sm:mt-0"
@@ -317,13 +320,9 @@ import { useUserStore } from "@/store/auth/index";
 import useToggle from "@/composables_/useToggle";
 import UtilsService from "@/services/utils.service";
 
-
-
 const authstore = useUserStore();
 const { user } = storeToRefs(authstore);
 const toast = useNuxtApp().$toast;
-
-
 
 // console.log(user, "user hiss");
 
@@ -366,17 +365,20 @@ const fetchCards = async () => {
   UtilsService.getCards()
     .then((response) => {
       const data = response;
-      c; //onsole.log(data, " data for get cards");
+
+      //console.log(data, " data for get cards");
       cards.value = data;
       if (data.length <= 0) {
         return navigateTo("/add-card");
       }
+
+
       fetching.value = false;
     })
     .catch((err) => {
       fetching.value = false;
       // console.log(err, "err");
-      toast.error('Error fetching card details..');
+      toast.error("Error fetching card details..");
     });
 };
 
@@ -403,7 +405,7 @@ const initDeleteCard = async () => {
     .catch((err) => {
       isDeleting.value = !true;
       // console.log(err, "err");
-      toast.error('Error deleting card.')
+      toast.error("Error deleting card.");
     });
 };
 

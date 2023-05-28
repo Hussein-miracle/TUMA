@@ -531,7 +531,6 @@ const handleSelectRecipient = (recipient) => {
 
   itemSelected.value = recipient;
 
-
   recipientForm.first_name = recipient.first_name;
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
@@ -544,13 +543,16 @@ const handleSelectRecipient = (recipient) => {
     saveMobileDetails();
   }
 
-  const recipientCreationData = {
-    first_name: recipientForm.first_name,
-    last_name: recipientForm.last_name,
-    phone_number: recipientForm.phone,
-    address: recipientForm.address,
+  const recipientData = {
+    result: {
+      ...recipient,
+    },
+    reasonId: reason_id,
   };
-
+  useAppStore().setCurrentRecipientData(recipientData);
+  localStorage.setItem("progged", JSON.stringify(true));
+  isLoading.value = false;
+  navigateTo("/payment-summary");
 };
 
 const handleCityInput = async (e) => {
@@ -669,7 +671,7 @@ const handleSubmit = async (values) => {
     UtilsService.createRecipient(recipientCreationData)
       .then((response) => {
         const result = response.data;
-        // console.log(result, "recipient creation result");
+        console.log(result, "recipient creation result");
         const recipientData = {
           result: {
             ...result,
