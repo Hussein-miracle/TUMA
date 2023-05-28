@@ -104,6 +104,7 @@ export const useAppStore = defineStore("app", {
       amount: "",
       currency: "",
     },
+    recipient_dial_code:''
   }),
   getters: {
     showTodo: (state) => {
@@ -155,6 +156,9 @@ export const useAppStore = defineStore("app", {
     getConversionData: (state) => {
       return state.conversionData;
     },
+    dc:(state) => {
+      return state.recipient_dial_code;
+    }
   },
   actions: {
     setShowTodo: (value) => {
@@ -188,6 +192,9 @@ export const useAppStore = defineStore("app", {
       useAppStore().restriction = {
         ...restrictionDetails,
       };
+    },
+    setDC:(dc) => {
+      useAppStore().recipient_dial_code = dc;
     },
     setRemittanceMethod(value) {
       // console.log(value,'remittance methid in store');

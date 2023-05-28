@@ -15,14 +15,17 @@
       </div>
     </div>
 
-    <div class="details flex flex-col items-start sm:w-[30%] h-full self-end text-sm sm:text-base">
+    <div
+      class="details flex flex-col items-start sm:w-[30%] h-full self-end text-sm sm:text-base"
+    >
       <div class="text-secondary flex gap-x-0.5 sm:gap-x-1">
         <span v-money>{{ amount }}</span>
         <span>{{ from_currency }}</span>
       </div>
       <div class="text-secondary flex gap-x-0.5 sm:gap-x-1">
+        <span>{{ recipient_currency_symbol }}</span>
         <span v-money>{{ converted_amount }}</span>
-        <span>{{ to_currency }}</span>
+        <!-- <span>{{ to_currency }}</span> -->
       </div>
 
       <transaction-status :status="status" />
@@ -40,6 +43,7 @@ const props = defineProps([
   "address",
   "to_currency",
   "converted_amount",
+  "recipient_currency_symbol",
 ]);
 </script>
 

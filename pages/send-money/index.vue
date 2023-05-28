@@ -892,11 +892,15 @@ const initialFetch = async () => {
           const data = response.data;
           // console.log(data, "rate fetch data");
           const result = data.default;
+          console.log(result, "result");
+          console.log(result["recipient_country_iso2"], "result dc");
           const mp = data.marketplace;
           const converted_amount = result.converted_amount;
           marketPlace.value = mp;
           const market = [...mp];
           // console.log(market, "market");
+
+          useAppStore().setDC(result["recipient_country_iso2"]);
           // updateMarketPlace(mp);
           Amount.value = converted_amount;
           const cash = converted_amount.cash;
@@ -966,9 +970,15 @@ const initialFetch = async () => {
           loading.value = false;
         })
         .catch((err) => {
-          // console.log(err,'error send-money initialFetch func ')
           loading.value = false;
-          toast.error('Error fetching current rates,check your network and refresh.');
+          console.log(err, "error send-money initialFetch func ");
+          const msg = err?.response?.data?.message;
+          if (!!msg) {
+            return toast.error(`${msg}`);
+          }
+          toast.error(
+            "Error fetching current rates,check your network and refresh."
+          );
         });
     }
   }

@@ -79,9 +79,9 @@
           v-model="signupForm.phone"
           name="phone2"
           id="phone2"
-          defaultCountry="US"
+          defaultCountry="NG"
           mode="international"
-          placeholder="'Recipient Phone Number e.g +1 234 567633'"
+          :placeholder="'Enter Phone Number with dial code e.g +44 234 567633'"
           class="pl-10 w-full"
           @focus="focusedPhone = true"
           @blur="focusedPhone = false"
@@ -349,7 +349,6 @@ import AuthService from "@/services/auth.service";
 import { useAppStore } from "@/store/app/index";
 import { useUserStore } from "@/store/auth/index";
 
-
 const toast = useNuxtApp().$toast;
 const { show, toggleShow } = useToggle();
 const {
@@ -427,7 +426,6 @@ const signupSchema = yup.object().shape({
   phone: yup.string().required("Phone is required!"),
 });
 
-
 const handleVerify = () => {
   navigateTo("/register/verification");
 };
@@ -437,37 +435,37 @@ const handleSubmit = async (values) => {
   // console.log(values, "reg values");
 
   // try {
-    AuthService.register(signupForm)
-      .then((result) => {
-        // console.log(result,'res reg');
-        const data = result.data.data;
-        // console.log(data,'after reg');
-        const user = data.user;
-        // console.log(user, "user after reg");
-        useAppStore().setAppUser(user);
-        useUserStore().setUser(user);
-        isLoading.value = false;
-        // createToast("Registration Successfull,Please verify", {
-        //   showIcon: true,
-        //   type: "success",
-        //   transition: "bounce",
-        //   // position:'top-center'
-        // });
-        toast.success('Registration successful,please verify.')
-        navigateTo("register/verification");
-      })
-      .catch((err) => {
-        const msg = err?.response?.data.message;
-        // createToast(`${msg}`, {
-        //   showIcon: true,
-        //   type: "warning",
-        //   transition: "bounce",
-        //   // position:'top-center'
-        // });
-        isLoading.value = false;
-        // console.log(err, "err");
-        toast.error(`${msg}`);
-      });
+  AuthService.register(signupForm)
+    .then((result) => {
+      // console.log(result,'res reg');
+      const data = result.data.data;
+      // console.log(data,'after reg');
+      const user = data.user;
+      // console.log(user, "user after reg");
+      useAppStore().setAppUser(user);
+      useUserStore().setUser(user);
+      isLoading.value = false;
+      // createToast("Registration Successfull,Please verify", {
+      //   showIcon: true,
+      //   type: "success",
+      //   transition: "bounce",
+      //   // position:'top-center'
+      // });
+      toast.success("Registration successful,please verify.");
+      navigateTo("register/verification");
+    })
+    .catch((err) => {
+      const msg = err?.response?.data.message;
+      // createToast(`${msg}`, {
+      //   showIcon: true,
+      //   type: "warning",
+      //   transition: "bounce",
+      //   // position:'top-center'
+      // });
+      isLoading.value = false;
+      // console.log(err, "err");
+      toast.error(`${msg}`);
+    });
   // } catch (err) {
   //   const msg = err?.response?.data.message;
   //   createToast(`${msg}`, {

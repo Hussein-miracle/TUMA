@@ -86,7 +86,7 @@ export const useUserStore = defineStore("user", {
 
       // const expirationDate = new Date(new Date().getTime() + expired * 1000);
 
-      console.log(data,'login data in store');
+      // console.log(data,'login data in store');
       const expirationDate = new Date((new Date().getTime() + expired) * 1000);
 
     

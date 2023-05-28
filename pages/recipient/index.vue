@@ -161,7 +161,7 @@
             v-model="recipientForm.phone"
             name="phone2"
             id="phone2"
-            defaultCountry="US"
+            :defaultCountry="dc"
             mode="international"
             :inputOptions="{
               placeholder: 'Recipient Phone Number e.g +1 234 567633',
@@ -280,13 +280,16 @@
               v-model="recipientForm.bank_account_number"
               name="bank_account_number"
               id="bank_account_number"
-              placeholder="Recipient Account Number"
+              placeholder="Recipient Sort Code"
             />
+            <!-- placeholder="Recipient Account Number" -->
 
             <label for="bank_account_number" class="mb-2 text-ash-1"
-              >Recipient Account Number</label
+              >Recipient Sort Code</label
             >
-
+            <!-- <label for="bank_account_number" class="mb-2 text-ash-1"
+              >Recipient Account Number</label
+            > -->
             <VeeErrorMsg
               class="text-red-600 py-1 my-1 max-w-md px-1 rounded-md bg-red-300 capitalize"
               name="bank_account_number"
@@ -428,7 +431,7 @@ const reasonForRemittance = ref("");
 
 const store = useAppStore();
 
-const { getRestriction: restrict } = storeToRefs(store);
+const { getRestriction: restrict, dc } = storeToRefs(store);
 
 // console.log(restrict,'restrict');
 // bank_account_name:'',
@@ -457,12 +460,11 @@ const fetchRecipients = async () => {
       // console.log(data , ' data for get recipients');
       formerRecipients.value = data;
       fetching.value = false;
-      
     })
     .catch((err) => {
       fetching.value = false;
       // console.log(err, "err");
-      toast.error('Error fetching previous recipients');
+      toast.error("Error fetching previous recipients");
     });
 };
 
@@ -525,26 +527,30 @@ const saveMobileDetails = () => {
   // }
 };
 const handleSelectRecipient = (recipient) => {
-  // console.log(recipient, "curr recipient");
-
-  // const gmap = document.getElementById("address2");
-  // gmap.dataset["modelvalue"] = recipient.address;
-  // gmap.value = recipient.address;
-  // console.log(gmap, "gmap");
+  console.log(recipient, "curr recipient");
 
   itemSelected.value = recipient;
-  // const reasonSel = reasons.value.find((r) => {
-  //   if (r?.reason === recipientForm.reason) {
-  //     return r;
-  //   }
-  // });
-  // console.log(recipient, "recipient selected");
+
 
   recipientForm.first_name = recipient.first_name;
   recipientForm.last_name = recipient.last_name;
   recipientForm.address = recipient.address;
   recipientForm.phone = recipient.phone_number;
   // showWithMap.value = !showWithMap.value;
+  if (remittanceMethod.value.toLowerCase() === "bank") {
+    saveAccountDetails();
+  }
+  if (remittanceMethod.value.toLowerCase() === "mobile") {
+    saveMobileDetails();
+  }
+
+  const recipientCreationData = {
+    first_name: recipientForm.first_name,
+    last_name: recipientForm.last_name,
+    phone_number: recipientForm.phone,
+    address: recipientForm.address,
+  };
+
 };
 
 const handleCityInput = async (e) => {
@@ -588,9 +594,12 @@ const createRecipientSchema = (method) => {
       phone: yup.string().required("Phone is required!"),
       address: yup.string().required("City is required!"),
       reason: yup.string().required("Reason for payment is required"),
+      // bank_account_number: yup
+      //   .string()
+      //   .required("Bank account number required."),
       bank_account_number: yup
         .string()
-        .required("Bank account number required."),
+        .required("Recipient Sort Code required."),
       bank_account_name: yup.string().required("Account name required."),
       bank_name: yup.string().required("Bank name required."),
     });
@@ -676,7 +685,7 @@ const handleSubmit = async (values) => {
       .catch((err) => {
         isLoading.value = false;
         // console.log(err, "err");
-        toast.error('An error occured please contact support.')
+        toast.error("An error occured please contact support.");
       });
   }
 };

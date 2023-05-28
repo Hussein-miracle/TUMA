@@ -35,6 +35,7 @@
         :amount="+transaction.amount"
         :converted_amount='transaction.converted_amount'
         :from_currency="transaction.from_currency"
+        :recipient_currency_symbol="transaction.currency"
         :to_currency="transaction.to_currency"
         :first_name="transaction.to_user.first_name"
         :last_name="transaction.to_user.last_name"
