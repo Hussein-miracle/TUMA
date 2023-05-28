@@ -1,22 +1,24 @@
 <template>
   <div
-    class="!w-24 !h-32 sm:!w-32 sm:!h-40 sm:pt-4 bg-white cursor-pointer rounded-md text-[#9DA3B4] gap-y-1 py-2 r border-2 hover:border-primary my-2 inline-block mx-2
-    "
-    :class="{'border-primary':selected}"
+    class="!w-24 !h-32 sm:!w-32 sm:!h-40 sm:pt-4 bg-white cursor-pointer rounded-md text-[#9DA3B4] gap-y-1 py-2 r border-2 hover:border-primary my-2 inline-block mx-2 relative"
+    :class="{ 'border-primary': selected }"
   >
+    <icons-bin
+      class="absolute top-1 right-1 w-4 h-4 cursor-pointer text-[#9DA3B4]"
+    />
     <div
-      class="px-2 py-2 w-10 h-10 logo bg-gray-400 flex items-center justify-center rounded-full text-white mx-auto uppercase"
+      class="px-2 py-2 w-10 h-10 logo bg-gray-400 flex items-center justify-center rounded-full text-white mx-auto uppercase !hover:fill-black duration-150 transition-all"
     >
-      {{ firstname[0] }}   {{ lastname[0] }}
+      {{ firstname[0] }} {{ lastname[0] }}
     </div>
 
-    <div class="mx-auto p text-center">{{firstname}}</div>
-    <div class="p mx-auto text-center">{{lastname}}</div>
+    <div class="mx-auto p text-center">{{ firstname }}</div>
+    <div class="p mx-auto text-center">{{ lastname }}</div>
   </div>
 </template>
 
 <script setup>
-const props  = defineProps(['firstname','lastname','selected'])
+const props = defineProps(["firstname", "lastname", "selected"]);
 </script>
 
 <style lang="scss" scoped>
